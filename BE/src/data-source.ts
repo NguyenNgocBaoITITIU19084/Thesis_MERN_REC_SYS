@@ -13,7 +13,7 @@ export const AppDataSource = new DataSource({
     username: process.env.USER_NAME,
     password: process.env.PASSWORD,
     database: process.env.DATABASE,
-    entities: [join(__dirname, '/../**/**.entity{.ts,.js}')],
+    entities: [ '/../**/**.entity{.ts,.js}'],
     synchronize: true,
     logging: true,
 })
