@@ -1,6 +1,5 @@
 import React from 'react'
 import {AiOutlineSearch, AiOutlineShoppingCart} from 'react-icons/ai'
-import {BiMenuAltLeft} from 'react-icons/bi'
 import { Link} from 'react-router-dom'
 
 import styles from './Header.module.scss'
@@ -24,9 +23,6 @@ const Header = () => {
             <span>Become Supplier </span>
           </div>
         </div>
-      </div>
-      <div className={`${styles['second-header']}`}>
-         
       </div>
     </div>
   )
