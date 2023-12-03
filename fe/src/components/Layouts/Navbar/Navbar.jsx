@@ -1,15 +1,21 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {BiMenuAltLeft, BiUserCircle} from 'react-icons/bi'
 import {AiOutlineShoppingCart, AiOutlineHeart} from 'react-icons/ai'
 import {NavLink} from 'react-router-dom'
 
 import styles from './Navbar.module.scss'
+import DropDown from '../DropDown/DropDown'
+
 const Navbar = () => {
+    const [openDropdown, setOpenDropDown] = useState(false)
   return (
-    <div className={`${styles.container}`}>
+    <nav className={`${styles.container}`}>
         <div className={`${styles['categories-wrapper']}`}>
             <BiMenuAltLeft size={30}/>
-            <span>All Categogies</span>
+            <span onClick={() => setOpenDropDown(!openDropdown)}>All Categogies</span>
+            {
+                openDropdown && <DropDown />
+            }
         </div>
         <div className={`${styles['pages-wrapper']}`}>
             <ul className={`${styles['list-pages']}`}>
@@ -41,7 +47,7 @@ const Navbar = () => {
                 <span>1</span>
             </div>
         </div>
-    </div>
+    </nav>
   )
 }
 
