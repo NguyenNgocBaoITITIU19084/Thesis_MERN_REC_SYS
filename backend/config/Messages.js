@@ -15,6 +15,7 @@ const messages = {
     success_query: "Successfully Query",
     success_update: "Successfully Update",
     category: " Category",
+    brand: " Brand",
   },
 };
 

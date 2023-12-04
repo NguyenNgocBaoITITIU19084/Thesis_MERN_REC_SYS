@@ -2,13 +2,13 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const categoriesSchema = new Schema(
+const brandSchema = new Schema(
   {
     name: {
       type: String,
       unique: true,
-      required: [true, "category name is required"],
-      minlength: [3, "category must be greater than 3 letters"],
+      required: [true, "brand name is required"],
+      minlength: [3, "brand must be greater than 3 letters"],
     },
     description: {
       type: String,
@@ -30,4 +30,4 @@ const categoriesSchema = new Schema(
 
 mongoose.set("runValidators", true);
 
-module.exports = mongoose.model("categories", categoriesSchema);
+module.exports = mongoose.model("brands", brandSchema);

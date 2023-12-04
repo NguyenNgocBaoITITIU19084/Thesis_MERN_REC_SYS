@@ -7,6 +7,7 @@ const { server } = require("./contants/server");
 const messages = require("./config/Messages");
 
 const CategoryRoutes = require("./routes/CategoryRoutes");
+const BrandRoutes = require("./routes/BrandRoute");
 
 const PORT = process.env.PORT;
 
@@ -17,6 +18,7 @@ const app = express();
 app.use(express.json());
 
 app.use(`${server}/category`, CategoryRoutes);
+app.use(`${server}/brand`, BrandRoutes);
 
 app.use(catchError);
 
