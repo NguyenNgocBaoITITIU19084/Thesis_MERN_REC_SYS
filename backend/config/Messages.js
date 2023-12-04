@@ -6,7 +6,15 @@ const messages = {
   },
   server: {
     success: "Server running on PORT:",
-    url: "https://localhost:",
+    url: "http://localhost:",
+  },
+  models: {
+    not_founded: "Not Found",
+    success_create: "Successfully Create",
+    success_delete: "Successfully Delete",
+    success_query: "Successfully Query",
+    success_update: "Successfully Update",
+    category: " Category",
   },
 };
 

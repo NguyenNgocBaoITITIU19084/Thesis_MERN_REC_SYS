@@ -1,6 +1,9 @@
 const { STATUS_CODE } = require("../contants/statusCode");
+
+const message = require("../config/Messages");
+
 const catchError = (err, req, res, next) => {
-  console.log("error-----", JSON.stringify(err, null, 2));
+  console.log(message.mongoose.error, JSON.stringify(err, null, 2));
   // bắt lỗi ở mongoose
   if (err.name === "ValidationError") {
     const errors = err.errors;

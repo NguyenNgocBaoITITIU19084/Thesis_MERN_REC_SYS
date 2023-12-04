@@ -12,11 +12,6 @@ const ConnectMongoose = () => {
       console.log(`${messages.mongoose.failed}`);
       console.log(`${messages.mongoose.error}`);
     });
-  const Cat = mongoose.model("Cat", { name: String });
-  const kitty = new Cat({ name: "Zildjian" });
-  const kitty123 = new Cat({ name: "123" });
-  kitty.save().then(() => console.log("meow"));
-  kitty123.save().then(() => console.log("meow"));
 };
 
 module.exports = ConnectMongoose;
