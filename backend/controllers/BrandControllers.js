@@ -27,7 +27,7 @@ exports.createBrand = catchAsync(async (req, res) => {
 exports.getAllBrands = catchAsync(async (req, res) => {
   const brand = await brandSchema.find();
   return res
-    .status(201)
+    .status(200)
     .json(
       new ResultObject(
         STATUS_CODE.SUCCESS,

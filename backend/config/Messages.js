@@ -14,8 +14,10 @@ const messages = {
     success_delete: "Successfully Delete",
     success_query: "Successfully Query",
     success_update: "Successfully Update",
-    category: " Category",
-    brand: " Brand",
+    category: " Category Model",
+    brand: " Brand Model",
+    discount: " Discount Model",
+    product: " Product Model",
   },
 };
 

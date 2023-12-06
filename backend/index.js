@@ -8,6 +8,8 @@ const messages = require("./config/Messages");
 
 const CategoryRoutes = require("./routes/CategoryRoutes");
 const BrandRoutes = require("./routes/BrandRoute");
+const DiscountRoutes = require("./routes/DiscountRoute");
+const ProductRoutes = require("./routes/ProductRoutes");
 
 const PORT = process.env.PORT;
 
@@ -19,6 +21,8 @@ app.use(express.json());
 
 app.use(`${server}/category`, CategoryRoutes);
 app.use(`${server}/brand`, BrandRoutes);
+app.use(`${server}/discount`, DiscountRoutes);
+app.use(`${server}/product`, ProductRoutes);
 
 app.use(catchError);
 
