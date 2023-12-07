@@ -6,7 +6,6 @@ const productSchema = new Schema(
   {
     name: {
       type: String,
-      unique: true,
       required: [true, "product name is required"],
       minlength: [3, "product must be greater than 3 letters"],
     },
@@ -25,9 +24,8 @@ const productSchema = new Schema(
     description: {
       type: String,
     },
-    inStock: {
+    soldOut: {
       type: Number,
-      default: 1,
     },
     isActive: {
       type: Boolean,
@@ -38,6 +36,14 @@ const productSchema = new Schema(
         type: String,
       },
     ],
+    discountApplied: {
+      type: [Schema.Types.ObjectId],
+      ref: "discounts",
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "",
+    },
   },
   {
     timestamps: true,

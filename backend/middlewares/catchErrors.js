@@ -23,7 +23,7 @@ const catchError = (err, req, res, next) => {
   // bắt lỗi điền sai id
   if (err.kind === "ObjectId") {
     err.statusCode = 400;
-    err.message = "Invalid Id";
+    err.message = "Invalid Id " + err.message;
   }
 
   // Catch Error Duplication Email
