@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const ROLE = require("../contants/role");
+const { ROLE } = require("../contants/role");
 
 const Schema = mongoose.Schema;
 
@@ -30,6 +30,10 @@ const UserSchema = new Schema(
     },
     refesh_token: {
       type: String,
+    },
+    profile: {
+      type: Schema.Types.ObjectId,
+      ref: "profiles",
     },
   },
   {
