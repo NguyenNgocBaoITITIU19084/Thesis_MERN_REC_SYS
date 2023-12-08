@@ -8,8 +8,16 @@ const { STATUS_CODE } = require("../contants/statusCode");
 const message = require("../config/Messages");
 
 exports.createProduct = catchAsync(async (req, res) => {
-  const { name, price, actualPrice, description, images, discountApplied } =
-    req.body;
+  const {
+    name,
+    price,
+    actualPrice,
+    description,
+    images,
+    discountApplied,
+    brand,
+    categories,
+  } = req.body;
 
   if (discountApplied) {
     const discount = await discountSchema.findById({ _id: discountApplied });
@@ -28,6 +36,8 @@ exports.createProduct = catchAsync(async (req, res) => {
       description,
       images,
       discountApplied,
+      brand,
+      categories,
     });
     return res
       .status(201)
@@ -47,6 +57,8 @@ exports.createProduct = catchAsync(async (req, res) => {
     description,
     images,
     discountApplied,
+    brand,
+    categories,
   });
   return res
     .status(201)
@@ -60,7 +72,11 @@ exports.createProduct = catchAsync(async (req, res) => {
 });
 
 exports.getAllproducts = catchAsync(async (req, res) => {
-  const products = await productSchema.find().populate("discountApplied");
+  const products = await productSchema
+    .find()
+    .populate("discountApplied")
+    .populate("brand")
+    .populate("categories");
   if (!products) {
     throw new ApiError(400, message.models.not_founded);
   }
@@ -122,6 +138,8 @@ exports.updateProductById = catchAsync(async (req, res) => {
       description,
       images,
       discountApplied,
+      brand,
+      categories,
     },
     { new: true }
   );

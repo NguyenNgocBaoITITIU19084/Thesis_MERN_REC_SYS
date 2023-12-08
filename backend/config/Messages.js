@@ -10,6 +10,7 @@ const messages = {
   },
   models: {
     not_founded: "Not Found",
+    not_yet: "There are no",
     success_create: "Successfully Create",
     success_delete: "Successfully Delete",
     success_query: "Successfully Query",
@@ -18,6 +19,7 @@ const messages = {
     brand: " Brand Model",
     discount: " Discount Model",
     product: " Product Model",
+    comment: " Comment Model",
   },
 };
 

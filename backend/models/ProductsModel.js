@@ -40,6 +40,20 @@ const productSchema = new Schema(
       type: [Schema.Types.ObjectId],
       ref: "discounts",
     },
+    brand: {
+      type: Schema.Types.ObjectId,
+      ref: "brands",
+      required: [true, "brand of product is required"],
+    },
+    categories: {
+      type: [Schema.Types.ObjectId],
+      ref: "categories",
+      required: [, "category of product is required"],
+    },
+    // comments: {
+    //   type: [Schema.Types.ObjectId],
+    //   ref: "comments",
+    // },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "",
