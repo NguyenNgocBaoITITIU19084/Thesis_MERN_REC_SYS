@@ -4,6 +4,10 @@ const messages = {
     failed: "Failed to Connect to Mongoo Database",
     error: "Error from Mongo Database",
   },
+  email_config: {
+    success: "Success config the email service",
+    failed: "",
+  },
   server: {
     success: "Server running on PORT:",
     url: "http://localhost:",
@@ -20,6 +24,13 @@ const messages = {
     discount: " Discount Model",
     product: " Product Model",
     comment: " Comment Model",
+    user: " User Model",
+  },
+  error: {
+    register: "user already existed",
+    login: {
+      inValid_input: "email or password is not valid",
+    },
   },
 };
 

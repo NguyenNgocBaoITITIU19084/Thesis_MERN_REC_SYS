@@ -26,6 +26,9 @@ const profileSchema = new Schema(
       default: 0,
       min: [0, "points of user must be greater than 0"],
     },
+    avatar: {
+      type: String,
+    },
   },
   {
     timestamps: true,

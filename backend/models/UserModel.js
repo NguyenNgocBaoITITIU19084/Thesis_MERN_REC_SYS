@@ -1,6 +1,10 @@
+require("dotenv").config();
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const { ROLE } = require("../contants/role");
+const ApiError = require("../utils/ApiError");
 
 const Schema = mongoose.Schema;
 
@@ -49,5 +53,37 @@ UserSchema.pre("save", function (next) {
     next();
   }
 });
+
+// jwt token
+UserSchema.methods.getJwtAccessToken = function () {
+  if (!this.isActive) {
+    throw new ApiError(400, "this account is not active");
+  }
+  return jwt.sign(
+    { id: this._id, roles: this.roles },
+    process.env.JWT_SECRET_KEY,
+    {
+      expiresIn: process.env.JWT_EXPIRES_ACCESS,
+    }
+  );
+};
+
+UserSchema.methods.getJwtRefeshToken = function () {
+  if (!this.isActive) {
+    throw new ApiError(400, "this account is not active");
+  }
+  return jwt.sign(
+    { id: this._id, roles: this.roles },
+    process.env.JWT_SECRET_KEY,
+    {
+      expiresIn: process.env.JWT_EXPIRES_REFESH,
+    }
+  );
+};
+
+// compare password
+UserSchema.methods.comparePassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
 module.exports = mongoose.model("users", UserSchema);

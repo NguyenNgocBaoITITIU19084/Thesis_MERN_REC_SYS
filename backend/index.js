@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 
 const ConnectMongoose = require("./config/ConnectMongoose");
+const EmailService = require("./utils/EmailService");
 const catchError = require("./middlewares/catchErrors");
 const { server } = require("./contants/server");
 const messages = require("./config/Messages");
@@ -16,6 +17,7 @@ const UserRoutes = require("./routes/UserRoute");
 const PORT = process.env.PORT;
 
 ConnectMongoose();
+EmailService.init();
 
 const app = express();
 
