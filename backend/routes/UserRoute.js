@@ -6,7 +6,7 @@ const route = express.Router();
 
 route.post("/register", userControllers.register);
 route.post("/login", userControllers.login);
-route.get("/test-auth", jwtAuth, userControllers.testAuth);
+route.patch("/forgot-password", userControllers.forgotPassword);
 route.delete("/:id");
 route.patch("/:id");
 

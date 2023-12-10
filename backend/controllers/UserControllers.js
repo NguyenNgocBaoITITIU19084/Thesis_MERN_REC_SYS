@@ -63,6 +63,20 @@ exports.login = catchAsync(async (req, res) => {
     );
 });
 
-exports.testAuth = catchAsync(async (req, res) => {
-  return res.json({ user: req.user });
+exports.forgotPassword = catchAsync(async (req, res) => {
+  const { email } = req.body;
+  const existedEmail = await userSchema.findOne({ email });
+  if (!existedEmail) {
+    throw new ApiError(400, `${message.error.login.inValid_input}`);
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ResultObject(
+        STATUS_CODE.SUCCESS,
+        `${message.models.success_update}${message.models.user}`,
+        null
+      )
+    );
 });
