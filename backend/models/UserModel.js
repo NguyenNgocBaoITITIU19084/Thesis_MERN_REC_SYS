@@ -1,10 +1,13 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+
 const jwt = require("jsonwebtoken");
+const randomString = require("randomstring");
+const bcrypt = require("bcryptjs");
 
 const { ROLE } = require("../contants/role");
 const ApiError = require("../utils/ApiError");
+const { hashString } = require("../utils/HashString");
 
 const Schema = mongoose.Schema;
 
@@ -34,6 +37,7 @@ const UserSchema = new Schema(
     },
     refesh_token: {
       type: String,
+      default: null,
     },
     profile: {
       type: Schema.Types.ObjectId,
@@ -47,8 +51,7 @@ const UserSchema = new Schema(
 
 UserSchema.pre("save", function (next) {
   if (this.isModified("password")) {
-    const salt = bcrypt.genSaltSync();
-    const hashedPassword = bcrypt.hashSync(this.password, salt);
+    const hashedPassword = hashString(this.password);
     this.password = hashedPassword;
     next();
   }
@@ -74,16 +77,33 @@ UserSchema.methods.getJwtRefeshToken = function () {
   }
   return jwt.sign(
     { id: this._id, roles: this.roles },
-    process.env.JWT_SECRET_KEY,
+    process.env.JWT_SECRET_KEY_REFESH,
     {
       expiresIn: process.env.JWT_EXPIRES_REFESH,
     }
   );
 };
 
+UserSchema.methods.verifyToken = function () {
+  if (!this.isActive) {
+    throw new ApiError(400, "this account is not active");
+  }
+  return jwt.verify(this.refesh_token, process.env.JWT_SECRET_KEY_REFESH);
+};
+
 // compare password
 UserSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// generate new random password
+UserSchema.methods.genRandomPassword = function () {
+  if (!this.isActive) {
+    throw new ApiError(400, "this account is not active");
+  }
+  const randoomToken = randomString.generate(10);
+  const hashedToken = hashString(randoomToken);
+  return hashedToken;
 };
 
 module.exports = mongoose.model("users", UserSchema);

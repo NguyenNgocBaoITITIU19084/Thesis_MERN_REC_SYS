@@ -27,9 +27,15 @@ const messages = {
     user: " User Model",
   },
   error: {
+    user_not_existed: "User doest not existed",
+    notMatchedPass: "Password doest not existed",
+    notExistedRefeshToken: "The Refesh Token doest not existed",
     register: "user already existed",
     login: {
       inValid_input: "email or password is not valid",
+    },
+    resetPassword: {
+      inValidToken: "Invalid Token",
     },
   },
 };

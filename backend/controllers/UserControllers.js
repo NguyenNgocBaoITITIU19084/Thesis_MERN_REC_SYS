@@ -5,18 +5,19 @@ const EmailService = require("../utils/EmailService");
 
 const userSchema = require("../models/UserModel");
 const profileSchema = require("../models/ProfilesModel");
+const { web_url } = require("../contants/server");
 const { STATUS_CODE } = require("../contants/statusCode");
 const message = require("../config/Messages");
 
 exports.register = catchAsync(async (req, res) => {
-  const { email, password, avatar } = req.body;
+  const { email, password } = req.body;
   const existedUser = await userSchema.findOne({ email });
   if (existedUser) {
     throw new ApiError(400, `${message.error.register}`);
   }
-  const newProfile = await profileSchema.create({ avatar });
+  const newProfile = await profileSchema.create({ firstName: null });
   const { id } = newProfile;
-  const newUser = await userSchema.create({
+  await userSchema.create({
     email,
     password,
     profile: id,
@@ -51,7 +52,9 @@ exports.login = catchAsync(async (req, res) => {
     throw new ApiError(400, `${message.error.login.inValid_input}`);
   }
   const accessToken = await existedEmail.getJwtAccessToken();
-  const data = { accessToken };
+  const refeshToken = await existedEmail.getJwtRefeshToken();
+  await userSchema.findOneAndUpdate({ email }, { refesh_token: refeshToken });
+  const data = { accessToken, refeshToken };
   return res
     .status(200)
     .json(
@@ -62,14 +65,46 @@ exports.login = catchAsync(async (req, res) => {
       )
     );
 });
-
-exports.forgotPassword = catchAsync(async (req, res) => {
-  const { email } = req.body;
-  const existedEmail = await userSchema.findOne({ email });
-  if (!existedEmail) {
-    throw new ApiError(400, `${message.error.login.inValid_input}`);
+exports.getNewAccessToken = catchAsync(async (req, res) => {
+  const { refeshToken } = req.body;
+  if (!refeshToken) {
+    throw new ApiError(401, `${message.error.notExistedRefeshToken}`);
   }
+  const existedEmail = await userSchema.findOne({ refesh_token: refeshToken });
+  if (!existedEmail) {
+    throw new ApiError(403, `${message.error.notExistedRefeshToken}`);
+  }
+  try {
+    await existedEmail.verifyToken();
+    const accessToken = await existedEmail.getJwtAccessToken();
+    const refeshToken = await existedEmail.getJwtRefeshToken();
+    await userSchema.findOneAndUpdate(
+      { email: existedEmail.email },
+      { refesh_token: refeshToken }
+    );
+    const data = { accessToken, refeshToken };
+    return res
+      .status(200)
+      .json(
+        new ResultObject(
+          STATUS_CODE.SUCCESS,
+          `${message.models.success_update}${message.models.user}`,
+          data
+        )
+      );
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      throw new ApiError(401, "Token is expired!");
+    }
+    throw new ApiError(403, "Forbiden");
+  }
+});
 
+exports.logOut = catchAsync(async (req, res) => {
+  const { id } = req.user;
+  await userSchema.findByIdAndUpdate(id, {
+    refesh_token: null,
+  });
   return res
     .status(200)
     .json(
@@ -77,6 +112,56 @@ exports.forgotPassword = catchAsync(async (req, res) => {
         STATUS_CODE.SUCCESS,
         `${message.models.success_update}${message.models.user}`,
         null
+      )
+    );
+});
+exports.forgotPassword = catchAsync(async (req, res) => {
+  const { email } = req.body;
+  const existedEmail = await userSchema.findOne({ email });
+  if (!existedEmail) {
+    throw new ApiError(400, `${message.error.login.inValid_input}`);
+  }
+  const newHashedPassword = existedEmail.genRandomPassword();
+  const link = `${web_url}/?token=${newHashedPassword}&userId=${existedEmail.id}`;
+  // await EmailService.sendGmail(
+  //   process.env.EMAIL,
+  //   email,
+  //   "Reset Password",
+  //   `Please click into this link ${link}`
+  // );
+  return res
+    .status(200)
+    .json(
+      new ResultObject(
+        STATUS_CODE.SUCCESS,
+        `${message.models.success_update}${message.models.user}`,
+        link
+      )
+    );
+});
+
+exports.resetPassword = catchAsync(async (req, res) => {
+  const { password, newPassword } = req.body;
+  const { id } = req.user;
+  console.log(id);
+  const existedEmail = await userSchema.findById(id);
+  if (!existedEmail) {
+    throw new ApiError(404, `${message.error.user_not_existed}`);
+  }
+  const isMatchedPassword = await existedEmail.comparePassword(password);
+  if (!isMatchedPassword) {
+    throw new ApiError(400, `${message.error.notMatchedPass}`);
+  }
+  existedEmail.password = newPassword;
+  const isUpdated = existedEmail.save();
+
+  return res
+    .status(200)
+    .json(
+      new ResultObject(
+        STATUS_CODE.SUCCESS,
+        `${message.models.success_update}${message.models.user}`,
+        isUpdated
       )
     );
 });
