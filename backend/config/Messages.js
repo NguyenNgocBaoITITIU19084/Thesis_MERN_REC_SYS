@@ -25,11 +25,13 @@ const messages = {
     product: " Product Model",
     comment: " Comment Model",
     user: " User Model",
+    profile: " Profile Model",
   },
   error: {
     user_not_existed: "User doest not existed",
     notMatchedPass: "Password doest not existed",
     notExistedRefeshToken: "The Refesh Token doest not existed",
+    already_existed: "Already existed",
     register: "user already existed",
     login: {
       inValid_input: "email or password is not valid",

@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const { GENDER } = require("../contants/gender");
+
 const Schema = mongoose.Schema;
 
 const profileSchema = new Schema(
@@ -17,13 +19,19 @@ const profileSchema = new Schema(
     address: {
       type: [String],
       maxlength: [150, "address must be less than 150 characters"],
-      default: null,
     },
     phoneNumber: {
-      type: String,
+      type: [String],
       maxlength: [11, "phone number must be less than 11 numbers"],
       minlength: [10, "phone number must be greater than 10 numbers"],
-      default: null,
+    },
+    gender: {
+      type: String,
+      enum: GENDER,
+      default: GENDER.UNKNOW,
+    },
+    age: {
+      type: Number,
     },
     points: {
       type: Number,

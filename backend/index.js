@@ -13,6 +13,7 @@ const DiscountRoutes = require("./routes/DiscountRoute");
 const ProductRoutes = require("./routes/ProductRoutes");
 const CommentRoutes = require("./routes/CommentRoute");
 const UserRoutes = require("./routes/UserRoute");
+const ProfileRoutes = require("./routes/ProfileRoute");
 
 const PORT = process.env.PORT;
 
@@ -29,6 +30,7 @@ app.use(`${server}/discount`, DiscountRoutes);
 app.use(`${server}/product`, ProductRoutes);
 app.use(`${server}/comment`, CommentRoutes);
 app.use(`${server}/auth`, UserRoutes);
+app.use(`${server}/profile`, ProfileRoutes);
 
 app.use(catchError);
 
