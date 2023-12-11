@@ -6,11 +6,14 @@ class EmailService {
   static init() {
     this.transporter = nodemailer.createTransport({
       host: process.env.SMPT_HOST,
-      port: 587,
-      secure: process.env.SMPT_SERVICE, // true for 465, false for other ports
+      port: process.env.SMPT_PORT,
+      secureConnection: process.env.SMPT_SERVICE, // true for 465, false for other ports
       auth: {
         user: process.env.EMAIL, // generated ethereal user
         pass: process.env.PASSWORD, // generated ethereal password
+      },
+      tls: {
+        ciphers: "SSLv3",
       },
     });
     console.log(`${message.email_config.success}`);

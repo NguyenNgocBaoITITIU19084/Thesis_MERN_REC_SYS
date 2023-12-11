@@ -43,6 +43,10 @@ const UserSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "profiles",
     },
+    store: {
+      type: Schema.Types.ObjectId,
+      ref: "stores",
+    },
   },
   {
     timestamps: true,

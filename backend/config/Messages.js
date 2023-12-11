@@ -26,6 +26,7 @@ const messages = {
     comment: " Comment Model",
     user: " User Model",
     profile: " Profile Model",
+    store: " Store Model",
   },
   error: {
     user_not_existed: "User doest not existed",

@@ -12,7 +12,10 @@ const storeSchema = new Schema(
     },
     description: {
       type: String,
-      maxlength: [50, "description of the store must be less than 50 letters"],
+      maxlength: [
+        100,
+        "description of the store must be less than 100 letters",
+      ],
     },
     isActive: {
       type: Boolean,
@@ -27,11 +30,18 @@ const storeSchema = new Schema(
       maxlength: [11, "phone number must be less than 11 numbers"],
       minlength: [10, "phone number must be greater than 10 numbers"],
     },
-    avatar: [
-      {
-        type: String,
-      },
-    ],
+    instagram: {
+      type: String,
+    },
+    facebook: {
+      type: String,
+    },
+    email: {
+      type: String,
+    },
+    avatar: {
+      type: String,
+    },
   },
   {
     timestamps: true,
