@@ -6,6 +6,7 @@ import {
   HomePage,
   FAQPage,
   EventsPage,
+  ProductsPage,
 } from "./Routes.js";
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
         <Route path="/sign-up" element={<SignUpPage />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/events" element={<EventsPage />} />
+        <Route path="/products" element={<ProductsPage />} />
       </Routes>
     </BrowserRouter>
   );
