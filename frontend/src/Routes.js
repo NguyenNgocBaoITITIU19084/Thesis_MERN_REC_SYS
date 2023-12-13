@@ -4,4 +4,13 @@ import HomePage from "./pages/HomePage.jsx";
 import FAQPage from "./pages/FAQPage.jsx";
 import EventsPage from "./pages/EventsPage.jsx";
 import ProductsPage from "./pages/ProductsPage.jsx";
-export { LoginPage, SignUpPage, HomePage, FAQPage, EventsPage, ProductsPage };
+import BestSellingPage from "./pages/BestSellingPage.jsx";
+export {
+  LoginPage,
+  SignUpPage,
+  HomePage,
+  FAQPage,
+  EventsPage,
+  ProductsPage,
+  BestSellingPage,
+};
