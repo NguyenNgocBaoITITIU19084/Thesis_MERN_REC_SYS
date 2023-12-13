@@ -5,6 +5,8 @@ import Category from "../components/Route/Category/Category";
 import BestDeals from "../components/Route/BestDeals/BestDeals";
 import Event from "../components/Event/Event";
 import FeaturedProducts from "../components/Route/FeaturedProducts/FeaturedProducts";
+import Sponsored from "../components/Route/Sponsored/Sponsored";
+
 const HomePage = () => {
   return (
     <div>
@@ -14,6 +16,7 @@ const HomePage = () => {
       <BestDeals />
       <Event />
       <FeaturedProducts />
+      <Sponsored />
     </div>
   );
 };
