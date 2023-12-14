@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   AiOutlineSearch,
@@ -6,22 +6,51 @@ import {
   AiOutlineShoppingCart,
 } from "react-icons/ai";
 import { IoIosArrowForward, IoIosArrowDown } from "react-icons/io";
-import { BiMenuAltLeft } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
+import { useSelector, useDispatch } from "react-redux";
 
-import { categoriesData, productData } from "../../static/data";
+import {
+  selectAllCategories,
+  fecthCategories,
+  selectLoadingState,
+} from "../../redux/features/categories/categoriesSlice";
+
+import {
+  selectAllBrands,
+  selectBrandLoadingState,
+  fecthBrands,
+} from "../../redux/features/brands/brandsSlice";
+
+import { productData } from "../../static/data";
 import styles from "../../styles/styles";
-import DropDown from "./DropDown";
 import Navbar from "./Navbar";
 import Cart from "../Cart/Cart";
+import OptionList from "./OptionList";
 
 const Header = ({ activeHeading }) => {
+  const dispatch = useDispatch();
+
+  const categories = useSelector(selectAllCategories);
+  const categoryStatus = useSelector(selectLoadingState);
+
+  const brands = useSelector(selectAllBrands);
+  const brandStatus = useSelector(selectBrandLoadingState);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [searchData, setSearchData] = useState(null);
   const [active, setActive] = useState(false);
-  const [dropDown, setDropDown] = useState(false);
+
   const [openCartList, setOpenCartList] = useState(false);
   const [openWhishList, setOpenWishList] = useState(false);
+
+  useEffect(() => {
+    if (categoryStatus === "idle") {
+      dispatch(fecthCategories());
+    }
+    if (categoryStatus === "idle") {
+      dispatch(fecthBrands());
+    }
+  }, [categoryStatus, brandStatus, dispatch]);
 
   window.addEventListener("scroll", () => {
     if (window.scrollY > 70) {
@@ -107,29 +136,11 @@ const Header = ({ activeHeading }) => {
           className={`${styles.section} relative ${styles.noramlFlex} justify-between`}
         >
           {/* {categories} */}
-          <div>
-            <div
-              className="relative h-[60px] mt-[10px] w-[270px] hidden 1000px:block"
-              onClick={() => setDropDown(!dropDown)}
-            >
-              <BiMenuAltLeft size={30} className="absolute top-3 left-2" />
-              <button
-                className={`h-[100%] w-full flex justify-between items-center pl-10 bg-white font-sans text-lg font-[500] select-none rounded-t-md`}
-              >
-                All Categories
-              </button>
-              <IoIosArrowDown
-                size={20}
-                className="absolute right-2 top-4 cursor-pointer"
-              />
-              {dropDown ? (
-                <DropDown
-                  categoriesData={categoriesData}
-                  setDropDown={setDropDown}
-                />
-              ) : null}
-            </div>
+          <div className="flex justify-between">
+            <OptionList data={brands} title={"Brands"} />
+            <OptionList data={categories} title={"Categories"} />
           </div>
+
           {/* navitems */}
           <div className={`${styles.noramlFlex}`}>
             <Navbar active={activeHeading} />

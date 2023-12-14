@@ -26,6 +26,7 @@ const productSchema = new Schema(
     },
     soldOut: {
       type: Number,
+      default: 0,
     },
     isActive: {
       type: Boolean,
@@ -50,13 +51,19 @@ const productSchema = new Schema(
       ref: "categories",
       required: [, "category of product is required"],
     },
+    total_rating: {
+      type: Number,
+      default: 0,
+    },
     // comments: {
     //   type: [Schema.Types.ObjectId],
     //   ref: "comments",
     // },
     createdBy: {
-      type: Schema.Types.ObjectId,
-      ref: "",
+      // type: Schema.Types.ObjectId,
+      // ref: "",
+      type: String,
+      default: "Bao Nguyen",
     },
   },
   {

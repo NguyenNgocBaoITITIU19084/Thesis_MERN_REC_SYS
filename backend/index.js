@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 
 const ConnectMongoose = require("./config/ConnectMongoose");
 const EmailService = require("./utils/EmailService");
@@ -23,6 +24,7 @@ EmailService.init();
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 app.use(`${server}/category`, CategoryRoutes);
