@@ -9,6 +9,7 @@ import {
   ProductsPage,
   BestSellingPage,
   ProductDetailsPage,
+  ProfilePage,
 } from "./Routes.js";
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/product/:name" element={<ProductDetailsPage />} />
         <Route path="/best-selling" element={<BestSellingPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </BrowserRouter>
   );
