@@ -1,12 +1,15 @@
-import { React, useState } from "react";
+import { React, useState, useContext, useEffect } from "react";
+import useAuth from "../../hooks/useAuth";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { LoginByUser } from "../../redux/features/auths/authSlice";
+import { jwtDecode } from "jwt-decode";
 
 import styles from "../../styles/styles";
 const Login = () => {
+  const { setAuth } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
@@ -16,6 +19,18 @@ const Login = () => {
   const onEmailChange = (e) => setEmail(e.target.value);
   const onPasswordChange = (e) => setPassword(e.target.value);
 
+  useEffect(() => {
+    return () => {
+      setEmail("");
+      setPassword("");
+      setAddRequestStatus("idle");
+    };
+  }, []);
+
+  const decodedJwt = (accessToken) => {
+    const user = jwtDecode(accessToken);
+    return user;
+  };
   const loginHandler = async (e) => {
     e.preventDefault();
     if (!email || !password) {
@@ -27,8 +42,15 @@ const Login = () => {
         setAddRequestStatus("pending");
         await dispatch(LoginByUser(data))
           .unwrap()
-          .then(() => {
+          .then((data) => {
             toast.success("successfully Login");
+            // console.log("from login button", data);
+            const { accessToken } = data.data;
+            const user = decodedJwt(accessToken);
+            console.log({ user });
+            setAuth({
+              user: "123123123",
+            });
             setEmail("");
             setPassword("");
             navigate("/");

@@ -12,34 +12,28 @@ import {
   BestSellingPage,
   ProductDetailsPage,
   ProfilePage,
+  Layout,
+  RequiredAuth,
 } from "./Routes.js";
+
 const App = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/sign-up" element={<SignUpPage />} />
-        <Route path="/faq" element={<FAQPage />} />
-        <Route path="/events" element={<EventsPage />} />
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/product/:name" element={<ProductDetailsPage />} />
-        <Route path="/best-selling" element={<BestSellingPage />} />
+    <Routes>
+      <Route path="/outlet" element={<Layout />} />
+      <Route path="/" element={<HomePage />} />
+
+      <Route element={<RequiredAuth />}>
         <Route path="/profile" element={<ProfilePage />} />
-      </Routes>
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-    </BrowserRouter>
+      </Route>
+
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/sign-up" element={<SignUpPage />} />
+      <Route path="/faq" element={<FAQPage />} />
+      <Route path="/events" element={<EventsPage />} />
+      <Route path="/products" element={<ProductsPage />} />
+      <Route path="/product/:name" element={<ProductDetailsPage />} />
+      <Route path="/best-selling" element={<BestSellingPage />} />
+    </Routes>
   );
 };
 

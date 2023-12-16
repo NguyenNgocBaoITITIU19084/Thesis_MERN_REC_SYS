@@ -7,6 +7,8 @@ import ProductsPage from "./pages/ProductsPage.jsx";
 import BestSellingPage from "./pages/BestSellingPage.jsx";
 import ProductDetailsPage from "./pages/ProductDetailsPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
+import Layout from "./components/layout/Layout.jsx";
+import RequiredAuth from "./components/layout/RequiredAuth.jsx";
 export {
   LoginPage,
   SignUpPage,
@@ -17,4 +19,6 @@ export {
   BestSellingPage,
   ProductDetailsPage,
   ProfilePage,
+  Layout,
+  RequiredAuth,
 };
