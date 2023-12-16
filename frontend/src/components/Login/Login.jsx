@@ -1,12 +1,46 @@
 import { React, useState } from "react";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { LoginByUser } from "../../redux/features/auths/authSlice";
 
 import styles from "../../styles/styles";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
+  const [addRequestStatus, setAddRequestStatus] = useState("idle");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const onEmailChange = (e) => setEmail(e.target.value);
+  const onPasswordChange = (e) => setPassword(e.target.value);
+
+  const loginHandler = async (e) => {
+    e.preventDefault();
+    if (!email || !password) {
+      return toast.error("Missing value");
+    }
+    const data = { email, password };
+    if (email && password && addRequestStatus === "idle") {
+      try {
+        setAddRequestStatus("pending");
+        await dispatch(LoginByUser(data))
+          .unwrap()
+          .then(() => {
+            toast.success("successfully Login");
+            setEmail("");
+            setPassword("");
+            navigate("/");
+          })
+          .catch((error) => toast.error(error.message));
+      } catch (err) {
+        console.error("Error from Sign up page ", err);
+      } finally {
+        setAddRequestStatus("idle");
+      }
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -32,6 +66,7 @@ const Login = () => {
                   autoComplete="email"
                   required
                   value={email}
+                  onChange={onEmailChange}
                 ></input>
               </div>
             </div>
@@ -50,6 +85,7 @@ const Login = () => {
                   autoComplete="current-password"
                   required
                   value={password}
+                  onChange={onPasswordChange}
                 ></input>
                 {visible ? (
                   <AiOutlineEye
@@ -96,6 +132,7 @@ const Login = () => {
               <button
                 type="submit"
                 className="group relative w-full h-[40px] flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                onClick={loginHandler}
               >
                 Login
               </button>

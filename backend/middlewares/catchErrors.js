@@ -10,15 +10,18 @@ const catchError = (err, req, res, next) => {
     const keys = Object.keys(errors);
     console.log("keys", keys);
     const errObject = {};
+    let messageErr = "";
     keys.map((key) => {
       errObject[key] = errors[key].message;
       // bat loi sai enum o role
       if (errors[key].kind === "enum") {
         errObject[key] = "invalid enum value";
       }
+      messageErr = errors[key].message;
     });
     err.statusCode = 400;
-    err.message = errObject;
+    // err.message = errObject;
+    err.message = messageErr;
   }
   // bắt lỗi điền sai id
   if (err.kind === "ObjectId") {
