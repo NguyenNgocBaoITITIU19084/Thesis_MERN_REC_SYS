@@ -759,4 +759,35 @@ const Address = () => {
     </div>
   );
 };
+const PaymentMethod = () => {
+  return (
+    <div className="w-full px-5">
+      <div className="flex w-full items-center justify-between">
+        <h1 className="text-[25px] font-[600] text-[#000000ba] pb-2">
+          Payment method
+        </h1>
+        <div className={`${styles.button} rounded-md`}>
+          <span className="text-[#fff]">Add New</span>
+        </div>
+      </div>
+      <br />
+      <div className="w-full bg-white h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10">
+        <div className="flex items-center">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Visa.svg/2560px-Visa.svg.png"
+            alt=""
+          />
+          <h5>Bao Nguyen Ngoc</h5>
+        </div>
+        <div className="pl-8 flex items-center">
+          <h6>123 **** *** *** ***</h6>
+          <h5 className="p;-6">09/2023</h5>
+        </div>
+        <div className="min-w-[10%] flex items-center justify-between pl-8">
+          <AiOutlineDelete size={25} className="cursor-pointer" />
+        </div>
+      </div>
+    </div>
+  );
+};
 export default ProfileContent;
