@@ -29,7 +29,7 @@ const App = () => {
       <Route path="/" element={<Layout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
-        <Route element={<RequiredAuth allowedRoles={[ROLE.ADMIN]} />}>
+        <Route element={<RequiredAuth allowedRoles={[ROLE.GUEST]} />}>
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/events" element={<EventsPage />} />
