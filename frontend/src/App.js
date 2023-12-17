@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -25,23 +25,43 @@ const ROLE = {
 
 const App = () => {
   return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/unauthorized" element={<Unauthorized />} />
-        <Route element={<RequiredAuth allowedRoles={[ROLE.GUEST]} />}>
-          <Route path="/profile" element={<ProfilePage />} />
+    <>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/product/:name" element={<ProductDetailsPage />} />
           <Route path="/best-selling" element={<BestSellingPage />} />
-        </Route>
+          <Route
+            element={
+              <RequiredAuth
+                allowedRoles={[ROLE.GUEST, ROLE.ADMIN, ROLE.SUPPLIER]}
+              />
+            }
+          >
+            <Route path="/profile" element={<ProfilePage />} />
+          </Route>
 
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/sign-up" element={<SignUpPage />} />
-      </Route>
-    </Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/sign-up" element={<SignUpPage />} />
+        </Route>
+      </Routes>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </>
   );
 };
 

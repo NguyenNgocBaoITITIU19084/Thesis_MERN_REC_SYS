@@ -5,7 +5,6 @@ import {
   AiOutlineDelete,
 } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
-import { Server_url } from "../../Server";
 import styles from "../../styles/styles";
 import { DataGrid } from "@material-ui/data-grid";
 import { Button } from "@material-ui/core";
@@ -15,18 +14,91 @@ import { RxCross1 } from "react-icons/rx";
 import { Country, State } from "country-state-city";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-import axios from "axios";
-// import { getAllOrdersOfUser } from "../../redux/actions/order";
+
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import {
+  selectProfile,
+  selectProfileLoadingState,
+  updateProfile,
+} from "../../redux/features/profile/profilesSlice";
+import { selectAccessAuth } from "../../redux/features/auths/authSlice";
+
 const ProfileContent = ({ active }) => {
-  const [name, setName] = useState("bao nguyen");
-  const [email, setEmail] = useState("ngocbao123steam@gmail.com");
-  const [phoneNumber, setPhoneNumber] = useState("0933546078");
-  const [password, setPassword] = useState("");
-  const [avatar, setAvatar] = useState(null);
   const dispatch = useDispatch();
 
-  const handleSubmit = () => {};
+  const profile = useSelector(selectProfile);
+  const token = useSelector(selectAccessAuth);
+  const { accessToken } = token;
+  const profileStatus = useSelector(selectProfileLoadingState);
+  const [startDate, setStartDate] = useState(new Date());
 
+  const [lastName, setLastName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [gender, setGender] = useState("");
+  const [avatar, setAvatar] = useState("");
+  const [age, setAge] = useState("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const canSubmit = [
+      firstName,
+      lastName,
+      address,
+      phoneNumber,
+      gender,
+      age,
+      avatar,
+    ].every(Boolean);
+    if (canSubmit) {
+      const data = {
+        firstName,
+        lastName,
+        address,
+        phoneNumber,
+        gender,
+        age,
+        avatar,
+      };
+      try {
+        await dispatch(updateProfile(accessToken, data))
+          .unwrap()
+          .then((data) => {
+            const {
+              firstName,
+              lastName,
+              gender,
+              phoneNumber,
+              avatar,
+              age,
+              address,
+            } = data;
+            console.log("avatar", data.avatar);
+            setFirstName(firstName);
+            setLastName(lastName);
+            setGender(gender);
+            setPhoneNumber(phoneNumber);
+            setAge(age);
+            setAddress(address);
+            toast.success("Success Update Profile");
+          });
+      } catch (error) {}
+    }
+  };
+  useEffect(() => {
+    setFirstName(profile.profile?.firstName ? profile.profile?.firstName : "");
+    setLastName(profile.profile?.lastName ? profile.profile?.lastName : "");
+    setGender(profile.profile?.gender ? profile.profile?.gender : "");
+    setPhoneNumber(
+      profile.profile?.phoneNumber ? profile.profile?.phoneNumber : ""
+    );
+    setAvatar(profile.profile?.avatar ? profile.profile?.avatar : "");
+    setAddress(profile.profile?.address ? profile.profile?.address : "");
+    setAge(profile.profile?.age ? profile.profile?.age : "");
+    setEmail(profile?.email);
+  }, [profileStatus, accessToken, dispatch]);
   return (
     <div className="w-full">
       {
@@ -36,7 +108,11 @@ const ProfileContent = ({ active }) => {
             <div className="flex justify-center w-full">
               <div className="relative">
                 <img
-                  src={`https://i.ytimg.com/vi/bf4yyStDWHE/maxresdefault.jpg`}
+                  src={`${
+                    avatar
+                      ? avatar
+                      : "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"
+                  }`}
                   className="w-[150px] h-[150px] rounded-full object-cover border-[3px] border-[#3ad132]"
                   alt=""
                 />
@@ -59,13 +135,36 @@ const ProfileContent = ({ active }) => {
               <form onSubmit={handleSubmit} aria-required={true}>
                 <div className="w-full 800px:flex block pb-3">
                   <div className=" w-[100%] 800px:w-[50%]">
-                    <label className="block pb-2">Full Name</label>
+                    <label className="block pb-2">First Name</label>
                     <input
                       type="text"
                       className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
                       required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                    />
+                  </div>
+                  <div className=" w-[100%] 800px:w-[50%]">
+                    <label className="block pb-2">Last Name</label>
+                    <input
+                      type="text"
+                      className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+                      required
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="w-full 800px:flex block pb-3">
+                  <div className=" w-[100%] 800px:w-[50%]">
+                    <label className="block pb-2">Phone Number</label>
+                    <input
+                      type="text"
+                      className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+                      required
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
                     />
                   </div>
                   <div className=" w-[100%] 800px:w-[50%]">
@@ -79,27 +178,35 @@ const ProfileContent = ({ active }) => {
                     />
                   </div>
                 </div>
-
                 <div className="w-full 800px:flex block pb-3">
                   <div className=" w-[100%] 800px:w-[50%]">
-                    <label className="block pb-2">Phone Number</label>
+                    <label className="block pb-2">Age</label>
                     <input
-                      type="number"
+                      type="text"
                       className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
                       required
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      value={age}
+                      onChange={(e) => setAge(e.target.value)}
                     />
                   </div>
-
                   <div className=" w-[100%] 800px:w-[50%]">
-                    <label className="block pb-2">Enter your password</label>
+                    <label className="block pb-2">Date of Birth</label>
+                    <DatePicker
+                      className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+                      selected={startDate}
+                      onChange={(date) => setStartDate(date)}
+                    />
+                  </div>
+                </div>
+                <div className="w-full 800px:flex block pb-3">
+                  <div className=" w-[100%] 800px:w-[50%]">
+                    <label className="block pb-2">Address</label>
                     <input
-                      type="password"
+                      type="text"
                       className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
                       required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
                     />
                   </div>
                 </div>

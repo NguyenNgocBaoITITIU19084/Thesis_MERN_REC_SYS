@@ -52,7 +52,7 @@ const Login = () => {
             // console.log("from login button", data);
             const { accessToken } = data.data;
             const user = decodedJwt(accessToken);
-            setAuth({ roles: user.roles, accessToken });
+            // setAuth({ roles: user.roles, accessToken });
             setEmail("");
             setPassword("");
             navigate(from, { replace: true });

@@ -13,22 +13,26 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 // import { server } from "../../server";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
-
+import { useSelector, useDispatch } from "react-redux";
+import {
+  selectAccessAuth,
+  LogOutByUser,
+} from "../../redux/features/auths/authSlice";
+import { clearProfile } from "../../redux/features/profile/profilesSlice";
 const ProfileSidebar = ({ setActive, active }) => {
+  const token = useSelector(selectAccessAuth);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const { user } = useSelector((state) => state.user);
+
   const logoutHandler = () => {
-    //     axios
-    //       .get(`${server}/user/logout`, { withCredentials: true })
-    //       .then((res) => {
-    //         toast.success(res.data.message);
-    //         window.location.reload(true);
-    //         navigate("/login");
-    //       })
-    //       .catch((error) => {
-    //         console.log(error.response.data.message);
-    //       });
+    const { accessToken } = token;
+    if (accessToken) {
+      dispatch(LogOutByUser(accessToken)).then(() => {
+        dispatch(clearProfile({}));
+        toast.success("Successfully Logout");
+        navigate("/");
+      });
+    }
   };
   return (
     <div className="w-full bg-white shadow-sm rounded-[10px] p-4 pt-8">

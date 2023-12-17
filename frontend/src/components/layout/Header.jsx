@@ -26,15 +26,24 @@ import styles from "../../styles/styles";
 import Navbar from "./Navbar";
 import Cart from "../Cart/Cart";
 import OptionList from "./OptionList";
+import {
+  selectProfile,
+  selectProfileLoadingState,
+  fetchProfileByUser,
+} from "../../redux/features/profile/profilesSlice";
 import Wishlist from "../Wishlist/Wishlist.jsx";
+import { selectAccessAuth } from "../../redux/features/auths/authSlice.js";
 const Header = ({ activeHeading }) => {
   const dispatch = useDispatch();
 
   const categories = useSelector(selectAllCategories);
   const categoryStatus = useSelector(selectLoadingState);
-
+  const profile = useSelector(selectProfile);
   const brands = useSelector(selectAllBrands);
   const brandStatus = useSelector(selectBrandLoadingState);
+  const token = useSelector(selectAccessAuth);
+  const { accessToken } = token;
+  const profileStatus = useSelector(selectProfileLoadingState);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchData, setSearchData] = useState(null);
@@ -50,7 +59,10 @@ const Header = ({ activeHeading }) => {
     if (categoryStatus === "idle") {
       dispatch(fecthBrands());
     }
-  }, [categoryStatus, brandStatus, dispatch]);
+    if (profileStatus === "idle" && accessToken) {
+      dispatch(fetchProfileByUser(accessToken));
+    }
+  }, [profileStatus, categoryStatus, brandStatus, dispatch]);
 
   window.addEventListener("scroll", () => {
     if (window.scrollY > 70) {
@@ -168,11 +180,27 @@ const Header = ({ activeHeading }) => {
                   0
                 </span>
               </div>
-              <div className="relative cursor-pointer mr-[15px]">
-                <Link to="/login">
-                  <CgProfile size={30} color="rgb(255 255 255 / 83%)" />
-                </Link>
-              </div>
+              {token.accessToken ? (
+                <div>
+                  <Link to="/profile">
+                    <img
+                      src={`${
+                        profile?.profile?.avatar
+                          ? profile?.profile?.avatar
+                          : "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"
+                      }`}
+                      alt=""
+                      className="w-[40px] h-[40px] rounded-full border-[3px] border-[#0eae88]"
+                    />
+                  </Link>
+                </div>
+              ) : (
+                <div className="relative cursor-pointer mr-[15px]">
+                  <Link to="/login">
+                    <CgProfile size={30} color="rgb(255 255 255 / 83%)" />
+                  </Link>
+                </div>
+              )}
             </div>
             {/* {Open Cart List Popup} */}
             {openCartList ? <Cart setOpenCartList={setOpenCartList} /> : null}

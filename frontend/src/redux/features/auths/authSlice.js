@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 import { Server_url, Api_version, auth_end_point } from "../../../Server.js";
 
 const END_POINT = `${Server_url}${Api_version}${auth_end_point}/`;
@@ -37,7 +38,21 @@ export const LoginByUser = createAsyncThunk(
     }
   }
 );
-
+export const LogOutByUser = createAsyncThunk(
+  "auth/logout",
+  async (accessToken, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const response = await axios.delete(`${END_POINT}log-out`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        withCredentials: true,
+      });
+      return fulfillWithValue(response.data);
+    } catch (error) {
+      console.log("error from axios", error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -56,9 +71,23 @@ const authSlice = createSlice({
       .addCase(LoginByUser.fulfilled, (state, action) => {
         state.status = "succeeded";
         const { data } = action.payload;
-        state.auth = data;
+        const decoded = jwtDecode(data.accessToken);
+        state.auth = {
+          roles: decoded.roles,
+          accessToken: data.accessToken,
+          refeshToken: data.refeshToken,
+        };
       })
       .addCase(LoginByUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload.message;
+      })
+      .addCase(LogOutByUser.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        const { data } = action.payload;
+        state.auth = [];
+      })
+      .addCase(LogOutByUser.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload.message;
       });

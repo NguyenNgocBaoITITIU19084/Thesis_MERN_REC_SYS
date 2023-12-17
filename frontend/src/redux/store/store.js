@@ -6,11 +6,12 @@ import categoriesReducer from "../features/categories/categoriesSlice";
 import brandsReducer from "../features/brands/brandsSlice";
 import productsReducer from "../features/products/productsSlice";
 import authReducer from "../features/auths/authSlice";
+import profileReducer from "../features/profile/profilesSlice";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth"],
+  whitelist: ["auth", "profile"],
 };
 
 const rootReducer = combineReducers({
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   brands: brandsReducer,
   products: productsReducer,
   auth: authReducer,
+  profile: profileReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
