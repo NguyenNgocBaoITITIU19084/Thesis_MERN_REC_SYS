@@ -9,6 +9,7 @@ import ProductDetailsPage from "./pages/ProductDetailsPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import Layout from "./components/layout/Layout.jsx";
 import RequiredAuth from "./components/layout/RequiredAuth.jsx";
+import Unauthorized from "./components/layout/Unauthorized.jsx";
 export {
   LoginPage,
   SignUpPage,
@@ -21,4 +22,5 @@ export {
   ProfilePage,
   Layout,
   RequiredAuth,
+  Unauthorized,
 };

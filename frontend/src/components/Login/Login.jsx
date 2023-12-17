@@ -1,7 +1,7 @@
-import { React, useState, useContext, useEffect } from "react";
+import { React, useState, useEffect } from "react";
 import useAuth from "../../hooks/useAuth";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { LoginByUser } from "../../redux/features/auths/authSlice";
@@ -10,12 +10,17 @@ import { jwtDecode } from "jwt-decode";
 import styles from "../../styles/styles";
 const Login = () => {
   const { setAuth } = useAuth();
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
   const [addRequestStatus, setAddRequestStatus] = useState("idle");
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
   const onEmailChange = (e) => setEmail(e.target.value);
   const onPasswordChange = (e) => setPassword(e.target.value);
 
@@ -47,13 +52,10 @@ const Login = () => {
             // console.log("from login button", data);
             const { accessToken } = data.data;
             const user = decodedJwt(accessToken);
-            console.log({ user });
-            setAuth({
-              user: "123123123",
-            });
+            setAuth({ roles: user.roles, accessToken });
             setEmail("");
             setPassword("");
-            navigate("/");
+            navigate(from, { replace: true });
           })
           .catch((error) => toast.error(error.message));
       } catch (err) {

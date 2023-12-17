@@ -66,7 +66,7 @@ const authSlice = createSlice({
 });
 
 // Selector
-// export const selectAllBrands = (state) => state.auth.auth;
+export const selectAccessAuth = (state) => state.auth.auth;
 // export const selectBrandLoadingState = (state) => state.auth.auth;
 export const selectAuthErrorState = (state) => state.auth.auth;
 

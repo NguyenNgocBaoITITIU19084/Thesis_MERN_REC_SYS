@@ -8,15 +8,15 @@ import store from "./redux/store/store";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider";
 ReactDOM.render(
-  <BrowserRouter>
-    <AuthProvider>
-      <Provider store={store}>
+  <Provider store={store}>
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
           <Route path="/*" element={<App />} />
         </Routes>
-      </Provider>
-    </AuthProvider>
-  </BrowserRouter>,
+      </AuthProvider>
+    </BrowserRouter>
+  </Provider>,
   document.getElementById("root")
 );
 

@@ -14,25 +14,33 @@ import {
   ProfilePage,
   Layout,
   RequiredAuth,
+  Unauthorized,
 } from "./Routes.js";
+
+const ROLE = {
+  ADMIN: "admin",
+  GUEST: "guest",
+  SUPPLIER: "supplier",
+};
 
 const App = () => {
   return (
     <Routes>
-      <Route path="/outlet" element={<Layout />} />
-      <Route path="/" element={<HomePage />} />
+      <Route path="/" element={<Layout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route element={<RequiredAuth allowedRoles={[ROLE.ADMIN]} />}>
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/faq" element={<FAQPage />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/product/:name" element={<ProductDetailsPage />} />
+          <Route path="/best-selling" element={<BestSellingPage />} />
+        </Route>
 
-      <Route element={<RequiredAuth />}>
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/sign-up" element={<SignUpPage />} />
       </Route>
-
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/sign-up" element={<SignUpPage />} />
-      <Route path="/faq" element={<FAQPage />} />
-      <Route path="/events" element={<EventsPage />} />
-      <Route path="/products" element={<ProductsPage />} />
-      <Route path="/product/:name" element={<ProductDetailsPage />} />
-      <Route path="/best-selling" element={<BestSellingPage />} />
     </Routes>
   );
 };
