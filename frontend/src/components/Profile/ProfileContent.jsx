@@ -41,6 +41,7 @@ const ProfileContent = ({ active }) => {
   const [gender, setGender] = useState("");
   const [avatar, setAvatar] = useState("");
   const [age, setAge] = useState("");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const canSubmit = [
@@ -50,7 +51,6 @@ const ProfileContent = ({ active }) => {
       phoneNumber,
       gender,
       age,
-      avatar,
     ].every(Boolean);
     if (canSubmit) {
       const data = {
@@ -60,21 +60,13 @@ const ProfileContent = ({ active }) => {
         phoneNumber,
         gender,
         age,
-        avatar,
       };
       try {
         await dispatch(updateProfile(accessToken, data))
           .unwrap()
           .then((data) => {
-            const {
-              firstName,
-              lastName,
-              gender,
-              phoneNumber,
-              avatar,
-              age,
-              address,
-            } = data;
+            const { firstName, lastName, gender, phoneNumber, age, address } =
+              data;
             console.log("avatar", data.avatar);
             setFirstName(firstName);
             setLastName(lastName);

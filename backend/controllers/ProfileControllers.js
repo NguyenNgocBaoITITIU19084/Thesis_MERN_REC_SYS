@@ -8,8 +8,7 @@ const { STATUS_CODE } = require("../contants/statusCode");
 const message = require("../config/Messages");
 
 exports.updateProfile = catchAsync(async (req, res) => {
-  const { firstName, lastName, address, phoneNumber, gender, age, avatar } =
-    req.body;
+  const { firstName, lastName, address, phoneNumber, gender, age } = req.body;
   const { id } = req.user;
   const existedEmail = await userSchema.findById(id).populate("profile");
   if (!existedEmail) {
@@ -28,7 +27,6 @@ exports.updateProfile = catchAsync(async (req, res) => {
       phoneNumber,
       gender,
       age,
-      avatar,
     },
     { new: true }
   );

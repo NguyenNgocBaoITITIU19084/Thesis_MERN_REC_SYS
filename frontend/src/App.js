@@ -15,6 +15,7 @@ import {
   Layout,
   RequiredAuth,
   Unauthorized,
+  ShopCreatePage,
 } from "./Routes.js";
 
 const ROLE = {
@@ -34,7 +35,8 @@ const App = () => {
           <Route path="/events" element={<EventsPage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/product/:name" element={<ProductDetailsPage />} />
-          <Route path="/best-selling" element={<BestSellingPage />} />
+          <Route path="/best-selling" element={<BestSellingPage />} />4
+          <Route path="/shop-create" element={<ShopCreatePage />} />
           <Route
             element={
               <RequiredAuth
@@ -44,7 +46,6 @@ const App = () => {
           >
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
-
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUpPage />} />
         </Route>
