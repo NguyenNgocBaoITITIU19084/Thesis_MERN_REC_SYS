@@ -27,10 +27,6 @@ import { selectAccessAuth } from "../../redux/features/auths/authSlice";
 const ProfileContent = ({ active }) => {
   const dispatch = useDispatch();
 
-  const profile = useSelector(selectProfile);
-  const token = useSelector(selectAccessAuth);
-  const { accessToken } = token;
-  const profileStatus = useSelector(selectProfileLoadingState);
   const [startDate, setStartDate] = useState(new Date());
 
   const [lastName, setLastName] = useState("");
@@ -42,55 +38,8 @@ const ProfileContent = ({ active }) => {
   const [avatar, setAvatar] = useState("");
   const [age, setAge] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const canSubmit = [
-      firstName,
-      lastName,
-      address,
-      phoneNumber,
-      gender,
-      age,
-    ].every(Boolean);
-    if (canSubmit) {
-      const data = {
-        firstName,
-        lastName,
-        address,
-        phoneNumber,
-        gender,
-        age,
-      };
-      try {
-        await dispatch(updateProfile(accessToken, data))
-          .unwrap()
-          .then((data) => {
-            const { firstName, lastName, gender, phoneNumber, age, address } =
-              data;
-            console.log("avatar", data.avatar);
-            setFirstName(firstName);
-            setLastName(lastName);
-            setGender(gender);
-            setPhoneNumber(phoneNumber);
-            setAge(age);
-            setAddress(address);
-            toast.success("Success Update Profile");
-          });
-      } catch (error) {}
-    }
-  };
-  useEffect(() => {
-    setFirstName(profile.profile?.firstName ? profile.profile?.firstName : "");
-    setLastName(profile.profile?.lastName ? profile.profile?.lastName : "");
-    setGender(profile.profile?.gender ? profile.profile?.gender : "");
-    setPhoneNumber(
-      profile.profile?.phoneNumber ? profile.profile?.phoneNumber : ""
-    );
-    setAvatar(profile.profile?.avatar ? profile.profile?.avatar : "");
-    setAddress(profile.profile?.address ? profile.profile?.address : "");
-    setAge(profile.profile?.age ? profile.profile?.age : "");
-    setEmail(profile?.email);
-  }, [profileStatus, accessToken, dispatch]);
+  const handleSubmit = async (e) => {};
+  useEffect(() => {}, []);
   return (
     <div className="w-full">
       {

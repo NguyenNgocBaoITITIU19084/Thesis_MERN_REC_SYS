@@ -1,16 +1,15 @@
 import { React, useState, useEffect } from "react";
-import useAuth from "../../hooks/useAuth";
+
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { LoginByUser } from "../../redux/features/auths/authSlice";
-import { jwtDecode } from "jwt-decode";
 
 import styles from "../../styles/styles";
+import axios from "axios";
+import { Api_version, Server_url, auth_end_point } from "../../Server";
+import { successLogin } from "../../redux/features/auths/authSlice";
 const Login = () => {
-  const { setAuth } = useAuth();
-
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
@@ -32,38 +31,53 @@ const Login = () => {
     };
   }, []);
 
-  const decodedJwt = (accessToken) => {
-    const user = jwtDecode(accessToken);
-    return user;
-  };
+  // const decodedJwt = (accessToken) => {
+  //   const user = jwtDecode(accessToken);
+  //   return user;
+  // };
+  // const loginHandler = async (e) => {
+  //   e.preventDefault();
+  //   if (!email || !password) {
+  //     return toast.error("Missing value");
+  //   }
+  //   const data = { email, password };
+  //   if (email && password && addRequestStatus === "idle") {
+  //     try {
+  //       setAddRequestStatus("pending");
+  //       await dispatch(LoginByUser(data))
+  //         .unwrap()
+  //         .then((data) => {
+  //           toast.success("successfully Login");
+  //           // console.log("from login button", data);
+  //           const { accessToken } = data.data;
+  //           const user = decodedJwt(accessToken);
+  //           // setAuth({ roles: user.roles, accessToken });
+  //           setEmail("");
+  //           setPassword("");
+  //           navigate(from, { replace: true });
+  //         })
+  //         .catch((error) => toast.error(error.message));
+  //     } catch (err) {
+  //       console.error("Error from Sign up page ", err);
+  //     } finally {
+  //       setAddRequestStatus("idle");
+  //     }
+  //   }
+  // };
   const loginHandler = async (e) => {
     e.preventDefault();
-    if (!email || !password) {
-      return toast.error("Missing value");
-    }
-    const data = { email, password };
-    if (email && password && addRequestStatus === "idle") {
-      try {
-        setAddRequestStatus("pending");
-        await dispatch(LoginByUser(data))
-          .unwrap()
-          .then((data) => {
-            toast.success("successfully Login");
-            // console.log("from login button", data);
-            const { accessToken } = data.data;
-            const user = decodedJwt(accessToken);
-            // setAuth({ roles: user.roles, accessToken });
-            setEmail("");
-            setPassword("");
-            navigate(from, { replace: true });
-          })
-          .catch((error) => toast.error(error.message));
-      } catch (err) {
-        console.error("Error from Sign up page ", err);
-      } finally {
-        setAddRequestStatus("idle");
-      }
-    }
+    await axios
+      .post(
+        `${Server_url}${Api_version}${auth_end_point}/login`,
+        { email, password },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        toast.success("Success Login");
+        navigate("/");
+        dispatch(successLogin());
+      })
+      .catch((err) => toast.error(err.response.data.message));
   };
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

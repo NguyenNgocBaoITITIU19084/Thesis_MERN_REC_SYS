@@ -1,6 +1,8 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
 
 const ConnectMongoose = require("./config/ConnectMongoose");
 const EmailService = require("./utils/EmailService");
@@ -30,6 +32,8 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 
 app.use(`${server}/category`, CategoryRoutes);
 app.use(`${server}/brand`, BrandRoutes);

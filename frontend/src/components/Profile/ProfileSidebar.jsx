@@ -17,22 +17,23 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   selectAccessAuth,
   LogOutByUser,
+  successLogOut,
 } from "../../redux/features/auths/authSlice";
 import { clearProfile } from "../../redux/features/profile/profilesSlice";
+
 const ProfileSidebar = ({ setActive, active }) => {
   const token = useSelector(selectAccessAuth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const logoutHandler = () => {
-    const { accessToken } = token;
-    if (accessToken) {
-      dispatch(LogOutByUser(accessToken)).then(() => {
-        dispatch(clearProfile({}));
-        toast.success("Successfully Logout");
-        navigate("/");
-      });
-    }
+    dispatch(LogOutByUser()).then(() => {
+      dispatch(clearProfile({}));
+      dispatch(successLogOut());
+      toast.success("Successfully Logout");
+      // window.location.reload(true);
+      navigate("/");
+    });
   };
   return (
     <div className="w-full bg-white shadow-sm rounded-[10px] p-4 pt-8">

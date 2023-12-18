@@ -11,12 +11,12 @@ const initialState = {
   error: null,
 };
 
-export const fetchProfileByUser = createAsyncThunk(
-  "profile/fetchProfileByUser",
-  async (accessToken) => {
+export const fetchProfile = createAsyncThunk(
+  "profile/fetchProfile",
+  async () => {
     try {
       const response = await axios.get(END_POINT, {
-        headers: { Authorization: `Bearer ${accessToken}` },
+        withCredentials: true,
       });
       return response.data;
     } catch (error) {
@@ -50,15 +50,15 @@ const profileSlice = createSlice({
   },
   extraReducers(builder) {
     builder
-      .addCase(fetchProfileByUser.pending, (state, action) => {
+      .addCase(fetchProfile.pending, (state, action) => {
         state.status = "loading";
       })
-      .addCase(fetchProfileByUser.fulfilled, (state, action) => {
+      .addCase(fetchProfile.fulfilled, (state, action) => {
         state.status = "succeeded";
         const { data } = action.payload;
         state.profile = { ...data };
       })
-      .addCase(fetchProfileByUser.rejected, (state, action) => {
+      .addCase(fetchProfile.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       })

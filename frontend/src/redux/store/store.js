@@ -11,7 +11,7 @@ import profileReducer from "../features/profile/profilesSlice";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "profile"],
+  whitelist: ["auth"],
 };
 
 const rootReducer = combineReducers({

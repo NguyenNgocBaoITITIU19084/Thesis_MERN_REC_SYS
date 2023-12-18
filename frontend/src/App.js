@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   LoginPage,
@@ -13,11 +13,11 @@ import {
   ProductDetailsPage,
   ProfilePage,
   Layout,
-  RequiredAuth,
-  Unauthorized,
   ShopCreatePage,
 } from "./Routes.js";
-
+import ProtectedRoute from "./components/Route/ProtectedRoutes/ProtectedRoute.jsx";
+import { fetchProfile } from "./redux/features/profile/profilesSlice.js";
+import { useDispatch } from "react-redux";
 const ROLE = {
   ADMIN: "admin",
   GUEST: "guest",
@@ -25,12 +25,34 @@ const ROLE = {
 };
 
 const App = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    try {
+      dispatch(fetchProfile())
+        .unwrap()
+        .then((res) => {})
+        .catch((err) => {
+          toast.error("Error loading profile");
+        });
+      // axios
+      //   .get(`${Server_url}${Api_version}${profile_end_point}/`, {
+      //     withCredentials: true,
+      //   })
+      //   .then((res) => {
+      //     toast.success("Welcome Back!");
+      //   })
+      //   .catch((err) => {
+      //     toast.error("Error loading profile");
+      //   });
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
   return (
     <>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="/" element={<HomePage />} />
-          <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/products" element={<ProductsPage />} />
@@ -38,14 +60,13 @@ const App = () => {
           <Route path="/best-selling" element={<BestSellingPage />} />4
           <Route path="/shop-create" element={<ShopCreatePage />} />
           <Route
+            path="/profile"
             element={
-              <RequiredAuth
-                allowedRoles={[ROLE.GUEST, ROLE.ADMIN, ROLE.SUPPLIER]}
-              />
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
             }
-          >
-            <Route path="/profile" element={<ProfilePage />} />
-          </Route>
+          />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUpPage />} />
         </Route>

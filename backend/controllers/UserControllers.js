@@ -2,12 +2,13 @@ const catchAsync = require("../middlewares/catchAsync");
 const ApiError = require("../utils/ApiError");
 const ResultObject = require("../utils/ResultObject");
 const EmailService = require("../utils/EmailService");
+const sendToken = require("../utils/SendToken");
 
 const userSchema = require("../models/UserModel");
 const profileSchema = require("../models/ProfilesModel");
 const { web_url } = require("../contants/server");
 const { STATUS_CODE } = require("../contants/statusCode");
-const message = require("../config/Messages");
+const message = require("../../backend/config/Messages");
 
 exports.register = catchAsync(async (req, res) => {
   const { email, password } = req.body;
@@ -55,15 +56,16 @@ exports.login = catchAsync(async (req, res) => {
   const refeshToken = await existedEmail.getJwtRefeshToken();
   await userSchema.findOneAndUpdate({ email }, { refesh_token: refeshToken });
   const data = { accessToken, refeshToken };
-  return res
-    .status(200)
-    .json(
-      new ResultObject(
-        STATUS_CODE.SUCCESS,
-        `${message.models.success_query}${message.models.user}`,
-        data
-      )
-    );
+  sendToken(data, 201, res);
+  // return res
+  //   .status(200)
+  //   .json(
+  //     new ResultObject(
+  //       STATUS_CODE.SUCCESS,
+  //       `${message.models.success_query}${message.models.user}`,
+  //       data
+  //     )
+  //   );
 });
 exports.getNewAccessToken = catchAsync(async (req, res) => {
   const { refeshToken } = req.body;
@@ -100,20 +102,26 @@ exports.getNewAccessToken = catchAsync(async (req, res) => {
   }
 });
 
-exports.logOut = catchAsync(async (req, res) => {
+exports.logOut = catchAsync(async (req, res, next) => {
   const { id } = req.user;
+  console.log("----id", id);
   await userSchema.findByIdAndUpdate(id, {
     refesh_token: null,
   });
-  return res
-    .status(200)
-    .json(
-      new ResultObject(
-        STATUS_CODE.SUCCESS,
-        `${message.models.success_update}${message.models.user}`,
-        null
-      )
-    );
+  try {
+    res.clearCookie("token");
+    return res
+      .status(200)
+      .json(
+        new ResultObject(
+          STATUS_CODE.SUCCESS,
+          `${message.models.success_update}${message.models.user}`,
+          null
+        )
+      );
+  } catch (error) {
+    throw new ApiError(404, "Already Log-out");
+  }
 });
 exports.forgotPassword = catchAsync(async (req, res) => {
   const { email } = req.body;

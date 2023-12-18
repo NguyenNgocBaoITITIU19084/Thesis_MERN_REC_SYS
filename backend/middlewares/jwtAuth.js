@@ -1,6 +1,7 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
+const UserSchema = require("../models/UserModel");
 const ApiError = require("../utils/ApiError");
 
 exports.jwtAuth = (req, res, next) => {
@@ -22,4 +23,22 @@ exports.jwtAuth = (req, res, next) => {
     }
     throw new ApiError(403, "Forbiden");
   }
+};
+
+exports.isAuthenticated = async (req, res, next) => {
+  const { token } = req.cookies;
+
+  if (!token) {
+    throw new ApiError(401, "Please login to continue");
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const { id } = decoded;
+    req.user = await UserSchema.findById(id);
+  } catch (error) {
+    console.log("error from is authen", error);
+  }
+
+  next();
 };
