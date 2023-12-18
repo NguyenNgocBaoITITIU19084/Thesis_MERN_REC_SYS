@@ -10,19 +10,16 @@ import {
 import { TbAddressBook } from "react-icons/tb";
 import { RxPerson } from "react-icons/rx";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-// import { server } from "../../server";
+
 import { toast } from "react-toastify";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
-  selectAccessAuth,
   LogOutByUser,
   successLogOut,
 } from "../../redux/features/auths/authSlice";
 import { clearProfile } from "../../redux/features/profile/profilesSlice";
-
+import { clearStoreProfile } from "../../redux/features/store/storeSlice";
 const ProfileSidebar = ({ setActive, active }) => {
-  const token = useSelector(selectAccessAuth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -30,6 +27,7 @@ const ProfileSidebar = ({ setActive, active }) => {
     dispatch(LogOutByUser()).then(() => {
       dispatch(clearProfile({}));
       dispatch(successLogOut());
+      dispatch(clearStoreProfile());
       toast.success("Successfully Logout");
       // window.location.reload(true);
       navigate("/");
