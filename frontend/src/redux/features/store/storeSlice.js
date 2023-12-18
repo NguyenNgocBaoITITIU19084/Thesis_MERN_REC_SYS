@@ -1,12 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-import {
-  Server_url,
-  Api_version,
-  store,
-  store_end_point,
-} from "../../../Server.js";
+import { Server_url, Api_version, store_end_point } from "../../../Server.js";
 
 const END_POINT = `${Server_url}${Api_version}${store_end_point}/`;
 
@@ -29,7 +24,16 @@ export const createStore = createAsyncThunk(
     }
   }
 );
-
+export const fetchStore = createAsyncThunk("store/fetchStore", async () => {
+  try {
+    const response = await axios.get(`${END_POINT}`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    return error.response.data.message;
+  }
+});
 const storeSlice = createSlice({
   name: "store",
   initialState,
@@ -37,6 +41,11 @@ const storeSlice = createSlice({
     clearError(state) {
       state.status = "idle";
       state.error = null;
+    },
+    clearStoreProfile(state) {
+      state.store = {};
+      state.error = null;
+      state.status = "idle";
     },
   },
   extraReducers(builder) {
@@ -51,11 +60,22 @@ const storeSlice = createSlice({
       .addCase(createStore.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+      })
+      .addCase(fetchStore.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchStore.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.store = { ...action.payload.data };
+      })
+      .addCase(fetchStore.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });
 
-export const { clearError } = storeSlice.actions;
+export const { clearError, clearStoreProfile } = storeSlice.actions;
 // Selector
 export const selectStore = (state) => state.store.store;
 export const selectStoreLoadingState = (state) => state.store.status;

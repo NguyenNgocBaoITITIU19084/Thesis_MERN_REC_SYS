@@ -15,7 +15,9 @@ import {
   Layout,
   ShopCreatePage,
 } from "./Routes.js";
+import { ShopHomePage, DashBoardPage } from "./ShopRoutes.js";
 import ProtectedRoute from "./components/Route/ProtectedRoutes/ProtectedRoute.jsx";
+import SellerProtectedRoute from "./components/Route/ProtectedRoutes/SellerProtectedRoute.jsx";
 import {
   clearProfile,
   fetchProfile,
@@ -25,41 +27,40 @@ import {
   selectAccessAuth,
   successLogOut,
 } from "./redux/features/auths/authSlice.js";
+import {
+  fetchStore,
+  clearStoreProfile,
+} from "./redux/features/store/storeSlice.js";
 import { useSelector } from "react-redux";
+
 const ROLE = {
   ADMIN: "admin",
   GUEST: "guest",
   SUPPLIER: "supplier",
 };
-
 const App = () => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector(selectAccessAuth);
-  useEffect(() => {
+  useEffect(async () => {
     if (isAuthenticated === true) {
       try {
-        dispatch(fetchProfile())
+        await dispatch(fetchProfile())
           .unwrap()
           .then((res) => {})
           .catch((err) => {
             toast.error("Error loading profile");
           });
-        // axios
-        //   .get(`${Server_url}${Api_version}${profile_end_point}/`, {
-        //     withCredentials: true,
-        //   })
-        //   .then((res) => {
-        //     toast.success("Welcome Back!");
-        //   })
-        //   .catch((err) => {
-        //     toast.error("Error loading profile");
-        //   });
+        await dispatch(fetchStore())
+          .unwrap()
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err));
       } catch (error) {
         console.log(error);
       }
       return () => {
         dispatch(clearProfile({}));
         dispatch(successLogOut());
+        dispatch(clearStoreProfile());
       };
     }
   }, [isAuthenticated]);
@@ -67,12 +68,32 @@ const App = () => {
     <>
       <Routes>
         <Route path="/" element={<Layout />}>
+          {/* Public Route */}
           <Route path="/" element={<HomePage />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/product/:name" element={<ProductDetailsPage />} />
-          <Route path="/best-selling" element={<BestSellingPage />} />4
+          <Route path="/best-selling" element={<BestSellingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/sign-up" element={<SignUpPage />} />
+          {/* {Shop Route} */}
+          <Route
+            path="/shop/:id"
+            element={
+              <SellerProtectedRoute>
+                <ShopHomePage />
+              </SellerProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <SellerProtectedRoute>
+                <DashBoardPage />
+              </SellerProtectedRoute>
+            }
+          />
           <Route
             path="/shop-create"
             element={
@@ -89,8 +110,6 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/sign-up" element={<SignUpPage />} />
         </Route>
       </Routes>
       <ToastContainer

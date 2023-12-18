@@ -38,6 +38,8 @@ const ShopCreate = () => {
             setPhoneNumber("");
             setAddress("");
             setAvatar("");
+            navigate("/");
+            window.location.reload(true);
           })
           .catch((error) => toast.error(error));
       } catch (err) {

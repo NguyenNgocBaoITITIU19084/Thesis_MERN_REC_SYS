@@ -28,6 +28,7 @@ import Cart from "../Cart/Cart";
 import OptionList from "./OptionList";
 import { selectAccessAuth } from "../../redux/features/auths/authSlice.js";
 import { selectProfile } from "../../redux/features/profile/profilesSlice.js";
+import { selectStore } from "../../redux/features/store/storeSlice.js";
 import Wishlist from "../Wishlist/Wishlist.jsx";
 
 const Header = ({ activeHeading }) => {
@@ -41,6 +42,8 @@ const Header = ({ activeHeading }) => {
 
   const brands = useSelector(selectAllBrands);
   const brandStatus = useSelector(selectBrandLoadingState);
+
+  const isStore = useSelector(selectStore);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchData, setSearchData] = useState(null);
@@ -56,7 +59,7 @@ const Header = ({ activeHeading }) => {
     if (categoryStatus === "idle") {
       dispatch(fecthBrands());
     }
-  }, [categoryStatus, brandStatus, dispatch]);
+  }, [categoryStatus, brandStatus, dispatch, isAuthenticated, isStore]);
 
   window.addEventListener("scroll", () => {
     if (window.scrollY > 70) {
@@ -125,13 +128,23 @@ const Header = ({ activeHeading }) => {
             ) : null}
           </div>
           {isAuthenticated ? (
-            <div className={`${styles.button}`}>
-              <Link to="/shop-create">
-                <h1 className="text-[#fff] flex items-center">
-                  Become Seller <IoIosArrowForward className="ml-1" />
-                </h1>
-              </Link>
-            </div>
+            isStore.store ? (
+              <div className={`${styles.button}`}>
+                <Link to={`/dashboard`}>
+                  <h1 className="text-[#fff] flex items-center">
+                    Dash Board <IoIosArrowForward className="ml-1" />
+                  </h1>
+                </Link>
+              </div>
+            ) : (
+              <div className={`${styles.button}`}>
+                <Link to="/shop-create">
+                  <h1 className="text-[#fff] flex items-center">
+                    Become Seller <IoIosArrowForward className="ml-1" />
+                  </h1>
+                </Link>
+              </div>
+            )
           ) : (
             <div className={`${styles.button}`}>
               <h1 className="text-[#fff] flex items-center">

@@ -1,11 +1,14 @@
 import { React, useState } from "react";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import styles from "../../styles/styles";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { registerNewUser } from "../../redux/features/auths/authSlice";
+import {
+  registerNewUser,
+  clearError,
+} from "../../redux/features/auths/authSlice";
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,6 +17,7 @@ const SignUp = () => {
   const [addRequestStatus, setAddRequestStatus] = useState("idle");
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const onEmailChange = (e) => setEmail(e.target.value);
   const onPasswordChange = (e) => setPassword(e.target.value);
@@ -42,6 +46,8 @@ const SignUp = () => {
             setEmail("");
             setPassword("");
             setConfirmPass("");
+            dispatch(clearError());
+            navigate("/login");
           })
           .catch((error) => toast.error(error.message));
       } catch (err) {

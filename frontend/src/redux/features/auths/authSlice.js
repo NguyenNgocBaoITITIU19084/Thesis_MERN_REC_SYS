@@ -72,8 +72,6 @@ const authSlice = createSlice({
     builder
       .addCase(registerNewUser.fulfilled, (state, action) => {
         state.status = "succeeded";
-        const { data } = action.payload;
-        state.auth = state.auth.concat(data);
       })
       .addCase(registerNewUser.rejected, (state, action) => {
         state.status = "failed";

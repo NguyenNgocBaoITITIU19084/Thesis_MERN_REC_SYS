@@ -92,6 +92,18 @@ exports.getStore = catchAsync(async (req, res) => {
   if (!existedEmail) {
     throw new ApiError(401, `${message.error.user_not_existed}`);
   }
+  const { store: StoreId } = existedEmail;
+  if (!StoreId) {
+    return res
+      .status(201)
+      .json(
+        new ResultObject(
+          STATUS_CODE.SUCCESS,
+          message.models.success_query + message.models.store,
+          null
+        )
+      );
+  }
   return res
     .status(201)
     .json(
