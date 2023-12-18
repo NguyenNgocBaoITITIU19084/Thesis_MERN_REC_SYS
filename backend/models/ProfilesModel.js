@@ -40,7 +40,7 @@ const profileSchema = new Schema(
     },
     avatar: {
       type: String,
-      default: null,
+      default: "https://cdn-icons-png.flaticon.com/512/9131/9131529.png",
     },
   },
   {

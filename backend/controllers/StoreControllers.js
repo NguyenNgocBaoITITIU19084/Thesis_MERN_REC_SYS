@@ -36,15 +36,15 @@ exports.registerStore = catchAsync(async (req, res) => {
       `${message.models.store} ${message.error.already_existed}`
     );
   }
-  if (
-    ROLE.GUEST &&
-    [ROLE.GUEST].some((substring) => oldRoles.includes(substring))
-  ) {
-    throw new ApiError(
-      400,
-      `${ROLE.GUEST?.toString()} ${message.error.already_existed}`
-    );
-  }
+  // if (
+  //   ROLE.GUEST &&
+  //   [ROLE.GUEST].some((substring) => oldRoles.includes(substring))
+  // ) {
+  //   throw new ApiError(
+  //     400,
+  //     `${ROLE.GUEST?.toString()} ${message.error.already_existed}`
+  //   );
+  // }
   const store = await storeSchema.create({
     name,
     description,

@@ -7,6 +7,7 @@ import brandsReducer from "../features/brands/brandsSlice";
 import productsReducer from "../features/products/productsSlice";
 import authReducer from "../features/auths/authSlice";
 import profileReducer from "../features/profile/profilesSlice";
+import storeReducer from "../features/store/storeSlice";
 
 const persistConfig = {
   key: "root",
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   products: productsReducer,
   auth: authReducer,
   profile: profileReducer,
+  store: storeReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -6,43 +6,47 @@ import axios from "axios";
 // import { server } from "../../server";
 import { toast } from "react-toastify";
 import { RxAvatar } from "react-icons/rx";
+import { useDispatch, useSelector } from "react-redux";
 
+import { createStore, clearError } from "../../redux/features/store/storeSlice";
 const ShopCreate = () => {
-  const [email, setEmail] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [description, setDescription] = useState("");
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState();
   const [address, setAddress] = useState("");
-  const [zipCode, setZipCode] = useState();
-  const [avatar, setAvatar] = useState();
-  const [password, setPassword] = useState("");
-  const [visible, setVisible] = useState(false);
+  const [avatar, setAvatar] = useState("");
+  const [addRequestStatus, setAddRequestStatus] = useState("idle");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // axios
-    //   .post(`${server}/shop/create-shop`, {
-    //     name,
-    //     email,
-    //     password,
-    //     avatar,
-    //     zipCode,
-    //     address,
-    //     phoneNumber,
-    //   })
-    //   .then((res) => {
-    //     toast.success(res.data.message);
-    //     setName("");
-    //     setEmail("");
-    //     setPassword("");
-    //     setAvatar();
-    //     setZipCode();
-    //     setAddress("");
-    //     setPhoneNumber();
-    //   })
-    //   .catch((error) => {
-    //     toast.error(error.response.data.message);
-    //   });
+    const data =
+      [name, description, phoneNumber, address].every(Boolean) &&
+      addRequestStatus === "idle";
+    const formData = { name, description, phoneNumber, address };
+    if (data) {
+      try {
+        setAddRequestStatus("pending");
+        await dispatch(createStore(formData))
+          .unwrap()
+          .then(() => {
+            toast.success("successfully create an account");
+            setName("");
+            setDescription("");
+            setPhoneNumber("");
+            setAddress("");
+            setAvatar("");
+          })
+          .catch((error) => toast.error(error));
+      } catch (err) {
+        console.error("Error from Sign up page ", err);
+      } finally {
+        dispatch(clearError());
+        setAddRequestStatus("idle");
+      }
+    }
   };
 
   const handleFileInputChange = (e) => {
@@ -110,7 +114,7 @@ const ShopCreate = () => {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
               >
-                Email address
+                Description Store
               </label>
               <div className="mt-1">
                 <input
@@ -118,8 +122,8 @@ const ShopCreate = () => {
                   name="email"
                   autoComplete="email"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>
@@ -141,39 +145,6 @@ const ShopCreate = () => {
                   onChange={(e) => setAddress(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  type={visible ? "text" : "password"}
-                  name="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
-                {visible ? (
-                  <AiOutlineEye
-                    className="absolute right-2 top-2 cursor-pointer"
-                    size={25}
-                    onClick={() => setVisible(false)}
-                  />
-                ) : (
-                  <AiOutlineEyeInvisible
-                    className="absolute right-2 top-2 cursor-pointer"
-                    size={25}
-                    onClick={() => setVisible(true)}
-                  />
-                )}
               </div>
             </div>
 
@@ -217,12 +188,6 @@ const ShopCreate = () => {
               >
                 Submit
               </button>
-            </div>
-            <div className={`${styles.noramlFlex} w-full`}>
-              <h4>Already have an account?</h4>
-              <Link to="/shop-login" className="text-blue-600 pl-2">
-                Sign in
-              </Link>
             </div>
           </form>
         </div>

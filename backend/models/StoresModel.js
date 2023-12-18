@@ -16,6 +16,7 @@ const storeSchema = new Schema(
         100,
         "description of the store must be less than 100 letters",
       ],
+      default: null,
     },
     isActive: {
       type: Boolean,
@@ -23,7 +24,7 @@ const storeSchema = new Schema(
     },
     address: {
       type: [String],
-      maxlength: [150, "address must be less than 150 characters"],
+      maxlength: [250, "address must be less than 150 characters"],
     },
     phoneNumber: {
       type: [String],
@@ -41,6 +42,8 @@ const storeSchema = new Schema(
     },
     avatar: {
       type: String,
+      default:
+        "https://media.istockphoto.com/id/1315110986/vector/store-editable-stroke-outline-icon-isolated-on-white-background-flat-vector-illustration.jpg?s=612x612&w=0&k=20&c=mCrUUX3bWTZOvKrr3ontPWJKO_9HAOmboDxxd_XeIRI=",
     },
   },
   {

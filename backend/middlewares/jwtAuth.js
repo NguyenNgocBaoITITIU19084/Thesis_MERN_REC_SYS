@@ -37,8 +37,10 @@ exports.isAuthenticated = async (req, res, next) => {
     const { id } = decoded;
     req.user = await UserSchema.findById(id);
   } catch (error) {
-    console.log("error from is authen", error);
+    if (error.name === "TokenExpiredError") {
+      throw new ApiError(401, "Token is expired!");
+    }
+    throw new ApiError(403, "Forbiden");
   }
-
   next();
 };

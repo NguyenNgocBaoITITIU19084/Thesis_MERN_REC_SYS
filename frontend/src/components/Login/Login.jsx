@@ -74,8 +74,8 @@ const Login = () => {
       )
       .then((res) => {
         toast.success("Success Login");
-        navigate("/");
         dispatch(successLogin());
+        navigate("/");
       })
       .catch((err) => toast.error(err.response.data.message));
   };

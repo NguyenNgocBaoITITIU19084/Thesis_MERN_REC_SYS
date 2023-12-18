@@ -16,8 +16,16 @@ import {
   ShopCreatePage,
 } from "./Routes.js";
 import ProtectedRoute from "./components/Route/ProtectedRoutes/ProtectedRoute.jsx";
-import { fetchProfile } from "./redux/features/profile/profilesSlice.js";
+import {
+  clearProfile,
+  fetchProfile,
+} from "./redux/features/profile/profilesSlice.js";
 import { useDispatch } from "react-redux";
+import {
+  selectAccessAuth,
+  successLogOut,
+} from "./redux/features/auths/authSlice.js";
+import { useSelector } from "react-redux";
 const ROLE = {
   ADMIN: "admin",
   GUEST: "guest",
@@ -26,28 +34,35 @@ const ROLE = {
 
 const App = () => {
   const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector(selectAccessAuth);
   useEffect(() => {
-    try {
-      dispatch(fetchProfile())
-        .unwrap()
-        .then((res) => {})
-        .catch((err) => {
-          toast.error("Error loading profile");
-        });
-      // axios
-      //   .get(`${Server_url}${Api_version}${profile_end_point}/`, {
-      //     withCredentials: true,
-      //   })
-      //   .then((res) => {
-      //     toast.success("Welcome Back!");
-      //   })
-      //   .catch((err) => {
-      //     toast.error("Error loading profile");
-      //   });
-    } catch (error) {
-      console.log(error);
+    if (isAuthenticated === true) {
+      try {
+        dispatch(fetchProfile())
+          .unwrap()
+          .then((res) => {})
+          .catch((err) => {
+            toast.error("Error loading profile");
+          });
+        // axios
+        //   .get(`${Server_url}${Api_version}${profile_end_point}/`, {
+        //     withCredentials: true,
+        //   })
+        //   .then((res) => {
+        //     toast.success("Welcome Back!");
+        //   })
+        //   .catch((err) => {
+        //     toast.error("Error loading profile");
+        //   });
+      } catch (error) {
+        console.log(error);
+      }
+      return () => {
+        dispatch(clearProfile({}));
+        dispatch(successLogOut());
+      };
     }
-  }, []);
+  }, [isAuthenticated]);
   return (
     <>
       <Routes>
@@ -58,7 +73,14 @@ const App = () => {
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/product/:name" element={<ProductDetailsPage />} />
           <Route path="/best-selling" element={<BestSellingPage />} />4
-          <Route path="/shop-create" element={<ShopCreatePage />} />
+          <Route
+            path="/shop-create"
+            element={
+              <ProtectedRoute>
+                <ShopCreatePage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/profile"
             element={

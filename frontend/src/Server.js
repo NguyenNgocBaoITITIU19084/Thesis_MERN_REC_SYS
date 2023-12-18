@@ -6,3 +6,4 @@ exports.brand_end_point = "/brand";
 exports.product_end_point = "/product";
 exports.auth_end_point = "/auth";
 exports.profile_end_point = "/profile";
+exports.store_end_point = "/store";

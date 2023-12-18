@@ -26,11 +26,15 @@ import styles from "../../styles/styles";
 import Navbar from "./Navbar";
 import Cart from "../Cart/Cart";
 import OptionList from "./OptionList";
-
+import { selectAccessAuth } from "../../redux/features/auths/authSlice.js";
+import { selectProfile } from "../../redux/features/profile/profilesSlice.js";
 import Wishlist from "../Wishlist/Wishlist.jsx";
 
 const Header = ({ activeHeading }) => {
   const dispatch = useDispatch();
+
+  const { isAuthenticated } = useSelector(selectAccessAuth);
+  const { profile } = useSelector(selectProfile);
 
   const categories = useSelector(selectAllCategories);
   const categoryStatus = useSelector(selectLoadingState);
@@ -120,13 +124,21 @@ const Header = ({ activeHeading }) => {
               </div>
             ) : null}
           </div>
-          <div className={`${styles.button}`}>
-            <Link to="/shop-create">
+          {isAuthenticated ? (
+            <div className={`${styles.button}`}>
+              <Link to="/shop-create">
+                <h1 className="text-[#fff] flex items-center">
+                  Become Seller <IoIosArrowForward className="ml-1" />
+                </h1>
+              </Link>
+            </div>
+          ) : (
+            <div className={`${styles.button}`}>
               <h1 className="text-[#fff] flex items-center">
-                Become Seller <IoIosArrowForward className="ml-1" />
+                Welcome back! <IoIosArrowForward className="ml-1" />
               </h1>
-            </Link>
-          </div>
+            </div>
+          )}
         </div>
       </div>
       <div
@@ -170,11 +182,27 @@ const Header = ({ activeHeading }) => {
                   0
                 </span>
               </div>
-              <div className="relative cursor-pointer mr-[15px]">
-                <Link to="/login">
-                  <CgProfile size={30} color="rgb(255 255 255 / 83%)" />
-                </Link>
-              </div>
+              {isAuthenticated ? (
+                <div className="relative cursor-pointer mr-[15px]">
+                  <Link to="/profile">
+                    <img
+                      src={`${
+                        profile?.avatar
+                          ? profile?.avatar
+                          : "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"
+                      }`}
+                      alt=""
+                      className="w-[35px] h-[35px] rounded-full border-[3px] border-[#0eae88]"
+                    />
+                  </Link>
+                </div>
+              ) : (
+                <div className="relative cursor-pointer mr-[15px]">
+                  <Link to="/login">
+                    <CgProfile size={30} color="rgb(255 255 255 / 83%)" />
+                  </Link>
+                </div>
+              )}
             </div>
             {/* {Open Cart List Popup} */}
             {openCartList ? <Cart setOpenCartList={setOpenCartList} /> : null}
