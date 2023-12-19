@@ -59,7 +59,7 @@ const Header = ({ activeHeading }) => {
     if (categoryStatus === "idle") {
       dispatch(fecthBrands());
     }
-  }, [categoryStatus, brandStatus, dispatch, isAuthenticated, isStore]);
+  }, [categoryStatus, brandStatus, dispatch]);
 
   window.addEventListener("scroll", () => {
     if (window.scrollY > 70) {

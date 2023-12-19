@@ -18,7 +18,7 @@ exports.createProduct = catchAsync(async (req, res) => {
     brand,
     categories,
   } = req.body;
-
+  const { store: storeId } = req.user;
   if (discountApplied) {
     const discount = await discountSchema.findById({ _id: discountApplied });
     if (!discount) {
@@ -38,6 +38,7 @@ exports.createProduct = catchAsync(async (req, res) => {
       discountApplied,
       brand,
       categories,
+      createdBy: storeId,
     });
     return res
       .status(201)
@@ -76,7 +77,8 @@ exports.getAllproducts = catchAsync(async (req, res) => {
     .find()
     .populate("discountApplied")
     .populate("brand")
-    .populate("categories");
+    .populate("categories")
+    .populate("createdBy");
   if (!products) {
     throw new ApiError(400, message.models.not_founded);
   }
@@ -156,6 +158,20 @@ exports.updateProductById = catchAsync(async (req, res) => {
         STATUS_CODE.SUCCESS,
         message.models.success_update + message.models.product,
         product
+      )
+    );
+});
+
+exports.getProductsByStoreId = catchAsync(async (req, res) => {
+  const { store: storeId } = req.user;
+  const products = await productSchema.find({ createdBy: storeId });
+  return res
+    .status(200)
+    .json(
+      new ResultObject(
+        STATUS_CODE.SUCCESS,
+        message.models.success_update + message.models.product,
+        products
       )
     );
 });

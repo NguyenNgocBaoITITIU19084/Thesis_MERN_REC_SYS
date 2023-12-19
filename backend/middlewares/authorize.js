@@ -1,11 +1,19 @@
 const ApiError = require("../utils/ApiError");
 
-exports.authorize =
-  (...roles) =>
-  (req, res, next) => {
-    const role = req.user.roles;
-    if (!role || !role.includes(...roles)) {
-      throw new ApiError(403, "No Permission");
+exports.authorize = (roles) => (req, res, next) => {
+  const UserRole = req.user.roles;
+  if (!UserRole) {
+    throw new ApiError(403, "No Permission");
+  }
+  let isOut = true;
+  roles.map((role) => {
+    const check = UserRole.includes(role);
+    if (check) {
+      isOut = false;
+      next();
     }
-    next();
-  };
+  });
+  if (isOut) {
+    throw new ApiError(403, "No Permission");
+  }
+};

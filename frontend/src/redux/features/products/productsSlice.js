@@ -22,11 +22,20 @@ export const fecthProducts = createAsyncThunk(
     }
   }
 );
-
 const productsSlice = createSlice({
   name: "products",
   initialState,
-  reducers: {},
+  reducers: {
+    clearError(state) {
+      state.error = null;
+      state.status = "idle";
+    },
+    clearProducts(state) {
+      state.products = [];
+      state.error = null;
+      state.status = "idle";
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(fecthProducts.pending, (state, action) => {
@@ -43,6 +52,8 @@ const productsSlice = createSlice({
       });
   },
 });
+
+export const { clearError, clearProducts } = productsSlice.actions;
 
 // Selector
 export const selectAllProducts = (state) => state.products.products;

@@ -60,10 +60,8 @@ const productSchema = new Schema(
     //   ref: "comments",
     // },
     createdBy: {
-      // type: Schema.Types.ObjectId,
-      // ref: "",
-      type: String,
-      default: "Bao Nguyen",
+      type: Schema.Types.ObjectId,
+      ref: "stores",
     },
   },
   {

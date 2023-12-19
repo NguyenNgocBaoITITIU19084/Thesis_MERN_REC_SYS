@@ -36,11 +36,11 @@ exports.isAuthenticated = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     const { id } = decoded;
     req.user = await UserSchema.findById(id);
+    next();
   } catch (error) {
     if (error.name === "TokenExpiredError") {
       throw new ApiError(401, "Token is expired!");
     }
     throw new ApiError(403, "Forbiden");
   }
-  next();
 };

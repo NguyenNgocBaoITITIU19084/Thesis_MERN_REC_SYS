@@ -24,6 +24,7 @@ import {
 } from "./redux/features/profile/profilesSlice.js";
 import { useDispatch } from "react-redux";
 import {
+  LogOutByUser,
   selectAccessAuth,
   successLogOut,
 } from "./redux/features/auths/authSlice.js";
@@ -33,37 +34,38 @@ import {
 } from "./redux/features/store/storeSlice.js";
 import { useSelector } from "react-redux";
 
-const ROLE = {
-  ADMIN: "admin",
-  GUEST: "guest",
-  SUPPLIER: "supplier",
-};
 const App = () => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector(selectAccessAuth);
-  useEffect(async () => {
-    if (isAuthenticated === true) {
-      try {
-        await dispatch(fetchProfile())
-          .unwrap()
-          .then((res) => {})
-          .catch((err) => {
-            toast.error("Error loading profile");
-          });
-        await dispatch(fetchStore())
-          .unwrap()
-          .then((res) => console.log(res))
-          .catch((err) => console.log(err));
-      } catch (error) {
-        console.log(error);
+
+  useEffect(() => {
+    async function fectchAuthen() {
+      if (isAuthenticated === true) {
+        try {
+          await dispatch(fetchProfile())
+            .unwrap()
+            .then((res) => {})
+            .catch((err) => {
+              toast.error("Error loading profile");
+            });
+          await dispatch(fetchStore())
+            .unwrap()
+            .then((res) => console.log(res))
+            .catch((err) => console.log(err));
+        } catch (error) {
+          console.log(error);
+        }
+        return () => {
+          dispatch(clearProfile({}));
+          dispatch(successLogOut());
+          dispatch(clearStoreProfile());
+          dispatch(LogOutByUser());
+        };
       }
-      return () => {
-        dispatch(clearProfile({}));
-        dispatch(successLogOut());
-        dispatch(clearStoreProfile());
-      };
     }
-  }, [isAuthenticated]);
+    fectchAuthen();
+  }, [isAuthenticated, dispatch]);
+
   return (
     <>
       <Routes>
