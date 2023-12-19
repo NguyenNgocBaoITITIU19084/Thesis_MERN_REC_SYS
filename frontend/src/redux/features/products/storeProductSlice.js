@@ -45,8 +45,7 @@ const storeProductsSlice = createSlice({
       })
       .addCase(fecthProductsByStoreSide.fulfilled, (state, action) => {
         state.status = "succeeded";
-        const { data } = action.payload;
-        state.storeProduct = state.storeProduct.concat(data);
+        state.storeProduct = [...action.payload.data];
       })
       .addCase(fecthProductsByStoreSide.rejected, (state, action) => {
         state.status = "failed";

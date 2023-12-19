@@ -55,8 +55,7 @@ const profileSlice = createSlice({
       })
       .addCase(fetchProfile.fulfilled, (state, action) => {
         state.status = "succeeded";
-        const { data } = action.payload;
-        state.profile = { ...data };
+        state.profile = { ...action.payload.data };
       })
       .addCase(fetchProfile.rejected, (state, action) => {
         state.status = "failed";
@@ -64,8 +63,7 @@ const profileSlice = createSlice({
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.status = "succeeded";
-        const { data } = action.payload;
-        state.profile = { ...data };
+        state.profile = { ...action.payload.data };
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.status = "failed";

@@ -17,12 +17,6 @@ import { toast } from "react-toastify";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {
-  selectProfile,
-  selectProfileLoadingState,
-  updateProfile,
-} from "../../redux/features/profile/profilesSlice";
-import { selectAccessAuth } from "../../redux/features/auths/authSlice";
 
 const ProfileContent = ({ active }) => {
   const dispatch = useDispatch();

@@ -43,8 +43,7 @@ const productsSlice = createSlice({
       })
       .addCase(fecthProducts.fulfilled, (state, action) => {
         state.status = "succeeded";
-        const { data } = action.payload;
-        state.products = state.products.concat(data);
+        state.products = [...action.payload.data];
       })
       .addCase(fecthProducts.rejected, (state, action) => {
         state.status = "failed";

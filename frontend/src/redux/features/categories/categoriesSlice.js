@@ -38,8 +38,7 @@ const categoriesSlice = createSlice({
       })
       .addCase(fecthCategories.fulfilled, (state, action) => {
         state.status = "succeeded";
-        const { data } = action.payload;
-        state.categories = state.categories.concat(data);
+        state.categories = [...action.payload.data];
       })
       .addCase(fecthCategories.rejected, (state, action) => {
         state.status = "failed";

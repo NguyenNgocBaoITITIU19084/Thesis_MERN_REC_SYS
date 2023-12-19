@@ -26,18 +26,20 @@ exports.jwtAuth = (req, res, next) => {
 };
 
 exports.isAuthenticated = async (req, res, next) => {
-  const { token } = req.cookies;
-
-  if (!token) {
-    throw new ApiError(401, "Please login to continue");
-  }
-
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    const { id } = decoded;
-    req.user = await UserSchema.findById(id);
-    next();
+    const token = req.cookies.token;
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+      const { id } = decoded;
+      req.user = await UserSchema.findById(id).catch((error) => {
+        return next(new ApiError(404, "Not Found User"));
+      });
+      next();
+    } else {
+      throw new ApiError(401, "Please login to continue");
+    }
   } catch (error) {
+    next(error);
     if (error.name === "TokenExpiredError") {
       throw new ApiError(401, "Token is expired!");
     }

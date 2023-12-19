@@ -5,7 +5,7 @@ import {
   AiOutlineHeart,
   AiOutlineShoppingCart,
 } from "react-icons/ai";
-import { IoIosArrowForward, IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowForward } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
 import { useSelector, useDispatch } from "react-redux";
 

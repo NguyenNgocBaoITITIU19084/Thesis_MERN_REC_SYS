@@ -19,7 +19,7 @@ const DropDown = ({ data, setDropDown, title }) => {
             onClick={() => submitHandle(i)}
           >
             <img
-              src={i.images}
+              src={i?.images}
               style={{
                 width: "25px",
                 height: "25px",
@@ -29,7 +29,7 @@ const DropDown = ({ data, setDropDown, title }) => {
               }}
               alt=""
             />
-            <h3 className="m-3 cursor-pointer select-none">{i.name}</h3>
+            <h3 className="m-3 cursor-pointer select-none">{i?.name}</h3>
           </div>
         ))}
     </div>
