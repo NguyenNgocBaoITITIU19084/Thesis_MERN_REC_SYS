@@ -11,6 +11,20 @@ const initialState = {
   error: null,
 };
 
+export const createProduct = createAsyncThunk(
+  "products/createProduct",
+  async (data) => {
+    try {
+      const response = await axios.post(END_POINT, data, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.log("Create Product Error", error);
+    }
+  }
+);
+
 export const fecthProducts = createAsyncThunk(
   "products/fecthProducts",
   async () => {
@@ -38,7 +52,7 @@ const productsSlice = createSlice({
   },
   extraReducers(builder) {
     builder
-      .addCase(fecthProducts.pending, (state, action) => {
+      .addCase(fecthProducts.pending, (state) => {
         state.status = "loading";
       })
       .addCase(fecthProducts.fulfilled, (state, action) => {
@@ -46,6 +60,16 @@ const productsSlice = createSlice({
         state.products = [...action.payload.data];
       })
       .addCase(fecthProducts.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(createProduct.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(createProduct.fulfilled, (state, action) => {
+        state.status = "succeeded";
+      })
+      .addCase(createProduct.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });

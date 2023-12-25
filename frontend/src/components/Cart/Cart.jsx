@@ -13,36 +13,6 @@ const Cart = ({ setOpenCartList }) => {
       description: "tessssssssssssssst",
       price: 4000,
     },
-    {
-      name: "Iphone 12 promax titan blue natural",
-      description: "tessssssssssssssst",
-      price: 4000,
-    },
-    {
-      name: "Iphone 12 promax titan blue natural",
-      description: "tessssssssssssssst",
-      price: 4000,
-    },
-    {
-      name: "Iphone 12 promax titan blue natural",
-      description: "tessssssssssssssst",
-      price: 4000,
-    },
-    {
-      name: "Iphone 12 promax titan blue natural",
-      description: "tessssssssssssssst",
-      price: 4000,
-    },
-    {
-      name: "Iphone 12 promax titan blue natural",
-      description: "tessssssssssssssst",
-      price: 4000,
-    },
-    {
-      name: "Iphone 12 promax titan blue natural",
-      description: "tessssssssssssssst",
-      price: 4000,
-    },
   ];
   return (
     <div className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-10">
@@ -58,7 +28,7 @@ const Cart = ({ setOpenCartList }) => {
           {/* {Item Length} */}
           <div className={`${styles.noramlFlex} p-4`}>
             <IoBagHandleOutline size={25} />
-            <h5 className="pl-2 text-[20px] font-[500]">3 Items In Cart</h5>
+            <h5 className="pl-2 text-[20px] font-[500]">1 Items In Cart</h5>
           </div>
 
           {/* {Cart Single Items} */}

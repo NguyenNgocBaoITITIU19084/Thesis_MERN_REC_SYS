@@ -66,12 +66,12 @@ exports.registerStore = catchAsync(async (req, res) => {
     }
   );
   //   Send Email
-  await EmailService.sendGmail(
-    process.env.EMAIL,
-    ownerEmail,
-    "Create a New Store At DevShop.",
-    `Thanks for becoming a new store at DevShop.`
-  );
+  // await EmailService.sendGmail(
+  //   process.env.EMAIL,
+  //   ownerEmail,
+  //   "Create a New Store At DevShop.",
+  //   `Thanks for becoming a new store at DevShop.`
+  // );
   return res
     .status(201)
     .json(

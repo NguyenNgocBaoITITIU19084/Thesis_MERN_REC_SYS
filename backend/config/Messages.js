@@ -41,6 +41,10 @@ const messages = {
       inValidToken: "Invalid Token",
     },
   },
+  uploadCloudinary: {
+    success: "success to upload images to cloudinary",
+    failed: "failed to upload images to cloudinary",
+  },
 };
 
 module.exports = messages;

@@ -6,20 +6,81 @@ import { categoriesData } from "../../static/data";
 import { toast } from "react-toastify";
 import { selectAllCategories } from "../../redux/features/categories/categoriesSlice";
 import { selectAllBrands } from "../../redux/features/brands/brandsSlice";
+import {
+  selectAllDiscounts,
+  selectDiscountState,
+  clearDiscountList,
+  clearError,
+  fecthDiscounts,
+} from "../../redux/features/discounts/discountsSlice.js";
+import { createProduct } from "../../redux/features/products/productsSlice.js";
 const CreateProduct = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const categoriesData = useSelector(selectAllCategories);
   const brandsData = useSelector(selectAllBrands);
+  const discountStatus = useSelector(selectDiscountState);
+  const discountsData = useSelector(selectAllDiscounts);
+
   const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
+  const [price, setPrice] = useState();
   const [actualPrice, setActualPrice] = useState();
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
-  const [discountApplied, setDiscountApplied] = useState([]);
-  const [categories, setCategories] = useState("");
+  const [discountApplied, setDiscountApplied] = useState();
+  const [categories, setCategories] = useState();
   const [brand, setBrand] = useState("");
+  const [requestStatus, setRequestStatus] = useState(false);
+
+  useEffect(() => {
+    if (discountStatus === "idle") {
+      dispatch(fecthDiscounts());
+    }
+    return () => {
+      clearError();
+      clearDiscountList();
+    };
+  }, [dispatch]);
+
+  const onCreateProductClicked = (e) => {
+    e.preventDefault();
+    const data = {
+      name,
+      price,
+      actualPrice,
+      description,
+      images,
+      discountApplied,
+      categories,
+      brand,
+    };
+    if (requestStatus === false) {
+      try {
+        setRequestStatus(true);
+        dispatch(createProduct(data))
+          .unwrap()
+          .then((result) => {
+            toast.success("Success Created Product!");
+            setName("");
+            setPrice();
+            setActualPrice();
+            setDescription("");
+            setImages([]);
+            setDiscountApplied();
+            setCategories();
+            setBrand();
+          })
+          .catch((err) => {
+            toast.error(err);
+          });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setRequestStatus(false);
+      }
+    }
+  };
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -115,6 +176,25 @@ const CreateProduct = () => {
         </div>
         <br />
         <div>
+          <label className="pb-2">
+            Discount Applied <span className="text-red-500">*</span>
+          </label>
+          <select
+            className="w-full mt-2 border h-[35px] rounded-[5px]"
+            value={discountApplied}
+            onChange={(e) => setDiscountApplied(e.target.value)}
+          >
+            <option value="Choose a brand">Choose a discount Applied</option>
+            {discountsData &&
+              discountsData.map((i, index) => (
+                <option value={i._id} key={index}>
+                  {i.code}
+                </option>
+              ))}
+          </select>
+        </div>
+        <br />
+        <div>
           <label className="pb-2">Actual Price</label>
           <input
             type="number"
@@ -169,6 +249,7 @@ const CreateProduct = () => {
           <br />
           <div>
             <input
+              onClick={onCreateProductClicked}
               type="submit"
               value="Create"
               className="mt-2 cursor-pointer appearance-none text-center block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"

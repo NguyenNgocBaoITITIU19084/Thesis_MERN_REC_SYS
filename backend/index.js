@@ -18,6 +18,7 @@ const CommentRoutes = require("./routes/CommentRoute");
 const UserRoutes = require("./routes/UserRoute");
 const ProfileRoutes = require("./routes/ProfileRoute");
 const StoreRoutes = require("./routes/StoreRoutes");
+const CloudinaryRoutes = require("./routes/UploadCloudinary");
 
 const PORT = process.env.PORT;
 
@@ -43,6 +44,7 @@ app.use(`${server}/comment`, CommentRoutes);
 app.use(`${server}/auth`, UserRoutes);
 app.use(`${server}/profile`, ProfileRoutes);
 app.use(`${server}/store`, StoreRoutes);
+app.use(`${server}/uploadCloudinary`, CloudinaryRoutes);
 
 app.use(catchError);
 
