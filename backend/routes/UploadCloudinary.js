@@ -11,5 +11,6 @@ route.post(
   cloud.array("image"),
   uploadCloudinaryCtlrs.uploadCloudinary
 );
+route.delete("/remove", uploadCloudinaryCtlrs.removeCloudinary);
 
 module.exports = route;

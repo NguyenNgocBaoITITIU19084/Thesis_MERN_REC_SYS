@@ -45,6 +45,10 @@ const messages = {
     success: "success to upload images to cloudinary",
     failed: "failed to upload images to cloudinary",
   },
+  removeCloudinary: {
+    success: "success to remove images to cloudinary",
+    failed: "failed to remove images to cloudinary",
+  },
 };
 
 module.exports = messages;

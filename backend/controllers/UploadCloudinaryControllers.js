@@ -1,21 +1,17 @@
 const catchAsync = require("../middlewares/catchAsync");
 const ApiError = require("../utils/ApiError");
 const ResultObject = require("../utils/ResultObject");
-const EmailService = require("../utils/EmailService");
+const cloudinary = require("cloudinary").v2;
 
-const storeSchema = require("../models/StoresModel");
-const userSchema = require("../models/UserModel");
 const { STATUS_CODE } = require("../contants/statusCode");
-const { ROLE } = require("../contants/role");
 const message = require("../config/Messages");
 
 exports.uploadCloudinary = catchAsync(async (req, res) => {
   const fileData = req.files;
   const fileLink = fileData.map((file) => {
-    return file.path;
+    return { link: file.path, fileName: file.filename };
   });
-  console.log(fileLink);
-  res
+  return res
     .status(201)
     .json(
       new ResultObject(
@@ -24,4 +20,19 @@ exports.uploadCloudinary = catchAsync(async (req, res) => {
         fileLink
       )
     );
+});
+
+exports.removeCloudinary = catchAsync(async (req, res) => {
+  const { fileName } = req.body;
+  cloudinary.uploader.destroy(fileName, function (error, result) {
+    return res
+      .status(200)
+      .json(
+        new ResultObject(
+          STATUS_CODE.SUCCESS,
+          message.removeCloudinary.success,
+          result
+        )
+      );
+  });
 });

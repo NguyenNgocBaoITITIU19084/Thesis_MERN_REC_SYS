@@ -32,11 +32,9 @@ const productSchema = new Schema(
       type: Boolean,
       default: true,
     },
-    images: [
-      {
-        type: String,
-      },
-    ],
+    images: {
+      type: [Object],
+    },
     discountApplied: {
       type: [Schema.Types.ObjectId],
       ref: "discounts",
