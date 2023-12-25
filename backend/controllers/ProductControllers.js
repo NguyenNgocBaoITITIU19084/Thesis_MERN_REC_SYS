@@ -162,6 +162,7 @@ exports.updateProductById = catchAsync(async (req, res) => {
     );
 });
 
+// authenticated
 exports.getProductsByStoreId = catchAsync(async (req, res) => {
   const { store: storeId } = req.user;
   const products = await productSchema.find({ createdBy: storeId });

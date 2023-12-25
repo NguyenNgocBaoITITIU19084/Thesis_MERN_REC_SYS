@@ -41,7 +41,9 @@ const ShopCreate = () => {
             navigate("/");
             window.location.reload(true);
           })
-          .catch((error) => toast.error(error));
+          .catch((error) => {
+            toast.error(error);
+          });
       } catch (err) {
         console.error("Error from Sign up page ", err);
       } finally {
