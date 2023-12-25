@@ -57,9 +57,9 @@ exports.createProduct = catchAsync(async (req, res) => {
     actualPrice,
     description,
     images,
-    discountApplied,
     brand,
     categories,
+    createdBy: storeId,
   });
   return res
     .status(201)

@@ -8,3 +8,4 @@ exports.auth_end_point = "/auth";
 exports.profile_end_point = "/profile";
 exports.store_end_point = "/store";
 exports.discount_end_point = "/discount";
+exports.cloudinary_end_point = "/uploadCloudinary";

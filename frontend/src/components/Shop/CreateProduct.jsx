@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +15,8 @@ import {
   fecthDiscounts,
 } from "../../redux/features/discounts/discountsSlice.js";
 import { createProduct } from "../../redux/features/products/productsSlice.js";
+import { Server_url, Api_version, cloudinary_end_point } from "../../Server.js";
+
 const CreateProduct = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -27,6 +30,7 @@ const CreateProduct = () => {
   const [price, setPrice] = useState();
   const [actualPrice, setActualPrice] = useState();
   const [description, setDescription] = useState("");
+  const [imagesResponse, setImagesResponse] = useState();
   const [images, setImages] = useState([]);
   const [discountApplied, setDiscountApplied] = useState();
   const [categories, setCategories] = useState();
@@ -45,16 +49,18 @@ const CreateProduct = () => {
 
   const onCreateProductClicked = (e) => {
     e.preventDefault();
+    console.log("00000000000", imagesResponse);
     const data = {
       name,
       price,
       actualPrice,
       description,
-      images,
+      images: imagesResponse,
       discountApplied,
       categories,
       brand,
     };
+    console.log("send data", data);
     if (requestStatus === false) {
       try {
         setRequestStatus(true);
@@ -70,6 +76,7 @@ const CreateProduct = () => {
             setDiscountApplied();
             setCategories();
             setBrand();
+            navigate("/dashboard-products");
           })
           .catch((err) => {
             toast.error(err);
@@ -84,10 +91,10 @@ const CreateProduct = () => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    console.log(files);
 
     setImages([]);
-
+    var formData = new FormData();
+    let responseArr = [];
     files.forEach((file) => {
       const reader = new FileReader();
 
@@ -97,6 +104,25 @@ const CreateProduct = () => {
         }
       };
       reader.readAsDataURL(file);
+      formData.append("image", file);
+      axios
+        .post(
+          `${Server_url}${Api_version}${cloudinary_end_point}/upload`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((res) => {
+          responseArr.push(res.data.data[0]);
+          setImagesResponse(responseArr);
+          toast.success("Success Upload Images");
+        })
+        .catch((err) => {
+          toast.error("Fail to Upload Images");
+        });
     });
   };
 
