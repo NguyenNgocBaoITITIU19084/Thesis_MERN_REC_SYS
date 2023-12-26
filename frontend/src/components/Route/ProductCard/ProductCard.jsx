@@ -27,9 +27,9 @@ const ProductCard = ({ data }) => {
             className="w-full h-[170px] object-contain"
           />
         </Link>
-        <Link to="/">
+        {/* <Link to="/">
           <h5 className={`${styles.shop_name}`}>{data.createdBy}</h5>
-        </Link>
+        </Link> */}
         <Link to={`/product/${product_name}`}>
           <h4 className="pb-3 font-[500]">
             {data.name.length > 40 ? data.name.slice(0, 40) + "..." : data.name}

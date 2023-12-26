@@ -1,3 +1,5 @@
+const cloudinary = require("cloudinary").v2;
+
 const catchAsync = require("../middlewares/catchAsync");
 const ApiError = require("../utils/ApiError");
 const ResultObject = require("../utils/ResultObject");
@@ -115,7 +117,32 @@ exports.getProductById = catchAsync(async (req, res) => {
 
 exports.deleteProductById = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const product = await productSchema.findByIdAndDelete(id);
+  const { store: storeId } = req.user;
+  if (!id) {
+    throw new ApiError(400, "Not Found Product Id");
+  }
+  if (!storeId) {
+    throw new ApiError(403, "Forbiden");
+  }
+  const productDetail = await productSchema.find({
+    _id: id,
+    createdBy: storeId,
+  });
+  if (!productDetail.length) {
+    throw new ApiError(404, message.models.not_founded);
+  }
+  const [productSelect] = productDetail;
+  productSelect.images.forEach((image) => {
+    cloudinary.uploader.destroy(image.fileName, function (err, res) {
+      if (err) {
+        throw new ApiError(400, err);
+      }
+    });
+  });
+  const product = await productSchema.findByIdAndDelete({
+    _id: id,
+    createdBy: storeId,
+  });
   return res
     .status(200)
     .json(
@@ -165,6 +192,9 @@ exports.updateProductById = catchAsync(async (req, res) => {
 // authenticated
 exports.getProductsByStoreId = catchAsync(async (req, res) => {
   const { store: storeId } = req.user;
+  if (!storeId) {
+    throw new ApiError(403, "Forbiden");
+  }
   const products = await productSchema.find({ createdBy: storeId });
   return res
     .status(200)

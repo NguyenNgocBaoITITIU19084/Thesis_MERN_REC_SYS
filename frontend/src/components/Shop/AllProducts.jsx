@@ -5,22 +5,41 @@ import { AiOutlineDelete, AiOutlineEye } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Loader from "../layout/Loader";
-
+import {
+  selectAllProductsStore,
+  selectStoreProductsLoadingState,
+  fecthProductsByStoreSide,
+  deleteProductById,
+} from "../../redux/features/products/storeProductSlice";
+import { toast } from "react-toastify";
 const AllProducts = () => {
   const dispatch = useDispatch();
 
-  useEffect(() => {}, []);
+  const productsStore = useSelector(selectAllProductsStore);
+  const productsStroreStatus = useSelector(selectStoreProductsLoadingState);
+
+  useEffect(() => {
+    if (productsStroreStatus === "idle") {
+      dispatch(fecthProductsByStoreSide());
+    }
+  }, [dispatch, productsStroreStatus]);
 
   const handleDelete = (id) => {
+    console.log(id);
+    try {
+      dispatch(deleteProductById(id))
+        .unwrap()
+        .then((res) => toast.success("Success Delete Product"))
+        .catch((err) => toast.error("Failed to Delete Product"));
+    } catch (error) {}
     window.location.reload();
   };
 
   const columns = [
-    { field: "id", headerName: "Product Id", minWidth: 150, flex: 0.7 },
     {
       field: "name",
       headerName: "Name",
-      minWidth: 180,
+      minWidth: 150,
       flex: 1.4,
     },
     {
@@ -30,13 +49,11 @@ const AllProducts = () => {
       flex: 0.6,
     },
     {
-      field: "Stock",
-      headerName: "Stock",
-      type: "number",
-      minWidth: 80,
-      flex: 0.5,
+      field: "actualPrice",
+      headerName: "Actual Price",
+      minWidth: 100,
+      flex: 0.6,
     },
-
     {
       field: "sold",
       headerName: "Sold out",
@@ -84,20 +101,20 @@ const AllProducts = () => {
 
   const row = [];
 
-  products &&
-    products.forEach((item) => {
+  productsStore &&
+    productsStore.forEach((item) => {
       row.push({
         id: item._id,
         name: item.name,
-        price: "US$ " + item.discountPrice,
-        Stock: item.stock,
-        sold: item?.sold_out,
+        price: "$" + item.price,
+        actualPrice: item.actualPrice,
+        sold: item?.soldOut,
       });
     });
 
   return (
     <>
-      {isLoading ? (
+      {productsStroreStatus === "loading" ? (
         <Loader />
       ) : (
         <div className="w-full mx-8 pt-1 mt-10 bg-white">

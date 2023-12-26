@@ -11,12 +11,7 @@ route.post(
   authorize([ROLE.GUEST]),
   storeControllers.registerStore
 );
-route.get(
-  "/",
-  isAuthenticated,
-  authorize([ROLE.GUEST]),
-  storeControllers.getStore
-);
+route.get("/", isAuthenticated, storeControllers.getStore);
 route.delete("/");
 route.delete("/");
 route.patch("/");

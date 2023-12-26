@@ -11,6 +11,20 @@ const initialState = {
   error: null,
 };
 
+export const deleteProductById = createAsyncThunk(
+  "storeProducts/deleteProductById",
+  async (id) => {
+    try {
+      const response = await axios.delete(`${END_POINT}${id}`, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
 export const fecthProductsByStoreSide = createAsyncThunk(
   "storeProducts/fecthProductsByStoreSide",
   async () => {
@@ -48,6 +62,16 @@ const storeProductsSlice = createSlice({
         state.storeProduct = [...action.payload.data];
       })
       .addCase(fecthProductsByStoreSide.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(deleteProductById.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(deleteProductById.fulfilled, (state) => {
+        state.status = "succeeded";
+      })
+      .addCase(deleteProductById.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });

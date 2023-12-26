@@ -54,11 +54,11 @@ const DashBoardHeader = () => {
             />
           </Link>
           <h1 className="text-[#0f0f0f] flex items-center pr-4 font-bold text-lg">
-            {seller.name}
+            {seller?.name}
           </h1>
-          <Link to={`/shop/${seller._id}`}>
+          <Link to={`/shop/${seller?._id}`}>
             <img
-              src={`${seller.avatar}`}
+              src={`${seller?.avatar}`}
               alt=""
               className="w-[50px] h-[50px] rounded-full border-[3px] border-[#0eae88]"
             />

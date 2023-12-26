@@ -20,7 +20,7 @@ route.get(
 );
 
 route.get("/:id", productControllers.getProductById);
-route.delete("/:id", productControllers.deleteProductById);
+route.delete("/:id", isAuthenticated, productControllers.deleteProductById);
 route.patch("/:id", productControllers.updateProductById);
 
 module.exports = route;

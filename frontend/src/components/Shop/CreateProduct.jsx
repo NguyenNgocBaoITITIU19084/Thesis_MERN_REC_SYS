@@ -45,11 +45,10 @@ const CreateProduct = () => {
       clearError();
       clearDiscountList();
     };
-  }, [dispatch]);
+  }, [dispatch, discountStatus]);
 
   const onCreateProductClicked = (e) => {
     e.preventDefault();
-    console.log("00000000000", imagesResponse);
     const data = {
       name,
       price,
