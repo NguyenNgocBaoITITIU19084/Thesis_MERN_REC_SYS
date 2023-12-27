@@ -21,6 +21,7 @@ import {
   ShopCreateProduct,
   ShopAllProducts,
   ShopCreateEvents,
+  ShopAllCoupouns,
 } from "./ShopRoutes.js";
 import ProtectedRoute from "./components/Route/ProtectedRoutes/ProtectedRoute.jsx";
 import SellerProtectedRoute from "./components/Route/ProtectedRoutes/SellerProtectedRoute.jsx";
@@ -138,6 +139,14 @@ const App = () => {
               <ProtectedRoute>
                 <ProfilePage />
               </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard-coupouns"
+            element={
+              <SellerProtectedRoute>
+                <ShopAllCoupouns />
+              </SellerProtectedRoute>
             }
           />
         </Route>

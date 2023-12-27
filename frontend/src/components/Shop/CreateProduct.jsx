@@ -5,8 +5,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { categoriesData } from "../../static/data";
 import { toast } from "react-toastify";
-import { selectAllCategories } from "../../redux/features/categories/categoriesSlice";
-import { selectAllBrands } from "../../redux/features/brands/brandsSlice";
+import {
+  fecthCategories,
+  selectAllCategories,
+  selectLoadingState,
+} from "../../redux/features/categories/categoriesSlice";
+import {
+  fecthBrands,
+  selectAllBrands,
+  selectBrandLoadingState,
+} from "../../redux/features/brands/brandsSlice";
 import {
   selectAllDiscounts,
   selectDiscountState,
@@ -22,7 +30,11 @@ const CreateProduct = () => {
   const dispatch = useDispatch();
 
   const categoriesData = useSelector(selectAllCategories);
+  const cateStatus = useSelector(selectLoadingState);
+
   const brandsData = useSelector(selectAllBrands);
+  const brandStatus = useSelector(selectBrandLoadingState);
+
   const discountStatus = useSelector(selectDiscountState);
   const discountsData = useSelector(selectAllDiscounts);
 
@@ -30,7 +42,7 @@ const CreateProduct = () => {
   const [price, setPrice] = useState();
   const [actualPrice, setActualPrice] = useState();
   const [description, setDescription] = useState("");
-  const [imagesResponse, setImagesResponse] = useState();
+  const [imagesResponse, setImagesResponse] = useState([]);
   const [images, setImages] = useState([]);
   const [discountApplied, setDiscountApplied] = useState();
   const [categories, setCategories] = useState();
@@ -40,6 +52,12 @@ const CreateProduct = () => {
   useEffect(() => {
     if (discountStatus === "idle") {
       dispatch(fecthDiscounts());
+    }
+    if (brandStatus === "idle") {
+      dispatch(fecthBrands());
+    }
+    if (cateStatus === "idle") {
+      dispatch(fecthCategories());
     }
     return () => {
       clearError();
@@ -75,7 +93,6 @@ const CreateProduct = () => {
             setDiscountApplied();
             setCategories();
             setBrand();
-            navigate("/dashboard-products");
           })
           .catch((err) => {
             toast.error(err);
@@ -93,7 +110,7 @@ const CreateProduct = () => {
 
     setImages([]);
     var formData = new FormData();
-    let responseArr = [];
+
     files.forEach((file) => {
       const reader = new FileReader();
 
@@ -104,25 +121,29 @@ const CreateProduct = () => {
       };
       reader.readAsDataURL(file);
       formData.append("image", file);
-      axios
-        .post(
-          `${Server_url}${Api_version}${cloudinary_end_point}/upload`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        )
-        .then((res) => {
-          responseArr.push(res.data.data[0]);
-          setImagesResponse(responseArr);
-          toast.success("Success Upload Images");
-        })
-        .catch((err) => {
-          toast.error("Fail to Upload Images");
-        });
     });
+    axios
+      .post(
+        `${Server_url}${Api_version}${cloudinary_end_point}/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data.data);
+        let responseArr = [];
+        res.data.data.forEach((item) => {
+          responseArr.push(item);
+        });
+        setImagesResponse([...responseArr]);
+        toast.success("Success Upload Images");
+      })
+      .catch((err) => {
+        toast.error("Fail to Upload Images");
+      });
   };
 
   return (

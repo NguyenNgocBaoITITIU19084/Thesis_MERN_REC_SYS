@@ -97,7 +97,12 @@ exports.getAllproducts = catchAsync(async (req, res) => {
 
 exports.getProductById = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const product = await productSchema.findById(id).populate("discountApplied");
+  const product = await productSchema
+    .findById(id)
+    .populate("discountApplied")
+    .populate("brand")
+    .populate("categories")
+    .populate("createdBy");
   if (!product) {
     throw new ApiError(
       400,
