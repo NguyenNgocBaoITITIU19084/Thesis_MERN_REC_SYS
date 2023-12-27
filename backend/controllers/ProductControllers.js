@@ -161,8 +161,21 @@ exports.deleteProductById = catchAsync(async (req, res) => {
 
 exports.updateProductById = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const { name, price, actualPrice, description, images, discountApplied } =
-    req.body;
+  const {
+    name,
+    price,
+    actualPrice,
+    description,
+    images,
+    discountApplied,
+    brand,
+    categories,
+  } = req.body;
+  const { store: storeId } = req.user;
+  const checkingProduct = await productSchema.findById(id);
+  if (!storeId.equals(checkingProduct.createdBy)) {
+    throw new ApiError(403, "No Permition");
+  }
   const product = await productSchema.findByIdAndUpdate(
     id,
     {

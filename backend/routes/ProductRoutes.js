@@ -21,6 +21,11 @@ route.get(
 
 route.get("/:id", productControllers.getProductById);
 route.delete("/:id", isAuthenticated, productControllers.deleteProductById);
-route.patch("/:id", productControllers.updateProductById);
+route.patch(
+  "/:id",
+  isAuthenticated,
+  authorize([ROLE.SUPPLIER, ROLE.ADMIN]),
+  productControllers.updateProductById
+);
 
 module.exports = route;

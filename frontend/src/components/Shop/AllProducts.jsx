@@ -159,6 +159,9 @@ const ViewDetail = ({ setOpen, productId }) => {
   const [createdAt, setCreatedAt] = useState();
   const [updatedAt, setUpdatedAt] = useState();
   const [images, setImages] = useState([]);
+  const [brand, setBrand] = useState();
+  const [categories, setCategories] = useState([]);
+
   useEffect(() => {
     async function fetchProductById(productId) {
       const response = await axios
@@ -194,6 +197,52 @@ const ViewDetail = ({ setOpen, productId }) => {
     fetchProductById(productId);
   }, []);
 
+  const handleFormUpdate = (e, productId) => {
+    e.preventDefault();
+    // var formData = new FormData();
+    // formData.append("name", productName);
+    // formData.append("price", price);
+    // formData.append("actualPrice", actualPrice);
+    // formData.append("description", description);
+    // formData.append("brand", brand);
+    // categories.forEach((cate) => {
+    //   formData.append("categories", cate);
+    // });
+    // images.forEach((image) => {
+    //   formData.append("images", image);
+    // });
+    // console.log("-----", formData);
+
+    const data = {
+      name: productName,
+      price,
+      actualPrice,
+      description,
+      brand,
+      categories,
+      images,
+    };
+    console.log(data);
+    axios
+      .patch(
+        `${Server_url}${Api_version}${product_end_point}/${productId}`,
+        data,
+        {
+          withCredentials: true,
+        }
+      )
+      .then((res) => {
+        toast.success("Success to Update Product");
+      })
+      .catch((err) => {
+        toast.error("Failed to Update Product");
+      });
+  };
+
+  const onDeleteImageClicked = (link) => {
+    const res = images.filter((image) => image.link !== link);
+    setImages([...res]);
+  };
   return (
     <div className="fixed top-0 left-0 w-full h-screen bg-[#00000062] z-[20000] flex items-center justify-center ">
       <div className="w-[90%] 800px:w-[40%] h-[100vh] bg-white rounded-md shadow p-4 overflow-auto">
@@ -249,20 +298,7 @@ const ViewDetail = ({ setOpen, productId }) => {
               onChange={(e) => setActualPrice(e.target.value)}
             />
           </div>
-          <br />
-          <div>
-            <label className="pb-2">
-              Product Actual Price <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="name"
-              required
-              value={actualPrice}
-              className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              onChange={(e) => setActualPrice(e.target.value)}
-            />
-          </div>
+
           <br />
           <div>
             <label className="pb-2">
@@ -312,7 +348,10 @@ const ViewDetail = ({ setOpen, productId }) => {
                       alt=""
                       className="h-[120px] w-[120px] object-cover m-2"
                     />
-                    <div className="w-full flex justify-end absolute top-2 right-2 text-red-600">
+                    <div
+                      className="w-full flex justify-end absolute top-2 right-2 text-red-600"
+                      onClick={() => onDeleteImageClicked(image.link)}
+                    >
                       <RxCross1 size={20} className="cursor-pointer" />
                     </div>
                   </div>
@@ -322,6 +361,7 @@ const ViewDetail = ({ setOpen, productId }) => {
           <br />
           <div>
             <input
+              onClick={(e) => handleFormUpdate(e, productId)}
               type="submit"
               value="Update Detail"
               className="mt-2 cursor-pointer appearance-none text-center block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
