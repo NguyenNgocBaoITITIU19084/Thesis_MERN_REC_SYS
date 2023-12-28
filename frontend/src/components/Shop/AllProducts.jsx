@@ -2,50 +2,92 @@ import { Button } from "@material-ui/core";
 import { DataGrid } from "@material-ui/data-grid";
 import React, { useEffect, useState } from "react";
 import { AiOutlineDelete, AiOutlineEye } from "react-icons/ai";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+
 import Loader from "../layout/Loader";
 import { RxCross1 } from "react-icons/rx";
-import {
-  selectAllProductsStore,
-  selectStoreProductsLoadingState,
-  fecthProductsByStoreSide,
-  deleteProductById,
-  clearError,
-  clearStoreProduct,
-} from "../../redux/features/products/storeProductSlice";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { Api_version, Server_url, product_end_point } from "../../Server";
 const AllProducts = () => {
-  const dispatch = useDispatch();
+  const END_POINT = `${Server_url}${Api_version}${product_end_point}/`;
+
+  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [detailData, setDetailData] = useState();
 
   const [openView, setOpenView] = useState(false);
   const [productId, setProductId] = useState();
 
-  const productsStore = useSelector(selectAllProductsStore);
-  const productsStroreStatus = useSelector(selectStoreProductsLoadingState);
-
   useEffect(() => {
-    if (productsStroreStatus === "idle") {
-      dispatch(fecthProductsByStoreSide());
+    async function fetchProductsByStoreSide() {
+      setLoading(true);
+      await axios
+        .get(`${END_POINT}store-side`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          const data = res.data.data;
+          setProducts([...data]);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+          toast.error("Failed Fecth Products");
+        });
     }
-    return () => {};
-  }, [dispatch, productsStroreStatus]);
+    fetchProductsByStoreSide();
+    return () => {
+      setProducts([]);
+    };
+  }, []);
 
-  const handleDelete = (id) => {
-    try {
-      dispatch(deleteProductById(id))
-        .unwrap()
-        .then((res) => toast.success("Success Delete Product"))
-        .catch((err) => toast.error("Failed to Delete Product"));
-    } catch (error) {}
-    window.location.reload();
+  const handleDelete = async (id) => {
+    await axios
+      .delete(`${END_POINT}${id}`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        const data = res.data.data;
+        setProducts(products.filter((product) => product._id !== data._id));
+
+        toast.success("Success to Delete Product");
+      })
+      .catch((err) => {
+        toast.error("Failed to Delete Product");
+      });
+  };
+
+  const handleUpdateProduct = async (productId, data) => {
+    await axios
+      .patch(
+        `${Server_url}${Api_version}${product_end_point}/${productId}`,
+        data,
+        {
+          withCredentials: true,
+        }
+      )
+      .then((res) => {
+        const updateData = res.data.data;
+        products.forEach((product) => {
+          if (product._id === updateData._id) {
+            product.name = updateData.name;
+            product.price = updateData.price;
+            product.actualPrice = updateData.actualPrice;
+            product.description = updateData.description;
+            product.images = [...updateData.images];
+          }
+        });
+        toast.success("Success to Update Product");
+      })
+      .catch((err) => {
+        toast.error("Failed to Update Product");
+      });
   };
 
   const handleOpenView = (id) => {
     setOpenView(true);
     setProductId(id);
+    setDetailData(products.filter((product) => product._id === id));
   };
 
   const columns = [
@@ -115,8 +157,8 @@ const AllProducts = () => {
 
   const row = [];
 
-  productsStore &&
-    productsStore.forEach((item) => {
+  products &&
+    products.forEach((item) => {
       row.push({
         id: item._id,
         name: item.name,
@@ -128,7 +170,7 @@ const AllProducts = () => {
 
   return (
     <>
-      {productsStroreStatus === "loading" ? (
+      {loading ? (
         <Loader />
       ) : (
         <div className="w-full mx-8 pt-1 mt-10 bg-white">
@@ -140,7 +182,13 @@ const AllProducts = () => {
             autoHeight
           />
           {openView ? (
-            <ViewDetail setOpen={setOpenView} productId={productId} />
+            <ViewDetail
+              setOpen={setOpenView}
+              productId={productId}
+              handleUpdateProduct={handleUpdateProduct}
+              detailData={detailData}
+              setLoading={setLoading}
+            />
           ) : null}
         </div>
       )}
@@ -149,7 +197,13 @@ const AllProducts = () => {
 };
 
 export default AllProducts;
-const ViewDetail = ({ setOpen, productId }) => {
+
+const ViewDetail = ({
+  setOpen,
+  productId,
+  handleUpdateProduct,
+  detailData,
+}) => {
   const [productName, setProductName] = useState();
   const [price, setPrice] = useState();
   const [actualPrice, setActualPrice] = useState();
@@ -163,55 +217,33 @@ const ViewDetail = ({ setOpen, productId }) => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    async function fetchProductById(productId) {
-      const response = await axios
-        .get(`${Server_url}${Api_version}${product_end_point}/${productId}`)
-        .then((res) => {
-          const { data } = res.data;
-          let dataTime =
-            data &&
-            data.createdAt.slice(11, 19) + " " + data.createdAt.slice(0, 10);
-          let updatedTime =
-            data &&
-            data.updatedAt.slice(11, 19) + " " + data.updatedAt.slice(0, 10);
+    detailData.forEach((data) => {
+      let dataTime =
+        data &&
+        data.createdAt.slice(11, 19) + " " + data.createdAt.slice(0, 10);
+      let updatedTime =
+        data &&
+        data.updatedAt.slice(11, 19) + " " + data.updatedAt.slice(0, 10);
 
-          let img = [];
-          data.images.forEach((item) => {
-            img.push(item);
-          });
-          console.log(data);
-          setProductName(data && data.name);
-          setPrice(data && data.price);
-          setActualPrice(data && data.actualPrice);
-          setDescription(data && data.description);
-          setSoldOut(data && data.soldOut);
-          setRating(data && data.total_rating);
-          setUpdatedAt(updatedTime);
-          setCreatedAt(dataTime);
-          setImages([...img]);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-    fetchProductById(productId);
-  }, []);
+      let img = [];
+      data.images.forEach((item) => {
+        img.push(item);
+      });
+      console.log(data);
+      setProductName(data && data.name);
+      setPrice(data && data.price);
+      setActualPrice(data && data.actualPrice);
+      setDescription(data && data.description);
+      setSoldOut(data && data.soldOut);
+      setRating(data && data.total_rating);
+      setUpdatedAt(updatedTime);
+      setCreatedAt(dataTime);
+      setImages([...img]);
+    });
+  }, [detailData]);
 
   const handleFormUpdate = (e, productId) => {
     e.preventDefault();
-    // var formData = new FormData();
-    // formData.append("name", productName);
-    // formData.append("price", price);
-    // formData.append("actualPrice", actualPrice);
-    // formData.append("description", description);
-    // formData.append("brand", brand);
-    // categories.forEach((cate) => {
-    //   formData.append("categories", cate);
-    // });
-    // images.forEach((image) => {
-    //   formData.append("images", image);
-    // });
-    // console.log("-----", formData);
 
     const data = {
       name: productName,
@@ -222,21 +254,7 @@ const ViewDetail = ({ setOpen, productId }) => {
       categories,
       images,
     };
-    console.log(data);
-    axios
-      .patch(
-        `${Server_url}${Api_version}${product_end_point}/${productId}`,
-        data,
-        {
-          withCredentials: true,
-        }
-      )
-      .then((res) => {
-        toast.success("Success to Update Product");
-      })
-      .catch((err) => {
-        toast.error("Failed to Update Product");
-      });
+    handleUpdateProduct(productId, data);
   };
 
   const onDeleteImageClicked = (link) => {

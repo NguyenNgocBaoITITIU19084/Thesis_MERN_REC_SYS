@@ -32,8 +32,8 @@ const ProfileContent = ({ active }) => {
   const [avatar, setAvatar] = useState("");
   const [age, setAge] = useState("");
 
-  const handleSubmit = async (e) => {};
   useEffect(() => {}, []);
+  const handleSubmit = async (e) => {};
   return (
     <div className="w-full">
       {
