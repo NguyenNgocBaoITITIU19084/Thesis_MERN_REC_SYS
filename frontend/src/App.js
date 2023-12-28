@@ -84,6 +84,14 @@ const App = () => {
           <Route path="/best-selling" element={<BestSellingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUpPage />} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
           {/* {Shop Route} */}
           <Route
             path="/shop/:id"
@@ -112,33 +120,25 @@ const App = () => {
           <Route
             path="/shop-create"
             element={
-              <ProtectedRoute>
+              <SellerProtectedRoute>
                 <ShopCreatePage />
-              </ProtectedRoute>
+              </SellerProtectedRoute>
             }
           />
           <Route
             path="/dashboard-products"
             element={
-              <ProtectedRoute>
+              <SellerProtectedRoute>
                 <ShopAllProducts />
-              </ProtectedRoute>
+              </SellerProtectedRoute>
             }
           />
           <Route
             path="/dashboard-create-event"
             element={
-              <ProtectedRoute>
+              <SellerProtectedRoute>
                 <ShopCreateEvents />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <ProfilePage />
-              </ProtectedRoute>
+              </SellerProtectedRoute>
             }
           />
           <Route

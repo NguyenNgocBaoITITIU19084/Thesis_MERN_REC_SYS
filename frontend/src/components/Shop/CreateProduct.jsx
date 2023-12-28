@@ -93,6 +93,7 @@ const CreateProduct = () => {
             setDiscountApplied();
             setCategories();
             setBrand();
+            navigate("/dashboard-products");
           })
           .catch((err) => {
             toast.error(err);
