@@ -17,23 +17,115 @@ import { toast } from "react-toastify";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import axios from "axios";
+import {
+  Api_version,
+  Server_url,
+  profile_end_point,
+  cloudinary_end_point,
+} from "../../Server";
 
 const ProfileContent = ({ active }) => {
-  const dispatch = useDispatch();
+  const END_POINT = `${Server_url}${Api_version}${profile_end_point}/`;
 
   const [startDate, setStartDate] = useState(new Date());
-
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
-  const [gender, setGender] = useState("");
   const [avatar, setAvatar] = useState("");
   const [age, setAge] = useState("");
+  const [gender, setGender] = useState();
+  const [point, setPoint] = useState();
+  const [imagesResponse, setImagesResponse] = useState([]);
 
-  useEffect(() => {}, []);
-  const handleSubmit = async (e) => {};
+  useEffect(() => {
+    async function fetchUserProfile() {
+      await axios
+        .get(`${END_POINT}`, { withCredentials: true })
+        .then((res) => {
+          const profile = res.data.data;
+          console.log("profile", profile);
+          setFirstName(profile.profile.firstName);
+          setLastName(profile.profile.lastName);
+          setEmail(profile.email);
+          setPhoneNumber(profile.profile.phoneNumber[0]);
+          setAddress(profile.profile.address[0]);
+          setGender(profile.profile.gender);
+          setPoint(profile.profile.points);
+          setAge(profile.profile.age);
+        })
+        .catch((err) => {
+          toast.error("Failed To Loading Profile");
+          console.log(err);
+        });
+    }
+    fetchUserProfile();
+    return () => {
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setPhoneNumber("");
+      setAddress("");
+    };
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = {
+      firstName,
+      lastName,
+      address,
+      phoneNumber,
+      gender,
+      age,
+      avatar,
+    };
+    await axios
+      .patch(`${END_POINT}update-profile`, data, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const handleImage = async (e) => {
+    const reader = new FileReader();
+    var formData = new FormData();
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setAvatar(reader.result);
+      }
+    };
+    reader.readAsDataURL(e.target.files[0]);
+    formData.append("image", avatar);
+    axios
+      .post(
+        `${Server_url}${Api_version}${cloudinary_end_point}/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data.data);
+        let responseArr = [];
+        res.data.data.forEach((item) => {
+          responseArr.push(item);
+        });
+        setImagesResponse([...responseArr]);
+        toast.success("Success Upload Images");
+      })
+      .catch((err) => {
+        toast.error("Fail to Upload Images");
+      });
+  };
+
   return (
     <div className="w-full">
       {
@@ -56,7 +148,7 @@ const ProfileContent = ({ active }) => {
                     type="file"
                     id="image"
                     className="hidden"
-                    //   onChange={handleImage}
+                    onChange={handleImage}
                   />
                   <label htmlFor="image">
                     <AiOutlineCamera />
@@ -67,7 +159,7 @@ const ProfileContent = ({ active }) => {
             <br />
             <br />
             <div className="w-full px-5">
-              <form onSubmit={handleSubmit} aria-required={true}>
+              <form aria-required={true}>
                 <div className="w-full 800px:flex block pb-3">
                   <div className=" w-[100%] 800px:w-[50%]">
                     <label className="block pb-2">First Name</label>
@@ -109,7 +201,6 @@ const ProfileContent = ({ active }) => {
                       className={`${styles.input} !w-[95%] mb-1 800px:mb-0`}
                       required
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
                 </div>
@@ -144,8 +235,14 @@ const ProfileContent = ({ active }) => {
                       onChange={(e) => setAddress(e.target.value)}
                     />
                   </div>
+                  <div className=" w-[100%] 800px:w-[50%]">
+                    <label className="block pb-2 mt-9">
+                      Points: <span className="text-red-700">{point}</span>{" "}
+                    </label>
+                  </div>
                 </div>
                 <input
+                  onClick={handleSubmit}
                   className={`w-[250px] h-[40px] border border-[#3a24db] text-center text-[#3a24db] rounded-[3px] mt-8 cursor-pointer`}
                   required
                   value="Update"
