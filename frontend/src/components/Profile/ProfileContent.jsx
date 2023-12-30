@@ -46,7 +46,6 @@ const ProfileContent = ({ active }) => {
         .get(`${END_POINT}`, { withCredentials: true })
         .then((res) => {
           const profile = res.data.data;
-          console.log(profile);
           setFirstName(profile.profile.firstName);
           setLastName(profile.profile.lastName);
           setEmail(profile.email);
@@ -90,7 +89,9 @@ const ProfileContent = ({ active }) => {
       .then((res) => {
         toast.success("Success Upload Profile");
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        toast.error(err.response.data.message);
+      });
   };
 
   const handleImageChange = (e) => {
@@ -234,7 +235,6 @@ const ProfileContent = ({ active }) => {
                       className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
                       required
                       value={address}
-                      onChange={(e) => setAddress(e.target.value)}
                     />
                   </div>
                   <div className=" w-[100%] 800px:w-[50%]">
@@ -667,10 +667,38 @@ const Address = () => {
   const [selectedState, setSelectedState] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
 
+  const [listAddress, setListAddress] = useState([]);
+
   const item = "";
   const index = "";
 
   const user = ["a"];
+
+  useEffect(() => {
+    async function fetchUserProfile() {
+      await axios
+        .get(`${Server_url}${Api_version}${profile_end_point}/`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          const addr = res.data.data.profile.address;
+          const phoneList = res.data.data.profile.phoneNumber;
+          let data = [];
+          addr.forEach((address, index) => {
+            data.push({ address, phoneNumber: phoneList[index] });
+          });
+          setListAddress([...data]);
+          console.log(listAddress);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+    fetchUserProfile();
+    return () => {
+      setListAddress([]);
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -683,15 +711,26 @@ const Address = () => {
     ) {
       return toast.error("Please Provide All Fields");
     }
-    const finalAddr = `${address} ${selectedState.name} ${selectedCity.name} ${selectedCountry.name}`;
-    console.log(selectedState);
-    console.log(selectedCity);
-    console.log(selectedCountry);
-    console.log(finalAddr.toLowerCase());
+    const finalAddr =
+      `${address}, ${selectedState.name}, ${selectedCity.name}, ${selectedCountry.name}`.toLocaleLowerCase();
+    const data = { address: finalAddr, phoneNumber };
+    await axios
+      .patch(
+        `${Server_url}${Api_version}${profile_end_point}/add-phone-address`,
+        data,
+        { withCredentials: true }
+      )
+      .then((res) => {
+        setAddress("");
+        setPhoneNumber("");
+        setOpen(false);
+        toast.success("Success Create New Address");
+      })
+      .catch((err) => toast.error(err.response.data.message));
   };
 
-  const handleDelete = (item) => {
-    const id = item._id;
+  const handleDelete = (idx) => {
+    setListAddress(listAddress.filter((item, index) => index !== idx));
   };
 
   return (
@@ -768,7 +807,7 @@ const Address = () => {
                   </div>
 
                   <div className="w-full pb-2">
-                    <label className="block pb-2">Address 1</label>
+                    <label className="block pb-2">Address</label>
                     <input
                       type="address"
                       className={`${styles.input}`}
@@ -805,6 +844,7 @@ const Address = () => {
           </div>
         </div>
       )}
+
       <div className="flex w-full items-center justify-between">
         <h1 className="text-[25px] font-[600] text-[#000000ba] pb-2">
           My Addresses
@@ -817,37 +857,36 @@ const Address = () => {
         </div>
       </div>
       <br />
-      <div
-        className="w-full bg-white h-min 800px:h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10 mb-5"
-        key={index}
-      >
-        <div className="flex items-center">
-          <h5 className="pl-5 font-[600]">{item.addressType}</h5>
-        </div>
-        <div className="pl-8 flex items-center">
-          <h6 className="text-[12px] 800px:text-[unset]">
-            {item.address1} {item.address2}
-          </h6>
-        </div>
-        <div className="pl-8 flex items-center">
-          <h6 className="text-[12px] 800px:text-[unset]">
-            {user && user.phoneNumber}
-          </h6>
-        </div>
-        <div className="min-w-[10%] flex items-center justify-between pl-8">
-          <AiOutlineDelete
-            size={25}
-            className="cursor-pointer"
-            onClick={() => handleDelete(item)}
-          />
-        </div>
-      </div>
+      {listAddress &&
+        listAddress.map((item, index) => (
+          <div
+            className="w-full bg-white h-min 800px:h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10 mb-5"
+            key={index}
+          >
+            <div className="pl-8 flex flex-col">
+              <h1 className="font-bold text-blue-700">
+                Address: <span className="text-black">{item.address}</span>{" "}
+              </h1>
+              <h1 className="font-bold text-blue-700">
+                Phone Number:{" "}
+                <span className="text-black">{item.phoneNumber}</span>
+              </h1>
+            </div>
+            <div className="min-w-[10%] flex items-center justify-between pl-8">
+              <AiOutlineDelete
+                size={25}
+                className="cursor-pointer"
+                onClick={() => handleDelete(index)}
+              />
+            </div>
+          </div>
+        ))}
 
-      {/* {user && user.addresses.length === 0 && (
+      {listAddress.length === 0 && (
         <h5 className="text-center pt-8 text-[18px]">
           You not have any saved address!
         </h5>
-      )} */}
+      )}
     </div>
   );
 };
