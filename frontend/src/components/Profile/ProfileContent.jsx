@@ -669,11 +669,6 @@ const Address = () => {
 
   const [listAddress, setListAddress] = useState([]);
 
-  const item = "";
-  const index = "";
-
-  const user = ["a"];
-
   useEffect(() => {
     async function fetchUserProfile() {
       await axios
@@ -688,11 +683,8 @@ const Address = () => {
             data.push({ address, phoneNumber: phoneList[index] });
           });
           setListAddress([...data]);
-          console.log(listAddress);
         })
-        .catch((err) => {
-          console.log(err);
-        });
+        .catch((err) => toast.error(err.response.data.message));
     }
     fetchUserProfile();
     return () => {
@@ -729,8 +721,26 @@ const Address = () => {
       .catch((err) => toast.error(err.response.data.message));
   };
 
-  const handleDelete = (idx) => {
-    setListAddress(listAddress.filter((item, index) => index !== idx));
+  const handleDelete = async (idx) => {
+    const newAddressList = listAddress.filter((item, index) => index !== idx);
+    let phoneNumber = [];
+    let address = [];
+    newAddressList.forEach((item, index) => {
+      phoneNumber.push(item.phoneNumber);
+      address.push(item.address);
+    });
+    const data = { address, phoneNumber };
+    await axios
+      .patch(
+        `${Server_url}${Api_version}${profile_end_point}/update-profile`,
+        data,
+        { withCredentials: true }
+      )
+      .then((res) => {
+        toast.success("Success Delete Address");
+        setListAddress(listAddress.filter((item, index) => index !== idx));
+      })
+      .catch((err) => toast.error(err.response.data.message));
   };
 
   return (
