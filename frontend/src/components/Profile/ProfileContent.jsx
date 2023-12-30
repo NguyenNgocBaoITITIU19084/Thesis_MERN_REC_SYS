@@ -11,10 +11,10 @@ import { Button } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { MdTrackChanges } from "react-icons/md";
 import { RxCross1 } from "react-icons/rx";
-import { Country, State } from "country-state-city";
+import { Country, State, City } from "country-state-city";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-
+import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
@@ -23,6 +23,7 @@ import {
   Server_url,
   profile_end_point,
   cloudinary_end_point,
+  auth_end_point,
 } from "../../Server";
 
 const ProfileContent = ({ active }) => {
@@ -34,11 +35,10 @@ const ProfileContent = ({ active }) => {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
-  const [avatar, setAvatar] = useState("");
+  const [avatar, setAvatar] = useState([]);
   const [age, setAge] = useState("");
   const [gender, setGender] = useState();
   const [point, setPoint] = useState();
-  const [imagesResponse, setImagesResponse] = useState([]);
 
   useEffect(() => {
     async function fetchUserProfile() {
@@ -46,7 +46,7 @@ const ProfileContent = ({ active }) => {
         .get(`${END_POINT}`, { withCredentials: true })
         .then((res) => {
           const profile = res.data.data;
-          console.log("profile", profile);
+          console.log(profile);
           setFirstName(profile.profile.firstName);
           setLastName(profile.profile.lastName);
           setEmail(profile.email);
@@ -55,6 +55,7 @@ const ProfileContent = ({ active }) => {
           setGender(profile.profile.gender);
           setPoint(profile.profile.points);
           setAge(profile.profile.age);
+          setAvatar([...profile.profile.avatar]);
         })
         .catch((err) => {
           toast.error("Failed To Loading Profile");
@@ -87,21 +88,26 @@ const ProfileContent = ({ active }) => {
         withCredentials: true,
       })
       .then((res) => {
-        console.log(res);
+        toast.success("Success Upload Profile");
       })
       .catch((err) => console.log(err));
   };
 
-  const handleImage = async (e) => {
-    const reader = new FileReader();
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
     var formData = new FormData();
-    reader.onload = () => {
-      if (reader.readyState === 2) {
-        setAvatar(reader.result);
-      }
-    };
-    reader.readAsDataURL(e.target.files[0]);
-    formData.append("image", avatar);
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setAvatar((old) => [...old, reader.result]);
+        }
+      };
+      reader.readAsDataURL(file);
+      formData.append("image", file);
+    });
     axios
       .post(
         `${Server_url}${Api_version}${cloudinary_end_point}/upload`,
@@ -113,12 +119,8 @@ const ProfileContent = ({ active }) => {
         }
       )
       .then((res) => {
-        console.log(res.data.data);
-        let responseArr = [];
-        res.data.data.forEach((item) => {
-          responseArr.push(item);
-        });
-        setImagesResponse([...responseArr]);
+        const resImg = res.data.data;
+        setAvatar(resImg);
         toast.success("Success Upload Images");
       })
       .catch((err) => {
@@ -136,8 +138,8 @@ const ProfileContent = ({ active }) => {
               <div className="relative">
                 <img
                   src={`${
-                    avatar
-                      ? avatar
+                    avatar.length
+                      ? avatar[0].link
                       : "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"
                   }`}
                   className="w-[150px] h-[150px] rounded-full object-cover border-[3px] border-[#3ad132]"
@@ -148,7 +150,7 @@ const ProfileContent = ({ active }) => {
                     type="file"
                     id="image"
                     className="hidden"
-                    onChange={handleImage}
+                    onChange={handleImageChange}
                   />
                   <label htmlFor="image">
                     <AiOutlineCamera />
@@ -588,22 +590,24 @@ const ChangePassword = () => {
 
   const passwordChangeHandler = async (e) => {
     e.preventDefault();
-
-    // await axios
-    //   .put(
-    //     `${server}/user/update-user-password`,
-    //     { oldPassword, newPassword, confirmPassword },
-    //     { withCredentials: true }
-    //   )
-    //   .then((res) => {
-    //     toast.success(res.data.success);
-    //     setOldPassword("");
-    //     setNewPassword("");
-    //     setConfirmPassword("");
-    //   })
-    //   .catch((error) => {
-    //     toast.error(error.response.data.message);
-    //   });
+    if (newPassword !== confirmPassword) {
+      return toast.error("Password Is not match");
+    }
+    const data = { password: oldPassword, newPassword };
+    console.log("dataaa", data);
+    await axios
+      .patch(
+        `${Server_url}${Api_version}${auth_end_point}/reset-password`,
+        data,
+        { withCredentials: true }
+      )
+      .then((res) => {
+        setOldPassword("");
+        setNewPassword("");
+        setNewPassword("");
+        toast.success("Success Change Password");
+      })
+      .catch((err) => toast.error(err.response.data.message));
   };
   return (
     <div className="w-full px-5">
@@ -611,11 +615,7 @@ const ChangePassword = () => {
         Change Password
       </h1>
       <div className="w-full">
-        <form
-          aria-required
-          onSubmit={passwordChangeHandler}
-          className="flex flex-col items-center"
-        >
+        <form aria-required className="flex flex-col items-center">
           <div className=" w-[100%] 800px:w-[50%] mt-5">
             <label className="block pb-2">Enter your old password</label>
             <input
@@ -650,6 +650,7 @@ const ChangePassword = () => {
               required
               value="Update"
               type="submit"
+              onClick={passwordChangeHandler}
             />
           </div>
         </form>
@@ -659,56 +660,38 @@ const ChangePassword = () => {
 };
 const Address = () => {
   const [open, setOpen] = useState(false);
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [zipCode, setZipCode] = useState();
-  const [address1, setAddress1] = useState("");
-  const [address2, setAddress2] = useState("");
-  const [addressType, setAddressType] = useState("");
-  // const { user } = useSelector((state) => state.user);
-  const dispatch = useDispatch();
+  const [phoneNumber, setPhoneNumber] = useState();
+  const [address, setAddress] = useState("");
+
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedState, setSelectedState] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(null);
+
+  const item = "";
+  const index = "";
+
   const user = ["a"];
-  const addressTypeData = [
-    {
-      name: "Default",
-    },
-    {
-      name: "Home",
-    },
-    {
-      name: "Office",
-    },
-  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (addressType === "" || country === "" || city === "") {
-      toast.error("Please fill all the fields!");
-    } else {
-      // dispatch(
-      //   updatUserAddress(
-      //     country,
-      //     city,
-      //     address1,
-      //     address2,
-      //     zipCode,
-      //     addressType
-      //   )
-      // );
-      setOpen(false);
-      setCountry("");
-      setCity("");
-      setAddress1("");
-      setAddress2("");
-      setZipCode(null);
-      setAddressType("");
+    if (
+      !selectedCountry ||
+      !selectedCity ||
+      !selectedState ||
+      !phoneNumber ||
+      !address
+    ) {
+      return toast.error("Please Provide All Fields");
     }
+    const finalAddr = `${address} ${selectedState.name} ${selectedCity.name} ${selectedCountry.name}`;
+    console.log(selectedState);
+    console.log(selectedCity);
+    console.log(selectedCountry);
+    console.log(finalAddr.toLowerCase());
   };
 
   const handleDelete = (item) => {
     const id = item._id;
-    // dispatch(deleteUserAddress(id));
   };
 
   return (
@@ -731,52 +714,57 @@ const Address = () => {
                 <div className="w-full block p-4">
                   <div className="w-full pb-2">
                     <label className="block pb-2">Country</label>
-                    <select
-                      name=""
-                      id=""
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                      className="w-[95%] border h-[40px] rounded-[5px]"
-                    >
-                      <option value="" className="block border pb-2">
-                        choose your country
-                      </option>
-                      {Country &&
-                        Country.getAllCountries().map((item) => (
-                          <option
-                            className="block pb-2"
-                            key={item.isoCode}
-                            value={item.isoCode}
-                          >
-                            {item.name}
-                          </option>
-                        ))}
-                    </select>
+                    <Select
+                      options={Country.getAllCountries()}
+                      getOptionLabel={(options) => {
+                        return options["name"];
+                      }}
+                      getOptionValue={(options) => {
+                        return options["name"];
+                      }}
+                      value={selectedCountry}
+                      onChange={(item) => {
+                        setSelectedCountry(item);
+                      }}
+                    />
                   </div>
 
                   <div className="w-full pb-2">
                     <label className="block pb-2">Choose your City</label>
-                    <select
-                      name=""
-                      id=""
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      className="w-[95%] border h-[40px] rounded-[5px]"
-                    >
-                      <option value="" className="block border pb-2">
-                        choose your city
-                      </option>
-                      {State &&
-                        State.getStatesOfCountry(country).map((item) => (
-                          <option
-                            className="block pb-2"
-                            key={item.isoCode}
-                            value={item.isoCode}
-                          >
-                            {item.name}
-                          </option>
-                        ))}
-                    </select>
+                    <Select
+                      options={State?.getStatesOfCountry(
+                        selectedCountry?.isoCode
+                      )}
+                      getOptionLabel={(options) => {
+                        return options["name"];
+                      }}
+                      getOptionValue={(options) => {
+                        return options["name"];
+                      }}
+                      value={selectedState}
+                      onChange={(item) => {
+                        setSelectedState(item);
+                      }}
+                    />
+                  </div>
+                  <div className="w-full pb-2">
+                    <label className="block pb-2">Province</label>
+                    <Select
+                      options={City.getCitiesOfState(
+                        selectedState?.countryCode,
+                        selectedState?.isoCode
+                      )}
+                      getOptionLabel={(options) => {
+                        return options["name"];
+                      }}
+                      getOptionValue={(options) => {
+                        return options["name"];
+                      }}
+                      value={selectedCity}
+                      onChange={(item) => {
+                        setSelectedCity(item);
+                      }}
+                    />
                   </div>
 
                   <div className="w-full pb-2">
@@ -785,55 +773,20 @@ const Address = () => {
                       type="address"
                       className={`${styles.input}`}
                       required
-                      value={address1}
-                      onChange={(e) => setAddress1(e.target.value)}
-                    />
-                  </div>
-                  <div className="w-full pb-2">
-                    <label className="block pb-2">Address 2</label>
-                    <input
-                      type="address"
-                      className={`${styles.input}`}
-                      required
-                      value={address2}
-                      onChange={(e) => setAddress2(e.target.value)}
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
                     />
                   </div>
 
                   <div className="w-full pb-2">
-                    <label className="block pb-2">Zip Code</label>
+                    <label className="block pb-2">Phone Number</label>
                     <input
                       type="number"
                       className={`${styles.input}`}
                       required
-                      value={zipCode}
-                      onChange={(e) => setZipCode(e.target.value)}
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
                     />
-                  </div>
-
-                  <div className="w-full pb-2">
-                    <label className="block pb-2">Address Type</label>
-                    <select
-                      name=""
-                      id=""
-                      value={addressType}
-                      onChange={(e) => setAddressType(e.target.value)}
-                      className="w-[95%] border h-[40px] rounded-[5px]"
-                    >
-                      <option value="" className="block border pb-2">
-                        Choose your Address Type
-                      </option>
-                      {addressTypeData &&
-                        addressTypeData.map((item) => (
-                          <option
-                            className="block pb-2"
-                            key={item.name}
-                            value={item.name}
-                          >
-                            {item.name}
-                          </option>
-                        ))}
-                    </select>
                   </div>
 
                   <div className=" w-full pb-2">
@@ -842,6 +795,8 @@ const Address = () => {
                       className={`${styles.input} mt-5 cursor-pointer`}
                       required
                       readOnly
+                      value="Create New Address"
+                      onClick={(e) => handleSubmit(e)}
                     />
                   </div>
                 </div>
@@ -862,40 +817,37 @@ const Address = () => {
         </div>
       </div>
       <br />
-      {user &&
-        user.addresses.map((item, index) => (
-          <div
-            className="w-full bg-white h-min 800px:h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10 mb-5"
-            key={index}
-          >
-            <div className="flex items-center">
-              <h5 className="pl-5 font-[600]">{item.addressType}</h5>
-            </div>
-            <div className="pl-8 flex items-center">
-              <h6 className="text-[12px] 800px:text-[unset]">
-                {item.address1} {item.address2}
-              </h6>
-            </div>
-            <div className="pl-8 flex items-center">
-              <h6 className="text-[12px] 800px:text-[unset]">
-                {user && user.phoneNumber}
-              </h6>
-            </div>
-            <div className="min-w-[10%] flex items-center justify-between pl-8">
-              <AiOutlineDelete
-                size={25}
-                className="cursor-pointer"
-                onClick={() => handleDelete(item)}
-              />
-            </div>
-          </div>
-        ))}
+      <div
+        className="w-full bg-white h-min 800px:h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10 mb-5"
+        key={index}
+      >
+        <div className="flex items-center">
+          <h5 className="pl-5 font-[600]">{item.addressType}</h5>
+        </div>
+        <div className="pl-8 flex items-center">
+          <h6 className="text-[12px] 800px:text-[unset]">
+            {item.address1} {item.address2}
+          </h6>
+        </div>
+        <div className="pl-8 flex items-center">
+          <h6 className="text-[12px] 800px:text-[unset]">
+            {user && user.phoneNumber}
+          </h6>
+        </div>
+        <div className="min-w-[10%] flex items-center justify-between pl-8">
+          <AiOutlineDelete
+            size={25}
+            className="cursor-pointer"
+            onClick={() => handleDelete(item)}
+          />
+        </div>
+      </div>
 
-      {user && user.addresses.length === 0 && (
+      {/* {user && user.addresses.length === 0 && (
         <h5 className="text-center pt-8 text-[18px]">
           You not have any saved address!
         </h5>
-      )}
+      )} */}
     </div>
   );
 };

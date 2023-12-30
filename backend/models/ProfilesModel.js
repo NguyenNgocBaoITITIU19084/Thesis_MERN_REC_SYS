@@ -39,8 +39,7 @@ const profileSchema = new Schema(
       min: [0, "points of user must be greater than 0"],
     },
     avatar: {
-      type: String,
-      default: "https://cdn-icons-png.flaticon.com/512/9131/9131529.png",
+      type: [Object],
     },
   },
   {

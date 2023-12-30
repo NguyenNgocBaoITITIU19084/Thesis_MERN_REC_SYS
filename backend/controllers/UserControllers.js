@@ -104,7 +104,6 @@ exports.getNewAccessToken = catchAsync(async (req, res) => {
 
 exports.logOut = catchAsync(async (req, res, next) => {
   const { id } = req.user;
-  console.log("----id", id);
   await userSchema.findByIdAndUpdate(id, {
     refesh_token: null,
   });
@@ -151,7 +150,6 @@ exports.forgotPassword = catchAsync(async (req, res) => {
 exports.resetPassword = catchAsync(async (req, res) => {
   const { password, newPassword } = req.body;
   const { id } = req.user;
-  console.log(id);
   const existedEmail = await userSchema.findById(id);
   if (!existedEmail) {
     throw new ApiError(404, `${message.error.user_not_existed}`);

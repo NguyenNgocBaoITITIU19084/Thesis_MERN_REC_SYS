@@ -120,9 +120,9 @@ const App = () => {
           <Route
             path="/shop-create"
             element={
-              <SellerProtectedRoute>
+              <ProtectedRoute>
                 <ShopCreatePage />
-              </SellerProtectedRoute>
+              </ProtectedRoute>
             }
           />
           <Route

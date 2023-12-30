@@ -200,12 +200,12 @@ const Header = ({ activeHeading }) => {
                   <Link to="/profile">
                     <img
                       src={`${
-                        profile?.avatar
-                          ? profile?.avatar
+                        profile?.avatar.length
+                          ? profile?.avatar[0].link
                           : "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"
                       }`}
                       alt=""
-                      className="w-[35px] h-[35px] rounded-full border-[3px] border-[#0eae88]"
+                      className="w-[35px] h-[35px] rounded-full border-[3px] border-[#0eae88] object-cover"
                     />
                   </Link>
                 </div>
