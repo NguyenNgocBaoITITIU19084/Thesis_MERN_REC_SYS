@@ -58,7 +58,7 @@ const DashBoardHeader = () => {
           </h1>
           <Link to={`/shop/${seller?._id}`}>
             <img
-              src={`${seller?.avatar}`}
+              src={`${seller?.avatar[0].link}`}
               alt=""
               className="w-[50px] h-[50px] rounded-full border-[3px] border-[#0eae88]"
             />

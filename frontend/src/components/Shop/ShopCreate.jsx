@@ -1,68 +1,107 @@
 import { React, useState } from "react";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import styles from "../../styles/styles";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-// import { server } from "../../server";
 import { toast } from "react-toastify";
-import { RxAvatar } from "react-icons/rx";
-import { useDispatch, useSelector } from "react-redux";
 
-import { createStore, clearError } from "../../redux/features/store/storeSlice";
+import { useDispatch } from "react-redux";
+import { Country, State, City } from "country-state-city";
+import Select from "react-select";
+
+import {
+  Server_url,
+  Api_version,
+  cloudinary_end_point,
+  store_end_point,
+} from "../../Server.js";
+
 const ShopCreate = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState();
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
-  const [avatar, setAvatar] = useState("");
-  const [addRequestStatus, setAddRequestStatus] = useState("idle");
+  const [avatar, setAvatar] = useState([]);
+
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedState, setSelectedState] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const data =
-      [name, description, phoneNumber, address].every(Boolean) &&
-      addRequestStatus === "idle";
-    const formData = { name, description, phoneNumber, address };
-    if (data) {
-      try {
-        setAddRequestStatus("pending");
-        await dispatch(createStore(formData))
-          .unwrap()
-          .then(() => {
-            toast.success("successfully create an account");
-            setName("");
-            setDescription("");
-            setPhoneNumber("");
-            setAddress("");
-            setAvatar("");
-            navigate("/");
-            window.location.reload(true);
-          })
-          .catch((error) => {
-            toast.error(error);
-          });
-      } catch (err) {
-        console.error("Error from Sign up page ", err);
-      } finally {
-        dispatch(clearError());
-        setAddRequestStatus("idle");
-      }
+
+    if (
+      !name ||
+      !description ||
+      !phoneNumber ||
+      !selectedCountry ||
+      !selectedState ||
+      !selectedCity
+    ) {
+      toast.success("Please Provide AlL Fields");
     }
-  };
-
-  const handleFileInputChange = (e) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      if (reader.readyState === 2) {
-        setAvatar(reader.result);
-      }
+    const finalAddress =
+      `${address}, ${selectedState.name}, ${selectedCity.name}, ${selectedCountry.name}`.toLocaleLowerCase();
+    const data = {
+      name,
+      description,
+      address: finalAddress,
+      phoneNumber,
+      avatar,
     };
+    await axios
+      .post(
+        `${Server_url}${Api_version}${store_end_point}/register-store`,
+        data,
+        { withCredentials: true }
+      )
+      .then((res) => {
+        console.log(res);
+        setName("");
+        setDescription("");
+        setAddress("");
+        setPhoneNumber("");
+        setAvatar([]);
+        navigate("/");
+        window.location.reload(true);
+        toast.success("Success Create Store");
+      })
+      .catch((err) => toast.error(err.response.data.message));
+  };
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    var formData = new FormData();
 
-    reader.readAsDataURL(e.target.files[0]);
+    files.forEach((file) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setAvatar((old) => [...old, reader.result]);
+        }
+      };
+      reader.readAsDataURL(file);
+      formData.append("image", file);
+    });
+    axios
+      .post(
+        `${Server_url}${Api_version}${cloudinary_end_point}/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((res) => {
+        const resImg = res.data.data;
+        setAvatar(resImg);
+        toast.success("Success Upload Images");
+      })
+      .catch((err) => {
+        toast.error("Fail to Upload Images");
+      });
   };
 
   return (
@@ -134,6 +173,57 @@ const ShopCreate = () => {
             </div>
 
             <div>
+              <label className="block pb-2">Country</label>
+              <Select
+                options={Country.getAllCountries()}
+                getOptionLabel={(options) => {
+                  return options["name"];
+                }}
+                getOptionValue={(options) => {
+                  return options["name"];
+                }}
+                value={selectedCountry}
+                onChange={(item) => {
+                  setSelectedCountry(item);
+                }}
+              />
+            </div>
+            <div>
+              <label className="block pb-2"> City</label>
+              <Select
+                options={State?.getStatesOfCountry(selectedCountry?.isoCode)}
+                getOptionLabel={(options) => {
+                  return options["name"];
+                }}
+                getOptionValue={(options) => {
+                  return options["name"];
+                }}
+                value={selectedState}
+                onChange={(item) => {
+                  setSelectedState(item);
+                }}
+              />
+            </div>
+            <div>
+              <label className="block pb-2">Province</label>
+              <Select
+                options={City.getCitiesOfState(
+                  selectedState?.countryCode,
+                  selectedState?.isoCode
+                )}
+                getOptionLabel={(options) => {
+                  return options["name"];
+                }}
+                getOptionValue={(options) => {
+                  return options["name"];
+                }}
+                value={selectedCity}
+                onChange={(item) => {
+                  setSelectedCity(item);
+                }}
+              />
+            </div>
+            <div>
               <label
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
@@ -159,15 +249,15 @@ const ShopCreate = () => {
               ></label>
               <div className="mt-2 flex items-center">
                 <span className="inline-block h-8 w-8 rounded-full overflow-hidden">
-                  {avatar ? (
-                    <img
-                      src={avatar}
-                      alt="avatar"
-                      className="h-full w-full object-cover rounded-full"
-                    />
-                  ) : (
-                    <RxAvatar className="h-8 w-8" />
-                  )}
+                  <img
+                    src={`${
+                      avatar.length
+                        ? avatar[0].link
+                        : "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"
+                    }`}
+                    alt="avatar"
+                    className="h-full w-full object-cover rounded-full"
+                  />
                 </span>
                 <label
                   htmlFor="file-input"
@@ -178,7 +268,7 @@ const ShopCreate = () => {
                     type="file"
                     name="avatar"
                     id="file-input"
-                    onChange={handleFileInputChange}
+                    onChange={handleImageChange}
                     className="sr-only"
                   />
                 </label>

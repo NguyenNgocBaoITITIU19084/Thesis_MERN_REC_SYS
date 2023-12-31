@@ -41,7 +41,7 @@ const storeSchema = new Schema(
       type: String,
     },
     avatar: {
-      type: String,
+      type: [Object],
       default:
         "https://media.istockphoto.com/id/1315110986/vector/store-editable-stroke-outline-icon-isolated-on-white-background-flat-vector-illustration.jpg?s=612x612&w=0&k=20&c=mCrUUX3bWTZOvKrr3ontPWJKO_9HAOmboDxxd_XeIRI=",
     },

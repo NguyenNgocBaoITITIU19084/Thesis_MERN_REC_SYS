@@ -45,9 +45,9 @@ const ShopInfo = ({ isOwner }) => {
           <div className="w-full py-5">
             <div className="w-full flex item-center justify-center">
               <img
-                src={`${seller.avatar}`}
+                src={`${seller?.avatar[0].link}`}
                 alt=""
-                className="w-[200px] h-[200px] rounded-full border-[3px] border-[#0eae88]"
+                className="w-[200px] h-[200px] rounded-full border-[3px] border-[#0eae88] object-contain"
               />
             </div>
             <h3 className="text-center py-2 text-[20px]">{seller.name}</h3>
