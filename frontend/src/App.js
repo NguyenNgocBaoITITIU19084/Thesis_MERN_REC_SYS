@@ -22,6 +22,7 @@ import {
   ShopAllProducts,
   ShopCreateEvents,
   ShopAllCoupouns,
+  ShopSettingsPage,
 } from "./ShopRoutes.js";
 import ProtectedRoute from "./components/Route/ProtectedRoutes/ProtectedRoute.jsx";
 import SellerProtectedRoute from "./components/Route/ProtectedRoutes/SellerProtectedRoute.jsx";
@@ -114,6 +115,14 @@ const App = () => {
             element={
               <SellerProtectedRoute>
                 <ShopCreateProduct />
+              </SellerProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <SellerProtectedRoute>
+                <ShopSettingsPage />
               </SellerProtectedRoute>
             }
           />

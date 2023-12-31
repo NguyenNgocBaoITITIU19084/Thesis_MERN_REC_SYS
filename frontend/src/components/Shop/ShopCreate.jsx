@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-import { useDispatch } from "react-redux";
 import { Country, State, City } from "country-state-city";
 import Select from "react-select";
 
@@ -15,7 +14,6 @@ import {
 } from "../../Server.js";
 
 const ShopCreate = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [description, setDescription] = useState("");
@@ -30,7 +28,6 @@ const ShopCreate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (
       !name ||
       !description ||
