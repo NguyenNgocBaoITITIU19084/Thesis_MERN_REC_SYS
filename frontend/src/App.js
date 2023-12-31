@@ -24,6 +24,7 @@ import {
   ShopAllCoupouns,
   ShopSettingsPage,
 } from "./ShopRoutes.js";
+import { AdminDashboardPage } from "./AdminRoutes.js";
 import ProtectedRoute from "./components/Route/ProtectedRoutes/ProtectedRoute.jsx";
 import SellerProtectedRoute from "./components/Route/ProtectedRoutes/SellerProtectedRoute.jsx";
 import {
@@ -159,6 +160,8 @@ const App = () => {
             }
           />
         </Route>
+        {/* Admin Routes */}
+        <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
       </Routes>
       <ToastContainer
         position="top-center"
