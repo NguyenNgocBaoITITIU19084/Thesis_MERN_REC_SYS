@@ -27,6 +27,7 @@ const messages = {
     user: " User Model",
     profile: " Profile Model",
     store: " Store Model",
+    whishList: " WhishList Model",
   },
   error: {
     user_not_existed: "User doest not existed",
@@ -34,6 +35,7 @@ const messages = {
     notExistedRefeshToken: "The Refesh Token doest not existed",
     already_existed: "Already existed",
     register: "user already existed",
+    missing_fields: "Missing Fields",
     login: {
       inValid_input: "email or password is not valid",
     },

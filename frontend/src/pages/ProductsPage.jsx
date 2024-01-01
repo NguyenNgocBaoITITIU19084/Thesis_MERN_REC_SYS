@@ -2,30 +2,28 @@ import React, { useEffect, useState } from "react";
 import Header from "../components/layout/Header";
 import styles from "../styles/styles";
 import { useSearchParams } from "react-router-dom";
-import { productData } from "../static/data";
 import ProductCard from "../components/Route/ProductCard/ProductCard";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  selectAllProducts,
-  fecthProducts,
-  selectProductsLoadingState,
-  selectProductsErrorState,
-} from "../redux/features/products/productsSlice";
+import axios from "axios";
+import { Api_version, Server_url, product_end_point } from "../Server";
+
 const ProductsPage = () => {
   const [searchParams] = useSearchParams();
   const categoryData = searchParams.get("category");
-  const [data, setData] = useState([]);
-
-  const dispatch = useDispatch();
-
-  const products = useSelector(selectAllProducts);
-  const productStatus = useSelector(selectProductsLoadingState);
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    if (productStatus === "idle") {
-      dispatch(fecthProducts());
+    async function fectchAllProducts() {
+      await axios
+        .get(`${Server_url}${Api_version}${product_end_point}/`)
+        .then((res) => {
+          console.log(res.data.data);
+          setProducts([...res.data.data]);
+        })
+        .catch((err) => console.log(err));
     }
-  }, [fecthProducts, dispatch]);
+    fectchAllProducts();
+    return () => {};
+  }, []);
   return (
     <div>
       <Header activeHeading={3} />

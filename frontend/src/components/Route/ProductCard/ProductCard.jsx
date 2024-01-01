@@ -10,27 +10,48 @@ import {
   AiFillHeart,
 } from "react-icons/ai";
 import ProductDetailsCard from "../../Route/ProductDetailsCart/ProductDetailsCart";
+import axios from "axios";
+import { Api_version, Server_url, whishlist_end_point } from "../../../Server";
+import { toast } from "react-toastify";
 
 const ProductCard = ({ data }) => {
   const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
   const d = data.name;
   const product_name = d.replace(/\s+/g, "-");
+  const productId = data._id;
+
+  const handleAddToWhishList = async (productId) => {
+    const data = { productId };
+    await axios
+      .post(
+        `${Server_url}${Api_version}${whishlist_end_point}/add-product`,
+        data,
+        { withCredentials: true }
+      )
+      .then((res) => {
+        toast.success(res.data.message);
+      })
+      .catch((err) => toast.error(err.response.data.message));
+    setClick(!click);
+  };
+
   return (
     <>
+      {console.log(data)}
       <div className="w-full h-[370px] bg-white rounded-lg shadow-sm p-3 relative cursor-pointer">
         <div className="flex justify-end"></div>
         <Link to={`/products/${product_name}`}>
           <img
-            src={data.images}
+            src={data.images[0].link}
             alt=""
             className="w-full h-[170px] object-contain"
           />
         </Link>
-        {/* <Link to="/">
-          <h5 className={`${styles.shop_name}`}>{data.createdBy}</h5>
-        </Link> */}
-        <Link to={`/product/${product_name}`}>
+        <Link to={`/shop/preview/${data?.createdBy?._id}`}>
+          <h5 className={`${styles.shop_name}`}>{data?.createdBy.name}</h5>
+        </Link>
+        <Link to={`/product/${productId}`}>
           <h4 className="pb-3 font-[500]">
             {data.name.length > 40 ? data.name.slice(0, 40) + "..." : data.name}
           </h4>
@@ -72,7 +93,7 @@ const ProductCard = ({ data }) => {
               className="cursor-pointer absolute right-2 top-5"
               color={click ? "red" : "#333"}
               title="Add to wishlist"
-              onClick={() => setClick(!click)}
+              onClick={() => handleAddToWhishList(productId)}
             />
           )}
           <AiOutlineEye

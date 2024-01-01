@@ -19,6 +19,7 @@ const UserRoutes = require("./routes/UserRoute");
 const ProfileRoutes = require("./routes/ProfileRoute");
 const StoreRoutes = require("./routes/StoreRoutes");
 const CloudinaryRoutes = require("./routes/UploadCloudinary");
+const WhishListRoutes = require("./routes/WhishListRoute");
 
 const PORT = process.env.PORT;
 
@@ -45,6 +46,7 @@ app.use(`${server}/auth`, UserRoutes);
 app.use(`${server}/profile`, ProfileRoutes);
 app.use(`${server}/store`, StoreRoutes);
 app.use(`${server}/uploadCloudinary`, CloudinaryRoutes);
+app.use(`${server}/whish-list`, WhishListRoutes);
 
 app.use(catchError);
 
