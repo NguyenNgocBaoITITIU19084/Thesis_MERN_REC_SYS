@@ -25,6 +25,7 @@ import {
   ShopSettingsPage,
   ShopPreviewPage,
   ShopAllOrders,
+  ShopInboxPage,
 } from "./ShopRoutes.js";
 import {
   AdminDashboardPage,
@@ -173,6 +174,14 @@ const App = () => {
             element={
               <SellerProtectedRoute>
                 <ShopAllOrders />
+              </SellerProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard-messages"
+            element={
+              <SellerProtectedRoute>
+                <ShopInboxPage />
               </SellerProtectedRoute>
             }
           />
