@@ -1,5 +1,5 @@
 import AdminDashboardPage from "./pages/Admin/AdminDashboardPage.jsx";
-// import AdminDashboardUsers from "../pages/AdminDashboardUsers";
+import AdminDashboardUsers from "./pages/Admin/AdminDashboardUsers.jsx";
 // import AdminDashboardSellers from "../pages/AdminDashboardSellers";
 // import AdminDashboardOrders from "../pages/AdminDashboardOrders";
 // import AdminDashboardProducts from "../pages/AdminDashboardProducts";
@@ -8,7 +8,7 @@ import AdminDashboardPage from "./pages/Admin/AdminDashboardPage.jsx";
 
 export {
   AdminDashboardPage,
-  //   AdminDashboardUsers,
+  AdminDashboardUsers,
   //   AdminDashboardSellers,
   //   AdminDashboardOrders,
   //   AdminDashboardProducts,
