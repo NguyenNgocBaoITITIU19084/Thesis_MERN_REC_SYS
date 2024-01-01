@@ -23,6 +23,7 @@ import {
   ShopCreateEvents,
   ShopAllCoupouns,
   ShopSettingsPage,
+  ShopPreviewPage,
 } from "./ShopRoutes.js";
 import {
   AdminDashboardPage,
@@ -92,6 +93,7 @@ const App = () => {
           <Route path="/best-selling" element={<BestSellingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUpPage />} />
+          <Route path="/shop/preview/:id" element={<ShopPreviewPage />} />
           <Route
             path="/profile"
             element={
