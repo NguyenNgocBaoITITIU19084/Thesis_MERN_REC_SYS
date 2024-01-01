@@ -24,6 +24,7 @@ import {
   ShopAllCoupouns,
   ShopSettingsPage,
   ShopPreviewPage,
+  ShopAllOrders,
 } from "./ShopRoutes.js";
 import {
   AdminDashboardPage,
@@ -167,13 +168,21 @@ const App = () => {
               </SellerProtectedRoute>
             }
           />
+          <Route
+            path="/dashboard-orders"
+            element={
+              <SellerProtectedRoute>
+                <ShopAllOrders />
+              </SellerProtectedRoute>
+            }
+          />
+          {/* Admin Routes */}
+          <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+          <Route path="/admin-users" element={<AdminDashboardUsers />} />
+          <Route path="/admin-sellers" element={<AdminDashboardSellers />} />
+          <Route path="/admin-orders" element={<AdminDashboardOrders />} />
+          <Route path="/admin-products" element={<AdminDashboardProducts />} />
         </Route>
-        {/* Admin Routes */}
-        <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
-        <Route path="/admin-users" element={<AdminDashboardUsers />} />
-        <Route path="/admin-sellers" element={<AdminDashboardSellers />} />
-        <Route path="/admin-orders" element={<AdminDashboardOrders />} />
-        <Route path="/admin-products" element={<AdminDashboardProducts />} />
       </Routes>
       <ToastContainer
         position="top-center"
