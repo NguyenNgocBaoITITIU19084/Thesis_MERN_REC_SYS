@@ -24,7 +24,11 @@ import {
   ShopAllCoupouns,
   ShopSettingsPage,
 } from "./ShopRoutes.js";
-import { AdminDashboardPage, AdminDashboardUsers } from "./AdminRoutes.js";
+import {
+  AdminDashboardPage,
+  AdminDashboardUsers,
+  AdminDashboardSellers,
+} from "./AdminRoutes.js";
 import ProtectedRoute from "./components/Route/ProtectedRoutes/ProtectedRoute.jsx";
 import SellerProtectedRoute from "./components/Route/ProtectedRoutes/SellerProtectedRoute.jsx";
 import {
@@ -163,6 +167,7 @@ const App = () => {
         {/* Admin Routes */}
         <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
         <Route path="/admin-users" element={<AdminDashboardUsers />} />
+        <Route path="/admin-sellers" element={<AdminDashboardSellers />} />
       </Routes>
       <ToastContainer
         position="top-center"
