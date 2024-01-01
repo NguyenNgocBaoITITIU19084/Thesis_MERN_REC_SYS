@@ -89,7 +89,7 @@ const AdminSideBar = ({ active }) => {
           </h5>
         </Link>
       </div>
-
+      {/* 
       <div className="w-full flex items-center p-4">
         <Link to="/admin-events" className="w-full flex items-center">
           <MdOutlineLocalOffer
@@ -104,8 +104,8 @@ const AdminSideBar = ({ active }) => {
             All Events
           </h5>
         </Link>
-      </div>
-
+      </div> */}
+      {/* 
       <div className="w-full flex items-center p-4">
         <Link to="/admin-withdraw-request" className="w-full flex items-center">
           <CiMoneyBill
@@ -120,9 +120,9 @@ const AdminSideBar = ({ active }) => {
             Withdraw Request
           </h5>
         </Link>
-      </div>
+      </div> */}
 
-      <div className="w-full flex items-center p-4">
+      {/* <div className="w-full flex items-center p-4">
         <Link to="/profile" className="w-full flex items-center">
           <AiOutlineSetting
             size={30}
@@ -136,7 +136,7 @@ const AdminSideBar = ({ active }) => {
             Settings
           </h5>
         </Link>
-      </div>
+      </div> */}
     </div>
   );
 };
