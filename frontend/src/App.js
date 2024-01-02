@@ -14,6 +14,7 @@ import {
   ProfilePage,
   Layout,
   ShopCreatePage,
+  CheckoutPage,
 } from "./Routes.js";
 import {
   ShopHomePage,
@@ -96,6 +97,14 @@ const App = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUpPage />} />
           <Route path="/shop/preview/:id" element={<ShopPreviewPage />} />
+          <Route
+            path="/checkout"
+            element={
+              <ProtectedRoute>
+                <CheckoutPage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/profile"
             element={

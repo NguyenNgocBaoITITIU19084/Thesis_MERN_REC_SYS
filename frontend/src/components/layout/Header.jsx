@@ -30,6 +30,8 @@ import { selectAccessAuth } from "../../redux/features/auths/authSlice.js";
 import { selectProfile } from "../../redux/features/profile/profilesSlice.js";
 import { selectStore } from "../../redux/features/store/storeSlice.js";
 import Wishlist from "../Wishlist/Wishlist.jsx";
+import { Server_url, Api_version, whishlist_end_point } from "../../Server.js";
+import axios from "axios";
 
 const Header = ({ activeHeading }) => {
   const dispatch = useDispatch();
@@ -52,6 +54,8 @@ const Header = ({ activeHeading }) => {
   const [openCartList, setOpenCartList] = useState(false);
   const [openWhishList, setOpenWishList] = useState(false);
 
+  const [whishList, setWhishList] = useState([]);
+
   useEffect(() => {
     if (categoryStatus === "idle") {
       dispatch(fecthCategories());
@@ -59,6 +63,19 @@ const Header = ({ activeHeading }) => {
     if (categoryStatus === "idle") {
       dispatch(fecthBrands());
     }
+    async function fetchWhishListByUser() {
+      await axios
+        .get(
+          `${Server_url}${Api_version}${whishlist_end_point}/get-whish-list`,
+          { withCredentials: true }
+        )
+        .then((res) => {
+          console.log(res);
+          setWhishList([...res.data.data.productId]);
+        })
+        .catch((err) => console.log(err));
+    }
+    fetchWhishListByUser();
   }, [categoryStatus, brandStatus, dispatch]);
 
   window.addEventListener("scroll", () => {
@@ -179,9 +196,9 @@ const Header = ({ activeHeading }) => {
                 onClick={() => setOpenWishList(true)}
               >
                 <AiOutlineHeart size={30} color="rgb(255 255 255 / 83%)" />
-                <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
-                  0
-                </span>
+                {/* <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
+                  {whishList.length}
+                </span> */}
               </div>
               <div
                 className="relative cursor-pointer mr-[15px]"
@@ -191,9 +208,9 @@ const Header = ({ activeHeading }) => {
                   size={30}
                   color="rgb(255 255 255 / 83%)"
                 />
-                <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
+                {/* <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
                   0
-                </span>
+                </span> */}
               </div>
               {isAuthenticated ? (
                 <div className="relative cursor-pointer mr-[15px]">

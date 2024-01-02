@@ -30,18 +30,31 @@ const ProductCard = ({ data }) => {
         { withCredentials: true }
       )
       .then((res) => {
-        toast.success(res.data.message);
+        toast.success("Success Add Product To Whish List");
+        setClick(!click);
       })
       .catch((err) => toast.error(err.response.data.message));
-    setClick(!click);
   };
 
+  const handleRemoveToWhishList = async (productId) => {
+    const data = { productId };
+    await axios
+      .patch(
+        `${Server_url}${Api_version}${whishlist_end_point}/remove-product`,
+        data,
+        { withCredentials: true }
+      )
+      .then((res) => {
+        toast.success("Success Remove Product From Whish List");
+        setClick(!click);
+      })
+      .catch((err) => console.log(err));
+  };
   return (
     <>
-      {console.log(data)}
       <div className="w-full h-[370px] bg-white rounded-lg shadow-sm p-3 relative cursor-pointer">
         <div className="flex justify-end"></div>
-        <Link to={`/products/${product_name}`}>
+        <Link to={`/product/${data._id}`}>
           <img
             src={data.images[0].link}
             alt=""
@@ -84,7 +97,7 @@ const ProductCard = ({ data }) => {
               size={22}
               className="cursor-pointer absolute right-2 top-5"
               color={click ? "red" : "#333"}
-              onClick={() => setClick(!click)}
+              onClick={() => handleRemoveToWhishList(data._id)}
               title="Remove from wishlist"
             />
           ) : (
@@ -93,7 +106,7 @@ const ProductCard = ({ data }) => {
               className="cursor-pointer absolute right-2 top-5"
               color={click ? "red" : "#333"}
               title="Add to wishlist"
-              onClick={() => handleAddToWhishList(productId)}
+              onClick={() => handleAddToWhishList(data._id)}
             />
           )}
           <AiOutlineEye

@@ -4,11 +4,13 @@ const Schema = mongoose.Schema;
 
 const whishListSchema = new Schema(
   {
-    productId: {
-      type: [Schema.Types.ObjectId],
-      required: [true, "product id is required"],
-      ref: "products",
-    },
+    productId: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "products",
+        required: [true, "productId of product is required"],
+      },
+    ],
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "users",

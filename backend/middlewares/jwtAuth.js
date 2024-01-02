@@ -28,6 +28,7 @@ exports.jwtAuth = (req, res, next) => {
 exports.isAuthenticated = async (req, res, next) => {
   try {
     const token = req.cookies.token;
+    console.log("token", token);
     if (token) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
       const { id } = decoded;

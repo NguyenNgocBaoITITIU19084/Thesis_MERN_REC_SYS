@@ -10,7 +10,6 @@ import {
 } from "react-icons/ai";
 const ProductDetailsCard = ({ setOpen, data }) => {
   const [count, setCount] = useState(1);
-  const [click, setClick] = useState(false);
   const [select, setSelect] = useState(false);
 
   const handleMessageSubmit = () => {};
@@ -35,20 +34,24 @@ const ProductDetailsCard = ({ setOpen, data }) => {
             />
             <div className="block w-full 800px:flex">
               <div className="w-full 800px:w-[50%]">
-                <img src={data.images} alt="product image" />
+                <img
+                  src={data.images[0].link}
+                  alt="product image"
+                  className="object-contain"
+                />
                 <div className="flex">
                   <img
-                    src={data.createdBy?.avatar}
+                    src={data.createdBy?.avatar[0].link}
                     alt=""
-                    className="w-[50px] h-[50px] rounded-full mr-2"
+                    className="w-[50px] h-[50px] rounded-full mr-2 mt-5"
                   />
                   <div>
-                    <h3 className={`${styles.shop_name}`}>
+                    <h3 className={`${styles.shop_name} mt-5`}>
                       {data.createdBy?.name}
                     </h3>
-                    <h5 className="pb-3 text-[15px]">
+                    {/* <h5 className="pb-3 text-[15px]">
                       ({data.createdBy?.ratings}) Ratings
-                    </h5>
+                    </h5> */}
                   </div>
                 </div>
                 <div
@@ -63,7 +66,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                   ({data.soldOut}) Sold Out
                 </h5>
               </div>
-              <div className="w-full 800px:w-[50%] pt-5 pl-[5px] pr-[5px]">
+              <div className="w-full 800px:w-[50%] pt-5 pl-[5px] pr-[5px] ml-5">
                 <h1 className={`${styles.productTitle} text-[20px]`}>
                   {data.name}
                 </h1>
@@ -82,6 +85,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                     size={20}
                   />
                 </div>
+
                 <div className="flex items-center mt-12 justify-between pr-3">
                   <div>
                     <button
@@ -99,25 +103,6 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                     >
                       +
                     </button>
-                  </div>
-                  <div>
-                    {click ? (
-                      <AiFillHeart
-                        size={30}
-                        className="cursor-pointer"
-                        color={click ? "red" : "#333"}
-                        onClick={() => setClick(!click)}
-                        title="Remove from wishlist"
-                      />
-                    ) : (
-                      <AiOutlineHeart
-                        size={30}
-                        className="cursor-pointer"
-                        color={click ? "red" : "#333"}
-                        title="Add to wishlist"
-                        onClick={() => setClick(!click)}
-                      />
-                    )}
                   </div>
                 </div>
                 <div

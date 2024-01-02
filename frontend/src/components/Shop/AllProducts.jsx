@@ -78,6 +78,7 @@ const AllProducts = () => {
           }
         });
         toast.success("Success to Update Product");
+        setOpenView(false);
       })
       .catch((err) => {
         toast.error("Failed to Update Product");

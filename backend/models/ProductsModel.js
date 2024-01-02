@@ -35,20 +35,24 @@ const productSchema = new Schema(
     images: {
       type: [Object],
     },
-    discountApplied: {
-      type: [Schema.Types.ObjectId],
-      ref: "discounts",
-    },
+    discountApplied: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "discounts",
+      },
+    ],
     brand: {
       type: Schema.Types.ObjectId,
       ref: "brands",
       required: [true, "brand of product is required"],
     },
-    categories: {
-      type: [Schema.Types.ObjectId],
-      ref: "categories",
-      required: [, "category of product is required"],
-    },
+    categories: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "categories",
+        required: [true, "category of product is required"],
+      },
+    ],
     total_rating: {
       type: Number,
       default: 0,

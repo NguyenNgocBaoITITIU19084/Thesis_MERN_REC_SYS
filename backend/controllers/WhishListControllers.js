@@ -2,6 +2,7 @@ const catchAsync = require("../middlewares/catchAsync");
 const ApiError = require("../utils/ApiError");
 const ResultObject = require("../utils/ResultObject");
 
+const ProductSchema = require("../models/ProductsModel");
 const whishListSchema = require("../models/WhishListModel");
 const { STATUS_CODE } = require("../contants/statusCode");
 const message = require("../config/Messages");
@@ -66,7 +67,9 @@ exports.AddProductToWhishList = catchAsync(async (req, res) => {
 });
 exports.getAllWhishListByUser = catchAsync(async (req, res) => {
   const { _id } = req.user;
-  const whishList = await whishListSchema.findOne({ createdBy: _id });
+  const whishList = await whishListSchema
+    .findOne({ createdBy: _id })
+    .populate("productId");
   return res
     .status(201)
     .json(
@@ -74,6 +77,42 @@ exports.getAllWhishListByUser = catchAsync(async (req, res) => {
         STATUS_CODE.SUCCESS,
         message.models.success_create + message.models.whishList,
         whishList
+      )
+    );
+});
+
+exports.removeProductFromWhishList = catchAsync(async (req, res) => {
+  const { _id } = req.user;
+  const { productId } = req.body;
+  console.log(_id, productId);
+  if (!productId) {
+    throw new ApiError(400, message.error.missing_fields);
+  }
+  const existedWhishList = await whishListSchema.findOne({ createdBy: _id });
+  console.log(existedWhishList);
+  if (!existedWhishList) {
+    throw new ApiError(
+      404,
+      message.models.whishList + message.models.not_founded
+    );
+  }
+  const listNew = existedWhishList.productId.filter(
+    (item, index) => !item.equals(productId)
+  );
+  const whishlistData = await whishListSchema.findOneAndUpdate(
+    { createdBy: _id },
+    { productId: listNew },
+    {
+      new: true,
+    }
+  );
+  return res
+    .status(201)
+    .json(
+      new ResultObject(
+        STATUS_CODE.SUCCESS,
+        message.models.success_create + message.models.whishList,
+        whishlistData
       )
     );
 });

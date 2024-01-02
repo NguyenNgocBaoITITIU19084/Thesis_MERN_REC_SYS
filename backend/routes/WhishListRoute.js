@@ -19,5 +19,10 @@ route.get(
   authorize([ROLE.GUEST]),
   WhishListControllers.getAllWhishListByUser
 );
-
+route.patch(
+  `/remove-product`,
+  isAuthenticated,
+  authorize([ROLE.GUEST]),
+  WhishListControllers.removeProductFromWhishList
+);
 module.exports = route;
