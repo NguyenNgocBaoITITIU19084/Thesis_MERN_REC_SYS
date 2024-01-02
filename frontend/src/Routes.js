@@ -22,4 +22,5 @@ export {
   ProfilePage,
   Layout,
   ShopCreatePage,
+  CheckoutPage,
 };
