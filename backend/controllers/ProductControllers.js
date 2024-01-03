@@ -224,3 +224,89 @@ exports.getProductsByStoreId = catchAsync(async (req, res) => {
       )
     );
 });
+
+exports.getAllproductsByAdmin = catchAsync(async (req, res) => {
+  const products = await productSchema
+    .find()
+    .populate("discountApplied")
+    .populate("brand")
+    .populate("categories")
+    .populate("createdBy");
+  if (!products) {
+    throw new ApiError(400, message.models.not_founded);
+  }
+  return res
+    .status(200)
+    .json(
+      new ResultObject(
+        STATUS_CODE.SUCCESS,
+        message.models.success_query + message.models.product,
+        products
+      )
+    );
+});
+
+exports.createProductByAdmin = catchAsync(async (req, res) => {
+  const {
+    name,
+    price,
+    actualPrice,
+    description,
+    images,
+    discountApplied,
+    brand,
+    categories,
+  } = req.body;
+  const { _id: AdminId } = req.user;
+  if (discountApplied) {
+    const discount = await discountSchema.findById({ _id: discountApplied });
+    if (!discount) {
+      throw new ApiError(
+        400,
+        message.models.not_founded + message.models.discount
+      );
+    }
+    const { persentDiscount } = discount;
+    const newPrice = price - (price * persentDiscount) / 100;
+    const product = await productSchema.create({
+      name,
+      price: newPrice,
+      actualPrice,
+      description,
+      images,
+      discountApplied,
+      brand,
+      categories,
+      createdBy: AdminId,
+    });
+    return res
+      .status(201)
+      .json(
+        new ResultObject(
+          STATUS_CODE.SUCCESS,
+          message.models.success_create + message.models.product,
+          product
+        )
+      );
+  }
+
+  const product = await productSchema.create({
+    name,
+    price,
+    actualPrice,
+    description,
+    images,
+    brand,
+    categories,
+    createdBy: AdminId,
+  });
+  return res
+    .status(201)
+    .json(
+      new ResultObject(
+        STATUS_CODE.SUCCESS,
+        message.models.success_create + message.models.product,
+        product
+      )
+    );
+});

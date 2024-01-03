@@ -3,7 +3,6 @@ import axios from "axios";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { categoriesData } from "../../static/data";
 import { toast } from "react-toastify";
 import {
   fecthCategories,
@@ -77,7 +76,7 @@ const CreateProduct = () => {
       categories,
       brand,
     };
-    console.log("send data", data);
+
     if (requestStatus === false) {
       try {
         setRequestStatus(true);

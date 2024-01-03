@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import styles from "../../styles/styles";
-import { Country, State } from "country-state-city";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Api_version, Server_url, profile_end_point } from "../../Server";
+import { Country, State, City } from "country-state-city";
+import Select from "react-select";
 
 const Checkout = () => {
   const [user, setUser] = useState("");
@@ -18,10 +20,24 @@ const Checkout = () => {
   const [couponCode, setCouponCode] = useState("");
   const [couponCodeData, setCouponCodeData] = useState(null);
   const [discountPrice, setDiscountPrice] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    async function fetchUserProfile() {
+      await axios
+        .get(`${Server_url}${Api_version}${profile_end_point}/`, {
+          withCredentials: true,
+        })
+        .then((err) => {
+          const data = err.data.data;
+          console.log(data);
+        })
+        .catch((err) => console.log(err));
+    }
+    fetchUserProfile();
+    return () => {};
   }, []);
 
   const paymentSubmit = () => {
@@ -135,6 +151,9 @@ const ShippingInfo = ({
   zipCode,
   setZipCode,
 }) => {
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedState, setSelectedState] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(null);
   return (
     <div className="w-full 800px:w-[95%] bg-white rounded-md p-5 pb-8">
       <h5 className="text-[18px] font-[500]">Shipping Address</h5>
@@ -186,55 +205,60 @@ const ShippingInfo = ({
         <div className="w-full flex pb-3">
           <div className="w-[50%]">
             <label className="block pb-2">Country</label>
-            <select
-              className="w-[95%] border h-[40px] rounded-[5px]"
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-            >
-              <option className="block pb-2" value="">
-                Choose your country
-              </option>
-              {Country &&
-                Country.getAllCountries().map((item) => (
-                  <option key={item.isoCode} value={item.isoCode}>
-                    {item.name}
-                  </option>
-                ))}
-            </select>
+            <Select
+              options={Country.getAllCountries()}
+              getOptionLabel={(options) => {
+                return options["name"];
+              }}
+              getOptionValue={(options) => {
+                return options["name"];
+              }}
+              value={selectedCountry}
+              onChange={(item) => {
+                setSelectedCountry(item);
+              }}
+            />
           </div>
           <div className="w-[50%]">
             <label className="block pb-2">City</label>
-            <select
-              className="w-[95%] border h-[40px] rounded-[5px]"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-            >
-              <option className="block pb-2" value="">
-                Choose your City
-              </option>
-              {State &&
-                State.getStatesOfCountry(country).map((item) => (
-                  <option key={item.isoCode} value={item.isoCode}>
-                    {item.name}
-                  </option>
-                ))}
-            </select>
+            <Select
+              options={State?.getStatesOfCountry(selectedCountry?.isoCode)}
+              getOptionLabel={(options) => {
+                return options["name"];
+              }}
+              getOptionValue={(options) => {
+                return options["name"];
+              }}
+              value={selectedState}
+              onChange={(item) => {
+                setSelectedState(item);
+              }}
+            />
           </div>
         </div>
 
         <div className="w-full flex pb-3">
           <div className="w-[50%]">
-            <label className="block pb-2">Address1</label>
-            <input
-              type="address"
-              required
-              value={address1}
-              onChange={(e) => setAddress1(e.target.value)}
-              className={`${styles.input} !w-[95%]`}
+            <label className="block pb-2">Province</label>
+            <Select
+              options={City.getCitiesOfState(
+                selectedState?.countryCode,
+                selectedState?.isoCode
+              )}
+              getOptionLabel={(options) => {
+                return options["name"];
+              }}
+              getOptionValue={(options) => {
+                return options["name"];
+              }}
+              value={selectedCity}
+              onChange={(item) => {
+                setSelectedCity(item);
+              }}
             />
           </div>
           <div className="w-[50%]">
-            <label className="block pb-2">Address2</label>
+            <label className="block pb-2">Address</label>
             <input
               type="address"
               value={address2}

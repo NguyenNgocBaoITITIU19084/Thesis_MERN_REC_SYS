@@ -21,6 +21,7 @@ const StoreRoutes = require("./routes/StoreRoutes");
 const CloudinaryRoutes = require("./routes/UploadCloudinary");
 const WhishListRoutes = require("./routes/WhishListRoute");
 const CartListRoutes = require("./routes/CartListRoute");
+const OrderRoutes = require("./routes/OrderRoutes");
 
 const PORT = process.env.PORT;
 
@@ -49,6 +50,7 @@ app.use(`${server}/store`, StoreRoutes);
 app.use(`${server}/uploadCloudinary`, CloudinaryRoutes);
 app.use(`${server}/whish-list`, WhishListRoutes);
 app.use(`${server}/cart-list`, CartListRoutes);
+app.use(`${server}/order`, OrderRoutes);
 
 app.use(catchError);
 
