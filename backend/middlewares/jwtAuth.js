@@ -29,6 +29,10 @@ exports.isAuthenticated = async (req, res, next) => {
   try {
     const token = req.cookies.token;
     console.log("token", token);
+    console.log("type of token", typeof token === "string");
+    if (typeof token !== "string") {
+      return next(new ApiError(401, "Please login to continue"));
+    }
     if (token) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
       const { id } = decoded;
@@ -37,7 +41,7 @@ exports.isAuthenticated = async (req, res, next) => {
       });
       next();
     } else {
-      throw new ApiError(401, "Please login to continue");
+      return next(new ApiError(401, "Please login to continue"));
     }
   } catch (error) {
     next(error);

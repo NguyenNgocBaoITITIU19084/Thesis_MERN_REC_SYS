@@ -28,6 +28,7 @@ const messages = {
     profile: " Profile Model",
     store: " Store Model",
     whishList: " WhishList Model",
+    cartList: " CartList Model",
   },
   error: {
     user_not_existed: "User doest not existed",

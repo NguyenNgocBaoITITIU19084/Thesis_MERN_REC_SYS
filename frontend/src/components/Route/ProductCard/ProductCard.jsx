@@ -11,7 +11,12 @@ import {
 } from "react-icons/ai";
 import ProductDetailsCard from "../../Route/ProductDetailsCart/ProductDetailsCart";
 import axios from "axios";
-import { Api_version, Server_url, whishlist_end_point } from "../../../Server";
+import {
+  Api_version,
+  Server_url,
+  cartList_end_point,
+  whishlist_end_point,
+} from "../../../Server";
 import { toast } from "react-toastify";
 
 const ProductCard = ({ data }) => {
@@ -47,6 +52,19 @@ const ProductCard = ({ data }) => {
       .then((res) => {
         toast.success("Success Remove Product From Whish List");
         setClick(!click);
+      })
+      .catch((err) => console.log(err));
+  };
+  const handleAddProductToCartList = async (productId) => {
+    await axios
+      .post(
+        `${Server_url}${Api_version}${cartList_end_point}/add-product-increasing`,
+        { productId },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        console.log(res.data.message);
+        toast.success(res.data.message);
       })
       .catch((err) => console.log(err));
   };
@@ -121,6 +139,7 @@ const ProductCard = ({ data }) => {
             className="cursor-pointer absolute right-2 top-24"
             color="#444"
             title="Add to cart"
+            onClick={() => handleAddProductToCartList(data._id)}
           />
           {open ? <ProductDetailsCard setOpen={setOpen} data={data} /> : null}
         </div>

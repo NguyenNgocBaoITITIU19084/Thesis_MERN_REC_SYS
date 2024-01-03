@@ -12,7 +12,12 @@ route.post(
   authorize([ROLE.GUEST]),
   WhishListControllers.AddProductToWhishList
 );
-
+route.post(
+  "/add-product-to-cartList",
+  isAuthenticated,
+  authorize([ROLE.GUEST]),
+  WhishListControllers.addProductFromWhishListToCartList
+);
 route.get(
   `/get-whish-list`,
   isAuthenticated,

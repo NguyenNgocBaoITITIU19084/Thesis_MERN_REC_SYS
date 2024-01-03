@@ -38,7 +38,19 @@ const Wishlist = ({ setOpenWishlist }) => {
         { withCredentials: true }
       )
       .then((res) => {
-        console.log(res);
+        setWhishList([...res.data.data.productId]);
+        toast.success("Success Remove Product From WhishList");
+      })
+      .catch((err) => console.log(err));
+  };
+  const handleAddProductFromWhishListToCartList = async (productId) => {
+    await axios
+      .post(
+        `${Server_url}${Api_version}${whishlist_end_point}/add-product-to-cartList`,
+        { productId },
+        { withCredentials: true }
+      )
+      .then((res) => {
         setWhishList([...res.data.data.productId]);
         toast.success("Success Remove Product From WhishList");
       })
@@ -72,6 +84,9 @@ const Wishlist = ({ setOpenWishlist }) => {
                   data={i}
                   key={index}
                   handleRemoveToWhishList={handleRemoveToWhishList}
+                  handleAddProductFromWhishListToCartList={
+                    handleAddProductFromWhishListToCartList
+                  }
                 />
               ))}
           </div>
@@ -81,7 +96,11 @@ const Wishlist = ({ setOpenWishlist }) => {
   );
 };
 
-const CartSingle = ({ data, handleRemoveToWhishList }) => {
+const CartSingle = ({
+  data,
+  handleRemoveToWhishList,
+  handleAddProductFromWhishListToCartList,
+}) => {
   return (
     <div className="border-b p-4">
       <div className="w-full 800px:flex items-center">
@@ -90,18 +109,25 @@ const CartSingle = ({ data, handleRemoveToWhishList }) => {
           className="cursor-pointer 800px:mb-['unset'] 800px:ml-['unset'] mb-2 ml-2"
         />
         <img
-          src={data.images[0].link}
+          src={data?.images[0]?.link}
           alt=""
           className="w-[80px] h-[80px] ml-2"
         />
         <div className="pl-[5px]">
-          <h1>{data.name.length > 15 ? data.name.slice(0, 15) : data.name}</h1>
+          <h1>
+            {data.name.length > 15 ? data.name.slice(0, 15) + "..." : data.name}
+          </h1>
           <h4 className="font-[600] text-[17px] pt-[3px] text-[#d02222] font-Roboto">
             ${data.price}
           </h4>
         </div>
         <div>
-          <BsCartPlus size={25} className="cursor-pointer" tile="Add to cart" />
+          <BsCartPlus
+            size={25}
+            className="cursor-pointer"
+            tile="Add to cart"
+            onClick={() => handleAddProductFromWhishListToCartList(data._id)}
+          />
         </div>
       </div>
     </div>

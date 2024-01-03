@@ -1,12 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RxCross1 } from "react-icons/rx";
 import { IoBagHandleOutline } from "react-icons/io5";
 import { HiOutlineMinus, HiPlus } from "react-icons/hi";
 import { Link } from "react-router-dom";
 
 import styles from "../../styles/styles";
-
+import axios from "axios";
+import { Api_version, Server_url, cartList_end_point } from "../../Server";
+import { toast } from "react-toastify";
 const Cart = ({ setOpenCartList }) => {
+  const [cartList, setCartList] = useState([]);
+  useEffect(() => {
+    async function fetchCartList() {
+      await axios
+        .get(`${Server_url}${Api_version}${cartList_end_point}/get-cart-list`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          console.log(res.data.data.cartList);
+          setCartList([...res.data.data.cartList]);
+        })
+        .catch((err) => toast.error(err.response.data.message));
+    }
+    fetchCartList();
+    return () => {
+      setCartList([]);
+    };
+  }, []);
   const cartData = [
     {
       name: "Iphone 12 promax titan blue natural",
@@ -28,14 +48,18 @@ const Cart = ({ setOpenCartList }) => {
           {/* {Item Length} */}
           <div className={`${styles.noramlFlex} p-4`}>
             <IoBagHandleOutline size={25} />
-            <h5 className="pl-2 text-[20px] font-[500]">1 Items In Cart</h5>
+            <h5 className="pl-2 text-[20px] font-[500]">
+              {cartList.length} Items In Cart
+            </h5>
           </div>
 
           {/* {Cart Single Items} */}
           <br />
           <div className="w-full border-t">
-            {cartData &&
-              cartData.map((i, index) => <CartSingle data={i} key={index} />)}
+            {cartList &&
+              cartList.map((i, index) => (
+                <CartSingle data={i} key={index} setCartList={setCartList} />
+              ))}
           </div>
         </div>
         <div className="px-5 mb-3">
@@ -55,42 +79,99 @@ const Cart = ({ setOpenCartList }) => {
   );
 };
 
-const CartSingle = ({ data }) => {
-  const [value, setValue] = useState(1);
-  const totalPrice = data.price * value;
+const CartSingle = ({ data, setCartList }) => {
+  const [value, setValue] = useState(data.quantity);
+  const totalPrice = data.productId.price * value;
+
+  const handleAddProductToCartList = async (productId) => {
+    await axios
+      .patch(
+        `${Server_url}${Api_version}${cartList_end_point}/increasing-product`,
+        { productId },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        res.data.data.cartList.map((item, index) => {
+          if (item.productId === productId) {
+            return setValue(item.quantity);
+          }
+        });
+      })
+      .catch((err) => toast.error(err.response.data.message));
+  };
+  const handleRemoveProductFromCartList = async (productId) => {
+    await axios
+      .patch(
+        `${Server_url}${Api_version}${cartList_end_point}/remove-product`,
+        { productId },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        setCartList([
+          ...res.data.data.cartList.filter(
+            (item, index) => item.productId !== productId
+          ),
+        ]);
+        toast.success("Success Remove Product");
+      })
+      .catch((err) => toast.error(err.response.data.message));
+  };
+  const handleDecreasingProduct = async (productId) => {
+    await axios
+      .patch(
+        `${Server_url}${Api_version}${cartList_end_point}/decreasing-product`,
+        { productId },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        res.data.data.cartList.map((item) => {
+          if (item.productId === productId) {
+            return setValue(item.quantity);
+          }
+        });
+      })
+      .catch((err) => toast.error(err.response.data.message));
+  };
   return (
     <div className="border-b p-4">
       <div className="w-full flex items-center">
         <div>
           <div
             className={`bg-[#e44343] border border-[#e4434373] rounded-full w-[25px] h-[25px] ${styles.noramlFlex} justify-center cursor-pointer`}
-            onClick={() => setValue(value + 1)}
+            onClick={() => handleAddProductToCartList(data.productId._id)}
           >
             <HiPlus size={18} color="#fff" />
           </div>
           <span className="pl-[10px]">{value}</span>
           <div
             className="bg-[#a7abb14f] rounded-full w-[25px] h-[25px] flex items-center justify-center cursor-pointer"
-            onClick={() => setValue(value === 1 ? 1 : value - 1)}
+            onClick={() => handleDecreasingProduct(data.productId._id)}
           >
             <HiOutlineMinus size={16} color="#7d879c" />
           </div>
         </div>
         <img
-          src="data:image/jpeg;base64,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"
+          src={`${data.productId.images[0].link}`}
           alt=""
-          className="w-[80px] h-[80px] ml-2"
+          className="w-[80px] h-[80px] ml-2 object-contain"
         />
         <div className="pl-[5px]">
-          <h1>{data.name}</h1>
+          <h1>
+            {data.productId.name > 16
+              ? data.productId.name.slice(0, 15) + "..."
+              : data.productId.name}
+          </h1>
           <h4 className="font-[400] text-[15px] text-[#00000082]">
-            ${data.price}*{value}
+            ${data.productId.price}*{value}
           </h4>
           <h4 className="font-[600] text-[17px] pt-[3px] text-[#d02222] font-Roboto">
-            US${totalPrice}
+            ${totalPrice}
           </h4>
         </div>
-        <RxCross1 className="cursor-pointer" />
+        <RxCross1
+          className="cursor-pointer"
+          onClick={() => handleRemoveProductFromCartList(data.productId._id)}
+        />
       </div>
     </div>
   );

@@ -70,7 +70,6 @@ const Header = ({ activeHeading }) => {
           { withCredentials: true }
         )
         .then((res) => {
-          console.log(res);
           setWhishList([...res.data.data.productId]);
         })
         .catch((err) => console.log(err));
