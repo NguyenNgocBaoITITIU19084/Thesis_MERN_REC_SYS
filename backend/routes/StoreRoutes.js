@@ -12,9 +12,8 @@ route.post(
   storeControllers.registerStore
 );
 route.get("/", isAuthenticated, storeControllers.getStore);
-route.delete("/");
-route.delete("/");
-route.patch("/");
+route.get("/get-detail/:id", storeControllers.getDetailByID);
+route.get("/get-all", storeControllers.getAllStores);
 route.patch(
   "/",
   isAuthenticated,

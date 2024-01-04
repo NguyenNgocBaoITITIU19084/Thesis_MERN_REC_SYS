@@ -273,6 +273,12 @@ const AllProducts = () => {
             className={`${styles.button} !w-max !h-[45px] px-3 !rounded-[5px] mr-3 mb-3`}
             onClick={() => setOpen(true)}
           >
+            <span className="text-white">All Product</span>
+          </div>
+          <div
+            className={`${styles.button} !w-max !h-[45px] px-3 !rounded-[5px] mr-3 mb-3`}
+            onClick={() => setOpen(true)}
+          >
             <span className="text-white">Create New Product</span>
           </div>
         </div>

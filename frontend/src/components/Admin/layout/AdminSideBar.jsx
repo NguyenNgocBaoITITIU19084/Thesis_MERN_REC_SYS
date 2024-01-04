@@ -8,8 +8,31 @@ import { HiOutlineUserGroup } from "react-icons/hi";
 import { BsHandbag } from "react-icons/bs";
 import { MdOutlineLocalOffer } from "react-icons/md";
 import { AiOutlineLogin } from "react-icons/ai";
-
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { Api_version, Server_url, auth_end_point } from "../../../Server";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import {
+  LogOutByUser,
+  successLogOut,
+} from "../../../redux/features/auths/authSlice";
+import { clearProfile } from "../../../redux/features/profile/profilesSlice";
+import { clearStoreProfile } from "../../../redux/features/store/storeSlice";
 const AdminSideBar = ({ active }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const logoutHandler = () => {
+    dispatch(LogOutByUser()).then(() => {
+      dispatch(clearProfile({}));
+      dispatch(successLogOut());
+      dispatch(clearStoreProfile());
+      toast.success("Successfully Logout");
+      // window.location.reload(true);
+      navigate("/");
+    });
+  };
   return (
     <div className="w-full h-[90vh] bg-white shadow-sm overflow-y-scroll sticky top-0 left-0 z-10">
       {/* single item */}
@@ -122,7 +145,10 @@ const AdminSideBar = ({ active }) => {
         </Link>
       </div> */}
 
-      <div className="w-full flex items-center p-4 cursor-pointer">
+      <div
+        className="w-full flex items-center p-4 cursor-pointer"
+        onClick={logoutHandler}
+      >
         <AiOutlineLogin
           size={30}
           color={`${active === 8 ? "crimson" : "#555"}`}

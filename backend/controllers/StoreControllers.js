@@ -162,3 +162,29 @@ exports.updateStoreDetail = catchAsync(async (req, res) => {
       )
     );
 });
+exports.getAllStores = catchAsync(async (req, res) => {
+  const stores = await storeSchema.find();
+  return res
+    .status(200)
+    .json(
+      new ResultObject(
+        STATUS_CODE.SUCCESS,
+        message.models.success_create + message.models.store,
+        stores
+      )
+    );
+});
+
+exports.getDetailByID = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const storeDetail = await storeSchema.findById(id);
+  return res
+    .status(200)
+    .json(
+      new ResultObject(
+        STATUS_CODE.SUCCESS,
+        message.models.success_create + message.models.store,
+        storeDetail
+      )
+    );
+});

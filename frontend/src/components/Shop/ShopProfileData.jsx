@@ -1,43 +1,47 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import styles from "../../styles/styles";
 import ProductCard from "../Route/ProductCard/ProductCard";
-import {
-  clearError,
-  clearStoreProduct,
-  fecthProductsByStoreSide,
-  selectStoreProductsLoadingState,
-  selectAllProductsStore,
-} from "../../redux/features/products/storeProductSlice";
-const ShopProfileData = ({ isOwner }) => {
-  const productsStatus = useSelector(selectStoreProductsLoadingState);
-  const products = useSelector(selectAllProductsStore);
+import axios from "axios";
+import { Server_url, Api_version, product_end_point } from "../../Server";
 
+const ShopProfileData = ({ isOwner }) => {
   const { id } = useParams();
-  const dispatch = useDispatch();
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     async function fetchStoreProduct() {
-      if (productsStatus === "idle" && !products.storeProduct) {
-        try {
-          await dispatch(fecthProductsByStoreSide())
-            .unwrap()
-            .then((res) => console.log(res))
-            .catch((err) =>
-              console.log("error from fetching product by store side", err)
-            );
-        } catch (error) {
-          console.log(error);
-        }
-      }
+      await axios
+        .get(`${Server_url}${Api_version}${product_end_point}/store-side`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          setProducts([...res.data.data]);
+        })
+        .catch((err) => console.log(err));
     }
-    fetchStoreProduct();
+    async function fetchProductsByStoreId(id) {
+      await axios
+        .get(
+          `${Server_url}${Api_version}${product_end_point}/store-side/${id}`,
+          {
+            withCredentials: true,
+          }
+        )
+        .then((res) => {
+          setProducts([...res.data.data]);
+        })
+        .catch((err) => console.log(err));
+    }
+    if (isOwner) {
+      fetchStoreProduct();
+    } else {
+      fetchProductsByStoreId(id);
+    }
     return () => {
-      dispatch(clearError());
-      dispatch(clearStoreProduct());
+      setProducts([]);
     };
-  }, [dispatch]);
+  }, []);
 
   const [active, setActive] = useState(1);
 

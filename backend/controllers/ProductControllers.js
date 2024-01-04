@@ -257,7 +257,7 @@ exports.createProductByAdmin = catchAsync(async (req, res) => {
     brand,
     categories,
   } = req.body;
-  const { _id: AdminId } = req.user;
+  const { store: AdminId } = req.user;
   if (discountApplied) {
     const discount = await discountSchema.findById({ _id: discountApplied });
     if (!discount) {
@@ -307,6 +307,21 @@ exports.createProductByAdmin = catchAsync(async (req, res) => {
         STATUS_CODE.SUCCESS,
         message.models.success_create + message.models.product,
         product
+      )
+    );
+});
+
+exports.getAllProductByStoreId = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const products = await productSchema.find({ createdBy: id });
+
+  return res
+    .status(200)
+    .json(
+      new ResultObject(
+        STATUS_CODE.SUCCESS,
+        message.models.success_query + message.models.product,
+        products
       )
     );
 });

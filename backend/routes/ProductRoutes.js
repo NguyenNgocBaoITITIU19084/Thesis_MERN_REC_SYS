@@ -13,6 +13,7 @@ route.get(
   isAuthenticated,
   productControllers.getProductsByStoreId
 );
+route.get("/store-side/:id", productControllers.getAllProductByStoreId);
 route.post(
   "/",
   isAuthenticated,
