@@ -52,7 +52,7 @@ const ProductDetails = ({ data }) => {
             <div className="w-full py-5">
               <div className="block w-full 800px:flex">
                 <div className="w-full 800px:w-[50%]">
-                  <img src={data.images[select].link} alt="" className="" />
+                  <img src={data?.images[select]?.link} alt="" className="" />
                   <div className="w-full flex">
                     {data &&
                       data.images.map((image, index) => (

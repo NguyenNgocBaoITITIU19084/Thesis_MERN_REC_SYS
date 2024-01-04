@@ -325,3 +325,31 @@ exports.getAllProductByStoreId = catchAsync(async (req, res) => {
       )
     );
 });
+
+exports.setActiveProductByAdmin = catchAsync(async (req, res) => {
+  const { productId } = req.body;
+  if (!productId) {
+    throw new ApiError(400, "Missing field");
+  }
+  const existedProduct = await productSchema.find({ _id: productId }).lean();
+  if (!existedProduct) {
+    throw new ApiError(404, "Not Found Product");
+  }
+
+  const updateProduct = await productSchema.findByIdAndUpdate(
+    { _id: productId },
+    {
+      isActive: !existedProduct[0].isActive,
+    }
+  );
+
+  return res
+    .status(200)
+    .json(
+      new ResultObject(
+        STATUS_CODE.SUCCESS,
+        message.models.success_query + message.models.product,
+        updateProduct
+      )
+    );
+});

@@ -34,6 +34,12 @@ route.post(
   authorize([ROLE.ADMIN]),
   productControllers.createProductByAdmin
 );
+route.patch(
+  "/set-active-product",
+  isAuthenticated,
+  authorize([ROLE.ADMIN]),
+  productControllers.setActiveProductByAdmin
+);
 // =======================================
 
 route.get("/:id", productControllers.getProductById);
