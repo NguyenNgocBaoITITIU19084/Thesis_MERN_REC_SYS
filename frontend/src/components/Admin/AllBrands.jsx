@@ -10,32 +10,31 @@ import { toast } from "react-toastify";
 import {
   Api_version,
   Server_url,
-  category_end_point,
+  brand_end_point,
   cloudinary_end_point,
 } from "../../Server";
 
-const AllCategories = () => {
+const AllBrands = () => {
   const [createForm, setCreateForm] = useState(false);
-  const [category, setCategory] = useState([]);
   const [imagesResponse, setImagesResponse] = useState([]);
   const [images, setImages] = useState([]);
+  const [brands, setBrands] = useState([]);
 
   useEffect(() => {
-    async function fetchAllCategories() {
+    async function fetchAllBrands() {
       await axios
-        .get(`${Server_url}${Api_version}${category_end_point}/`)
+        .get(`${Server_url}${Api_version}${brand_end_point}/`)
         .then((res) => {
           console.log(res);
-          const check = res?.data?.data;
-          if (check.length) {
-            setCategory([...check]);
-          }
+          setBrands([...res?.data?.data]);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+        });
     }
-    fetchAllCategories();
+    fetchAllBrands();
     return () => {
-      setCategory([]);
+      setBrands([]);
     };
   }, []);
 
@@ -81,9 +80,9 @@ const AllCategories = () => {
 
   const handleDelete = async (id) => {
     await axios
-      .delete(`${Server_url}${Api_version}${category_end_point}/${id}`)
+      .delete(`${Server_url}${Api_version}${brand_end_point}/${id}`)
       .then((res) => {
-        setCategory(category.filter((item) => item._id !== id));
+        setBrands(brands.filter((item) => item._id !== id));
         toast.success("Success Delete Category");
       })
       .catch((err) => {
@@ -93,7 +92,6 @@ const AllCategories = () => {
 
   const columns = [
     { field: "id", headerName: "User ID", minWidth: 150, flex: 0.7 },
-
     {
       field: "name",
       headerName: "name",
@@ -117,8 +115,8 @@ const AllCategories = () => {
     {
       field: " ",
       flex: 1,
-      minWidth: 100,
-      headerName: "Delete",
+      minWidth: 150,
+      headerName: "Delete User",
       type: "number",
       sortable: false,
       renderCell: (params) => {
@@ -132,11 +130,10 @@ const AllCategories = () => {
       },
     },
   ];
-
+  const users = [];
   const row = [];
-
-  category &&
-    category.forEach((item) => {
+  brands &&
+    brands.forEach((item) => {
       row.push({
         id: item._id,
         name: item.name,
@@ -149,7 +146,7 @@ const AllCategories = () => {
     <div className="w-full flex justify-center pt-5">
       <div className="w-[97%]">
         <div className="flex justify-start items-center">
-          <h3 className="text-[22px] font-Poppins pb-2">All Categories</h3>
+          <h3 className="text-[22px] font-Poppins pb-2">All Brands</h3>
           <div
             onClick={() => setCreateForm(true)}
             className={`${styles.button} !w-max !h-[45px] px-3 !rounded-[5px] mr-3 mb-3 ml-4`}
@@ -157,7 +154,6 @@ const AllCategories = () => {
             <span className="text-white">Create</span>
           </div>
         </div>
-
         <div className="w-full min-h-[45vh] bg-white rounded">
           <DataGrid
             rows={row}
@@ -167,41 +163,15 @@ const AllCategories = () => {
             autoHeight
           />
         </div>
-        {/* {open && (
-          <div className="w-full fixed top-0 left-0 z-[999] bg-[#00000039] flex items-center justify-center h-screen">
-            <div className="w-[95%] 800px:w-[40%] min-h-[20vh] bg-white rounded shadow p-5">
-              <div className="w-full flex justify-end cursor-pointer">
-                <RxCross1 size={25} onClick={() => setOpen(false)} />
-              </div>
-              <h3 className="text-[25px] text-center py-5 font-Poppins text-[#000000cb]">
-                Are you sure you wanna delete this user?
-              </h3>
-              <div className="w-full flex items-center justify-center">
-                <div
-                  className={`${styles.button} text-white text-[18px] !h-[42px] mr-4`}
-                  onClick={() => setOpen(false)}
-                >
-                  cancel
-                </div>
-                <div
-                  className={`${styles.button} text-white text-[18px] !h-[42px] ml-4`}
-                  onClick={() => setOpen(false) || handleDelete(userId)}
-                >
-                  confirm
-                </div>
-              </div>
-            </div>
-          </div>
-        )} */}
         {createForm ? (
           <FormCreate
             setOpenUpdate={setCreateForm}
             handleImageChange={handleImageChange}
             images={images}
             imagesResponse={imagesResponse}
-            setCategory={setCategory}
+            setBrands={setBrands}
             setImages={setImages}
-            category={category}
+            brands={brands}
           />
         ) : null}
       </div>
@@ -209,29 +179,29 @@ const AllCategories = () => {
   );
 };
 
-export default AllCategories;
+export default AllBrands;
 
 const FormCreate = ({
   setOpenUpdate,
   handleImageChange,
   images,
   imagesResponse,
-  setCategory,
+  setBrands,
   setImages,
-  category,
+  brands,
 }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
-  const handleCreateCategory = async (e, imagesResponse) => {
+  const handleCreateBrands = async (e, imagesResponse) => {
     e.preventDefault();
     const data = { name, description, images: imagesResponse };
     await axios
-      .post(`${Server_url}${Api_version}${category_end_point}/`, data, {
+      .post(`${Server_url}${Api_version}${brand_end_point}/`, data, {
         withCredentials: true,
       })
       .then((res) => {
-        setCategory([res.data.data, ...category]);
+        setBrands([res.data.data, ...brands]);
         setName("");
         setDescription("");
         setImages([]);
@@ -252,7 +222,7 @@ const FormCreate = ({
             />
           </div>
           <h5 className="text-[30px] font-Poppins text-center">
-            Create Category
+            Create Brands
           </h5>
           {/* create coupoun code */}
           <form aria-required={true}>
@@ -319,7 +289,7 @@ const FormCreate = ({
             <br />
             <div>
               <input
-                onClick={(e) => handleCreateCategory(e, imagesResponse)}
+                onClick={(e) => handleCreateBrands(e, imagesResponse)}
                 type="submit"
                 value="Submit"
                 className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
