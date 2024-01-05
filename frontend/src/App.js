@@ -34,6 +34,7 @@ import {
   AdminDashboardSellers,
   AdminDashboardOrders,
   AdminDashboardProducts,
+  AdminDashboardCategories,
 } from "./AdminRoutes.js";
 import ProtectedRoute from "./components/Route/ProtectedRoutes/ProtectedRoute.jsx";
 import SellerProtectedRoute from "./components/Route/ProtectedRoutes/SellerProtectedRoute.jsx";
@@ -200,6 +201,10 @@ const App = () => {
           <Route path="/admin-sellers" element={<AdminDashboardSellers />} />
           <Route path="/admin-orders" element={<AdminDashboardOrders />} />
           <Route path="/admin-products" element={<AdminDashboardProducts />} />
+          <Route
+            path="/admin-category"
+            element={<AdminDashboardCategories />}
+          />
         </Route>
       </Routes>
       <ToastContainer

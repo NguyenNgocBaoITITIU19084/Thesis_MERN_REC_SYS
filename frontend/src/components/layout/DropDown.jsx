@@ -19,7 +19,7 @@ const DropDown = ({ data, setDropDown, title }) => {
             onClick={() => submitHandle(i)}
           >
             <img
-              src={i?.images}
+              src={i?.images[0]?.link}
               style={{
                 width: "25px",
                 height: "25px",

@@ -17,11 +17,9 @@ const categoriesSchema = new Schema(
       type: Boolean,
       default: true,
     },
-    images: [
-      {
-        type: String,
-      },
-    ],
+    images: {
+      type: [Object],
+    },
   },
   {
     timestamps: true,

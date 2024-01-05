@@ -19,7 +19,7 @@ const Wishlist = ({ setOpenWishlist }) => {
           { withCredentials: true }
         )
         .then((res) => {
-          console.log(res);
+          console.log("----------------", res);
           setWhishList([...res.data.data.productId]);
         })
         .catch((err) => console.log(err));
@@ -71,7 +71,7 @@ const Wishlist = ({ setOpenWishlist }) => {
           <div className={`${styles.noramlFlex} p-4`}>
             <IoBagHandleOutline size={25} />
             <h5 className="pl-2 text-[20px] font-[500]">
-              {whishList.length} Items In Wish List
+              {whishList?.length} Items In Wish List
             </h5>
           </div>
 
@@ -79,7 +79,7 @@ const Wishlist = ({ setOpenWishlist }) => {
           <br />
           <div className="w-full border-t">
             {whishList &&
-              whishList.map((i, index) => (
+              whishList?.map((i, index) => (
                 <CartSingle
                   data={i}
                   key={index}
@@ -105,7 +105,7 @@ const CartSingle = ({
     <div className="border-b p-4">
       <div className="w-full 800px:flex items-center">
         <RxCross1
-          onClick={() => handleRemoveToWhishList(data._id)}
+          onClick={() => handleRemoveToWhishList(data?._id)}
           className="cursor-pointer 800px:mb-['unset'] 800px:ml-['unset'] mb-2 ml-2"
         />
         <img
@@ -115,10 +115,12 @@ const CartSingle = ({
         />
         <div className="pl-[5px]">
           <h1>
-            {data.name.length > 15 ? data.name.slice(0, 15) + "..." : data.name}
+            {data?.name.length > 15
+              ? data?.name.slice(0, 15) + "..."
+              : data?.name}
           </h1>
           <h4 className="font-[600] text-[17px] pt-[3px] text-[#d02222] font-Roboto">
-            ${data.price}
+            ${data?.price}
           </h4>
         </div>
         <div>
@@ -126,7 +128,7 @@ const CartSingle = ({
             size={25}
             className="cursor-pointer"
             tile="Add to cart"
-            onClick={() => handleAddProductFromWhishListToCartList(data._id)}
+            onClick={() => handleAddProductFromWhishListToCartList(data?._id)}
           />
         </div>
       </div>

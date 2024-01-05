@@ -80,14 +80,16 @@ const ProductCard = ({ data }) => {
           />
         </Link>
         <Link to={`/shop/preview/${data?.createdBy?._id}`}>
-          <h5 className={`${styles.shop_name}`}>{data?.createdBy.name}</h5>
+          <h5 className={`${styles.shop_name}`}>{data?.createdBy?.name}</h5>
         </Link>
         <Link to={`/product/${productId}`}>
           <h4 className="pb-3 font-[500]">
-            {data.name.length > 40 ? data.name.slice(0, 40) + "..." : data.name}
+            {data?.name?.length > 40
+              ? data?.name?.slice(0, 40) + "..."
+              : data?.name}
           </h4>
           <div className="flex">
-            {data.total_rating}
+            {data?.total_rating}
             <AiFillStar
               className="mr-2 cursor-pointer"
               color="#F6BA00"
@@ -97,14 +99,14 @@ const ProductCard = ({ data }) => {
           <div className="py-2 flex items-center justify-between">
             <div className="flex">
               <h5 className={`${styles.productDiscountPrice}`}>
-                {data.price ? data.price + " $" : null}
+                {data?.price ? data?.price + " $" : null}
               </h5>
               <h4 className={`${styles.price}`}>
-                {data.actualPrice ? data.actualPrice + " $" : null}
+                {data?.actualPrice ? data?.actualPrice + " $" : null}
               </h4>
             </div>
             <span className="font-[400] text-[17px] text-[#68d284]">
-              {data.soldOut} sold
+              {data?.soldOut} sold
             </span>
           </div>
         </Link>

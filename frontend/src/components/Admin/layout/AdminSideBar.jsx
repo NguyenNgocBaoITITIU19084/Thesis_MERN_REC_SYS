@@ -112,9 +112,9 @@ const AdminSideBar = ({ active }) => {
           </h5>
         </Link>
       </div>
-      {/* 
+
       <div className="w-full flex items-center p-4">
-        <Link to="/admin-events" className="w-full flex items-center">
+        <Link to="/admin-category" className="w-full flex items-center">
           <MdOutlineLocalOffer
             size={30}
             color={`${active === 6 ? "crimson" : "#555"}`}
@@ -124,10 +124,10 @@ const AdminSideBar = ({ active }) => {
               active === 6 ? "text-[crimson]" : "text-[#555]"
             }`}
           >
-            All Events
+            All Categories
           </h5>
         </Link>
-      </div> */}
+      </div>
       {/* 
       <div className="w-full flex items-center p-4">
         <Link to="/admin-withdraw-request" className="w-full flex items-center">
@@ -144,7 +144,6 @@ const AdminSideBar = ({ active }) => {
           </h5>
         </Link>
       </div> */}
-
       <div
         className="w-full flex items-center p-4 cursor-pointer"
         onClick={logoutHandler}

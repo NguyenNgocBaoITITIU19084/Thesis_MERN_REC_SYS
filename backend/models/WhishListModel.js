@@ -15,6 +15,10 @@ const whishListSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "users",
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,

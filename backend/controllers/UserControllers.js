@@ -6,6 +6,8 @@ const sendToken = require("../utils/SendToken");
 
 const userSchema = require("../models/UserModel");
 const profileSchema = require("../models/ProfilesModel");
+const whishListSchema = require("../models/WhishListModel");
+const cartListSchema = require("../models/CartListModel");
 const { web_url } = require("../contants/server");
 const { STATUS_CODE } = require("../contants/statusCode");
 const message = require("../../backend/config/Messages");
@@ -18,11 +20,15 @@ exports.register = catchAsync(async (req, res) => {
   }
   const newProfile = await profileSchema.create({ firstName: null });
   const { id } = newProfile;
-  await userSchema.create({
+  const user = await userSchema.create({
     email,
     password,
     profile: id,
   });
+  const { id: userID } = user;
+  console.log("user id", userID);
+  const whishList = await whishListSchema.create({ createdBy: userID });
+  const cartList = await cartListSchema.create({ createdBy: userID });
   // Send Email
   // await EmailService.sendGmail(
   //   process.env.EMAIL,
