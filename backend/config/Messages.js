@@ -52,6 +52,9 @@ const messages = {
     success: "success to remove images to cloudinary",
     failed: "failed to remove images to cloudinary",
   },
+  readData: {
+    success: "success read data csv",
+  },
 };
 
 module.exports = messages;
