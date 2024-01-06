@@ -4,10 +4,16 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Api_version, Server_url, profile_end_point } from "../../Server";
+import {
+  Api_version,
+  Server_url,
+  profile_end_point,
+  cartList_end_point,
+} from "../../Server";
 import { Country, State, City } from "country-state-city";
 import Select from "react-select";
-
+import { RxCross1 } from "react-icons/rx";
+import { HiOutlineMinus, HiPlus } from "react-icons/hi";
 const Checkout = () => {
   const [cart, setCart] = useState([]);
   const [couponCode, setCouponCode] = useState("");
@@ -66,8 +72,6 @@ const Checkout = () => {
     ? (subTotalPrice + shipping - discountPercentenge).toFixed(2)
     : (subTotalPrice + shipping).toFixed(2);
 
-  console.log(discountPercentenge);
-
   return (
     <div className="w-full flex flex-col items-center py-8">
       <div className="w-[90%] 1000px:w-[70%] block 800px:flex">
@@ -76,7 +80,9 @@ const Checkout = () => {
         </div>
         <div className="w-full 800px:w-[35%] 800px:mt-0 mt-8">
           <div className="flex flex-col">
-            <CartData
+            <ProductOrderData />
+            {/* <CartData
+              subtotal={subtotal}
               handleSubmit={handleSubmit}
               totalPrice={totalPrice}
               shipping={shipping}
@@ -84,8 +90,7 @@ const Checkout = () => {
               couponCode={couponCode}
               setCouponCode={setCouponCode}
               discountPercentenge={discountPercentenge}
-            />
-            <ProductOrderData />
+            /> */}
           </div>
         </div>
       </div>
@@ -302,72 +307,68 @@ const ShippingInfo = ({}) => {
   );
 };
 
-const CartData = ({
-  handleSubmit,
-  totalPrice,
-  shipping,
-  subTotalPrice,
-  couponCode,
-  setCouponCode,
-  discountPercentenge,
-}) => {
-  return (
-    <div className="w-full bg-[#fff] rounded-md p-5 pb-8">
-      <div className="flex justify-between">
-        <h3 className="text-[16px] font-[400] text-[#000000a4]">subtotal:</h3>
-        <h5 className="text-[18px] font-[600]">${subTotalPrice}</h5>
-      </div>
-      <br />
-      <div className="flex justify-between">
-        <h3 className="text-[16px] font-[400] text-[#000000a4]">shipping:</h3>
-        <h5 className="text-[18px] font-[600]">${shipping.toFixed(2)}</h5>
-      </div>
-      <br />
-      <div className="flex justify-between border-b pb-3">
-        <h3 className="text-[16px] font-[400] text-[#000000a4]">Discount:</h3>
-        <h5 className="text-[18px] font-[600]">
-          - {discountPercentenge ? "$" + discountPercentenge.toString() : null}
-        </h5>
-      </div>
-      <h5 className="text-[18px] font-[600] text-end pt-3">${totalPrice}</h5>
-      <br />
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          className={`${styles.input} h-[40px] pl-2`}
-          placeholder="Coupoun code"
-          value={couponCode}
-          onChange={(e) => setCouponCode(e.target.value)}
-          required
-        />
-        <input
-          className={`w-full h-[40px] border border-[#f63b60] text-center text-[#f63b60] rounded-[3px] mt-8 cursor-pointer`}
-          required
-          value="Apply code"
-          type="submit"
-        />
-      </form>
-    </div>
-  );
-};
+// const CartData = ({
+//   handleSubmit,
+//   totalPrice,
+//   shipping,
+//   subTotalPrice,
+//   couponCode,
+//   setCouponCode,
+//   discountPercentenge,
+// }) => {
+//   return (
+//     <div className="w-full bg-[#fff] rounded-md p-5 pb-8">
+
+//     </div>
+//   );
+// };
+
 const ProductOrderData = () => {
+  const [cartList, setCartList] = useState([]);
+  const [subtotal, setSubtotal] = useState();
+  useEffect(() => {
+    async function fetchCartList() {
+      await axios
+        .get(`${Server_url}${Api_version}${cartList_end_point}/get-cart-list`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          setCartList([...res.data.data.cartList]);
+        })
+        .catch((err) => toast.error(err.response.data.message));
+    }
+    fetchCartList();
+    return () => {
+      setCartList([]);
+    };
+  }, []);
   return (
     <div className="w-full bg-[#fff] rounded-md p-5 pb-8">
+      {" "}
+      <div className="w-full border-t">
+        {cartList &&
+          cartList.map((i, index) => (
+            <>
+              <CartSingle
+                data={i}
+                key={index}
+                setCartList={setCartList}
+                setSubtotal={setSubtotal}
+                subtotal={subtotal}
+              />
+            </>
+          ))}
+      </div>
       <div className="flex justify-between">
         <h3 className="text-[16px] font-[400] text-[#000000a4]">subtotal:</h3>
-        <h5 className="text-[18px] font-[600]"></h5>
-      </div>
-      <br />
-      <div className="flex justify-between">
-        <h3 className="text-[16px] font-[400] text-[#000000a4]">shipping:</h3>
-        <h5 className="text-[18px] font-[600]"></h5>
+        <h5 className="text-[18px] font-[600]">${subtotal}</h5>
       </div>
       <br />
       <div className="flex justify-between border-b pb-3">
         <h3 className="text-[16px] font-[400] text-[#000000a4]">Discount:</h3>
         <h5 className="text-[18px] font-[600]"></h5>
       </div>
-      <h5 className="text-[18px] font-[600] text-end pt-3">${}</h5>
+      <h5 className="text-[18px] font-[600] text-end pt-3"></h5>
       <br />
       <form>
         <input
@@ -386,5 +387,101 @@ const ProductOrderData = () => {
     </div>
   );
 };
+const CartSingle = ({ data, setCartList, setSubtotal, subtotal }) => {
+  const [value, setValue] = useState(data.quantity);
+  const totalPrice = data.productId.price * value;
 
+  const handleAddProductToCartList = async (productId) => {
+    await axios
+      .patch(
+        `${Server_url}${Api_version}${cartList_end_point}/increasing-product`,
+        { productId },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        res.data.data.cartList.map((item, index) => {
+          if (item.productId === productId) {
+            return setValue(item.quantity);
+          }
+        });
+      })
+      .catch((err) => toast.error(err.response.data.message));
+  };
+  const handleRemoveProductFromCartList = async (productId) => {
+    await axios
+      .patch(
+        `${Server_url}${Api_version}${cartList_end_point}/remove-product`,
+        { productId },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        setCartList([
+          ...res.data.data.cartList.filter(
+            (item, index) => item.productId !== productId
+          ),
+        ]);
+        toast.success("Success Remove Product");
+      })
+      .catch((err) => toast.error(err.response.data.message));
+  };
+  const handleDecreasingProduct = async (productId) => {
+    await axios
+      .patch(
+        `${Server_url}${Api_version}${cartList_end_point}/decreasing-product`,
+        { productId },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        res.data.data.cartList.map((item) => {
+          if (item.productId === productId) {
+            return setValue(item.quantity);
+          }
+        });
+      })
+      .catch((err) => toast.error(err.response.data.message));
+  };
+  return (
+    <div className="border-b p-4">
+      <div className="w-full flex items-center">
+        <div>
+          <div
+            className={`bg-[#e44343] border border-[#e4434373] rounded-full w-[25px] h-[25px] ${styles.noramlFlex} justify-center cursor-pointer`}
+            onClick={() => handleAddProductToCartList(data.productId._id)}
+          >
+            <HiPlus size={18} color="#fff" />
+          </div>
+          <span className="pl-[10px]">{value}</span>
+          <div
+            className="bg-[#a7abb14f] rounded-full w-[25px] h-[25px] flex items-center justify-center cursor-pointer"
+            onClick={() => handleDecreasingProduct(data.productId._id)}
+          >
+            <HiOutlineMinus size={16} color="#7d879c" />
+          </div>
+        </div>
+        <img
+          src={`${data.productId.images[0].link}`}
+          alt=""
+          className="w-[80px] h-[80px] ml-2 object-contain"
+        />
+        <div className="pl-[5px]">
+          <h1>
+            {data.productId.name > 16
+              ? data.productId.name.slice(0, 15) + "..."
+              : data.productId.name}
+          </h1>
+          <h4 className="font-[400] text-[15px] text-[#00000082]">
+            ${data.productId.price}*{value}
+          </h4>
+          <h4 className="font-[600] text-[17px] pt-[3px] text-[#d02222] font-Roboto">
+            ${totalPrice}
+          </h4>
+        </div>
+        <RxCross1
+          className="cursor-pointer"
+          onClick={() => handleRemoveProductFromCartList(data.productId._id)}
+        />
+      </div>
+    </div>
+  );
+};
 export default Checkout;
