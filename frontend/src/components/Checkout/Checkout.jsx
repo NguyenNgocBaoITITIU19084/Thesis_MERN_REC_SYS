@@ -81,16 +81,6 @@ const Checkout = () => {
         <div className="w-full 800px:w-[35%] 800px:mt-0 mt-8">
           <div className="flex flex-col">
             <ProductOrderData />
-            {/* <CartData
-              subtotal={subtotal}
-              handleSubmit={handleSubmit}
-              totalPrice={totalPrice}
-              shipping={shipping}
-              subTotalPrice={subTotalPrice}
-              couponCode={couponCode}
-              setCouponCode={setCouponCode}
-              discountPercentenge={discountPercentenge}
-            /> */}
           </div>
         </div>
       </div>
@@ -149,7 +139,6 @@ const ShippingInfo = ({}) => {
     <div className="w-full 800px:w-[95%] bg-white rounded-md p-5 pb-8">
       <h5 className="text-[18px] font-[500]">Shipping Address</h5>
       <br />
-      {console.log("profile", profile)}
       <form>
         <div className="w-full flex pb-3">
           <div className="w-[50%]">
@@ -307,25 +296,10 @@ const ShippingInfo = ({}) => {
   );
 };
 
-// const CartData = ({
-//   handleSubmit,
-//   totalPrice,
-//   shipping,
-//   subTotalPrice,
-//   couponCode,
-//   setCouponCode,
-//   discountPercentenge,
-// }) => {
-//   return (
-//     <div className="w-full bg-[#fff] rounded-md p-5 pb-8">
-
-//     </div>
-//   );
-// };
-
 const ProductOrderData = () => {
   const [cartList, setCartList] = useState([]);
   const [subtotal, setSubtotal] = useState();
+
   useEffect(() => {
     async function fetchCartList() {
       await axios
@@ -333,30 +307,31 @@ const ProductOrderData = () => {
           withCredentials: true,
         })
         .then((res) => {
+          let subPrice = 0;
+          res.data.data.cartList.forEach((item) => {
+            subPrice += item.productId.price * item.quantity;
+          });
+          setSubtotal(subPrice);
           setCartList([...res.data.data.cartList]);
         })
         .catch((err) => toast.error(err.response.data.message));
     }
     fetchCartList();
-    return () => {
-      setCartList([]);
-    };
   }, []);
+
   return (
     <div className="w-full bg-[#fff] rounded-md p-5 pb-8">
       {" "}
       <div className="w-full border-t">
         {cartList &&
           cartList.map((i, index) => (
-            <>
-              <CartSingle
-                data={i}
-                key={index}
-                setCartList={setCartList}
-                setSubtotal={setSubtotal}
-                subtotal={subtotal}
-              />
-            </>
+            <CartSingle
+              data={i}
+              key={i._id}
+              setCartList={setCartList}
+              setSubtotal={setSubtotal}
+              subtotal={subtotal}
+            />
           ))}
       </div>
       <div className="flex justify-between">
@@ -390,7 +365,7 @@ const ProductOrderData = () => {
 const CartSingle = ({ data, setCartList, setSubtotal, subtotal }) => {
   const [value, setValue] = useState(data.quantity);
   const totalPrice = data.productId.price * value;
-
+  const price = data.productId.price;
   const handleAddProductToCartList = async (productId) => {
     await axios
       .patch(
@@ -404,6 +379,11 @@ const CartSingle = ({ data, setCartList, setSubtotal, subtotal }) => {
             return setValue(item.quantity);
           }
         });
+        let subPrice = 0;
+        res.data.data.cartList.forEach((item) => {
+          subPrice += price * item.quantity;
+        });
+        setSubtotal(subPrice);
       })
       .catch((err) => toast.error(err.response.data.message));
   };
@@ -415,11 +395,13 @@ const CartSingle = ({ data, setCartList, setSubtotal, subtotal }) => {
         { withCredentials: true }
       )
       .then((res) => {
+        console.log(res);
         setCartList([
           ...res.data.data.cartList.filter(
             (item, index) => item.productId !== productId
           ),
         ]);
+        setSubtotal(subtotal - totalPrice);
         toast.success("Success Remove Product");
       })
       .catch((err) => toast.error(err.response.data.message));
@@ -437,6 +419,11 @@ const CartSingle = ({ data, setCartList, setSubtotal, subtotal }) => {
             return setValue(item.quantity);
           }
         });
+        let subPrice = 0;
+        res.data.data.cartList.forEach((item) => {
+          subPrice += price * item.quantity;
+        });
+        setSubtotal(subPrice);
       })
       .catch((err) => toast.error(err.response.data.message));
   };

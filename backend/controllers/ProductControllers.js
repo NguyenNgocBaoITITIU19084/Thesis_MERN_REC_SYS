@@ -29,11 +29,11 @@ exports.createProduct = catchAsync(async (req, res) => {
         message.models.not_founded + message.models.discount
       );
     }
-    const { persentDiscount } = discount;
-    const newPrice = price - (price * persentDiscount) / 100;
+    // const { persentDiscount } = discount;
+    // const newPrice = price - (price * persentDiscount) / 100;
     const product = await productSchema.create({
       name,
-      price: newPrice,
+      price,
       actualPrice,
       description,
       images,
