@@ -60,7 +60,7 @@ const DashBoardHeader = () => {
             <img
               src={`${seller?.avatar[0].link}`}
               alt=""
-              className="w-[50px] h-[50px] rounded-full border-[3px] border-[#0eae88]"
+              className="w-[50px] h-[50px] rounded-full border-[3px] border-[#0eae88] object-contain"
             />
           </Link>
         </div>

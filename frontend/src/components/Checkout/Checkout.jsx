@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "../../styles/styles";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -14,6 +14,7 @@ import { Country, State, City } from "country-state-city";
 import Select from "react-select";
 import { RxCross1 } from "react-icons/rx";
 import { HiOutlineMinus, HiPlus } from "react-icons/hi";
+
 const Checkout = () => {
   const [cart, setCart] = useState([]);
   const [couponCode, setCouponCode] = useState("");
@@ -451,11 +452,13 @@ const CartSingle = ({ data, setCartList, setSubtotal, subtotal }) => {
           className="w-[80px] h-[80px] ml-2 object-contain"
         />
         <div className="pl-[5px]">
-          <h1>
-            {data.productId.name > 16
-              ? data.productId.name.slice(0, 15) + "..."
-              : data.productId.name}
-          </h1>
+          <Link to={`/product/${data.productId._id}`}>
+            <h1>
+              {data.productId.name.length > 16
+                ? data.productId.name.slice(0, 15) + "..."
+                : data.productId.name}
+            </h1>
+          </Link>
           <h4 className="font-[400] text-[15px] text-[#00000082]">
             ${data.productId.price}*{value}
           </h4>

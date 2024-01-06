@@ -156,11 +156,9 @@ const CartSingle = ({ data, setCartList }) => {
           className="w-[80px] h-[80px] ml-2 object-contain"
         />
         <div className="pl-[5px]">
-          <h1>
-            {data.productId.name > 16
-              ? data.productId.name.slice(0, 15) + "..."
-              : data.productId.name}
-          </h1>
+          <Link to={`/product/${data.productId._id}`}>
+            <h1>{data.productId.name.slice(0, 15) + "..."}</h1>
+          </Link>
           <h4 className="font-[400] text-[15px] text-[#00000082]">
             ${data.productId.price}*{value}
           </h4>

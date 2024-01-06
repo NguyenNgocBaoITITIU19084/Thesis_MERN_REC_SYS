@@ -30,7 +30,12 @@ import { selectAccessAuth } from "../../redux/features/auths/authSlice.js";
 import { selectProfile } from "../../redux/features/profile/profilesSlice.js";
 import { selectStore } from "../../redux/features/store/storeSlice.js";
 import Wishlist from "../Wishlist/Wishlist.jsx";
-import { Server_url, Api_version, whishlist_end_point } from "../../Server.js";
+import {
+  Server_url,
+  Api_version,
+  whishlist_end_point,
+  product_end_point,
+} from "../../Server.js";
 import axios from "axios";
 
 const Header = ({ activeHeading }) => {
@@ -55,6 +60,7 @@ const Header = ({ activeHeading }) => {
   const [openWhishList, setOpenWishList] = useState(false);
 
   const [whishList, setWhishList] = useState([]);
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     if (categoryStatus === "idle") {
@@ -74,7 +80,17 @@ const Header = ({ activeHeading }) => {
         })
         .catch((err) => console.log(err));
     }
+    async function fetchAllProducts() {
+      await axios
+        .get(`${Server_url}${Api_version}${product_end_point}/`)
+        .then((res) => {
+          console.log("all products", res);
+          setProducts([...res.data.data]);
+        })
+        .catch((err) => console.log(err));
+    }
     fetchWhishListByUser();
+    fetchAllProducts();
   }, [categoryStatus, brandStatus, dispatch]);
 
   window.addEventListener("scroll", () => {
@@ -90,8 +106,8 @@ const Header = ({ activeHeading }) => {
     setSearchTerm(term);
 
     const filteredProducts =
-      productData &&
-      productData.filter((product) =>
+      products &&
+      products.filter((product) =>
         product.name.toLocaleLowerCase().includes(term.toLocaleLowerCase())
       );
     setSearchData(filteredProducts);
@@ -122,20 +138,19 @@ const Header = ({ activeHeading }) => {
               className="absolute right-2 top-1.5 cursor-pointer"
             />
             {searchData && searchData.length !== 0 ? (
-              <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
+              <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4 w-full">
                 {searchData &&
                   searchData.map((i, index) => {
                     const d = i.name;
-                    const Product_name = d.replace(/\s+/g, "-");
                     return (
-                      <Link to={`/product/${Product_name}`}>
+                      <Link to={`/product/${i._id}`}>
                         <div className="w-full flex items-start-py-3">
                           <img
-                            src={`${i.image_Url[0].url}`}
+                            src={`${i?.images[0]?.link}`}
                             alt=""
                             className="w-[40px] h-[40px] mr-[10px]"
                           />
-                          <h1>{i.name}</h1>
+                          <h1>{i?.name}</h1>
                         </div>
                       </Link>
                     );

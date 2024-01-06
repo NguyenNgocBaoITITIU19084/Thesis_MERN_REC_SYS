@@ -15,6 +15,7 @@ import {
   Layout,
   ShopCreatePage,
   CheckoutPage,
+  PaymentPage,
 } from "./Routes.js";
 import {
   ShopHomePage,
@@ -99,6 +100,14 @@ const App = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUpPage />} />
           <Route path="/shop/preview/:id" element={<ShopPreviewPage />} />
+          <Route
+            path="/payment"
+            element={
+              <ProtectedRoute>
+                <PaymentPage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/checkout"
             element={
