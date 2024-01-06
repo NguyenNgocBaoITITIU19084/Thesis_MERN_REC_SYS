@@ -82,11 +82,13 @@ const ProfileContent = ({ active }) => {
       age,
       avatar,
     };
+    console.log("submit data", data);
     await axios
       .patch(`${END_POINT}update-profile`, data, {
         withCredentials: true,
       })
       .then((res) => {
+        console.log("ressss", res);
         toast.success("Success Upload Profile");
       })
       .catch((err) => {
@@ -235,6 +237,7 @@ const ProfileContent = ({ active }) => {
                       className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
                       required
                       value={address}
+                      onChange={(e) => setAddress(e.target.value)}
                     />
                   </div>
                   <div className=" w-[100%] 800px:w-[50%]">

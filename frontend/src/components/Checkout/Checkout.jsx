@@ -9,69 +9,43 @@ import { Country, State, City } from "country-state-city";
 import Select from "react-select";
 
 const Checkout = () => {
-  const [user, setUser] = useState("");
   const [cart, setCart] = useState([]);
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [userInfo, setUserInfo] = useState(false);
-  const [address1, setAddress1] = useState("");
-  const [address2, setAddress2] = useState("");
-  const [zipCode, setZipCode] = useState(null);
   const [couponCode, setCouponCode] = useState("");
   const [couponCodeData, setCouponCodeData] = useState(null);
   const [discountPrice, setDiscountPrice] = useState(null);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    async function fetchUserProfile() {
-      await axios
-        .get(`${Server_url}${Api_version}${profile_end_point}/`, {
-          withCredentials: true,
-        })
-        .then((err) => {
-          const data = err.data.data;
-          console.log(data);
-        })
-        .catch((err) => console.log(err));
-    }
-    fetchUserProfile();
-    return () => {};
-  }, []);
-
   const paymentSubmit = () => {
-    if (
-      address1 === "" ||
-      address2 === "" ||
-      zipCode === null ||
-      country === "" ||
-      city === ""
-    ) {
-      toast.error("Please choose your delivery address!");
-    } else {
-      const shippingAddress = {
-        address1,
-        address2,
-        zipCode,
-        country,
-        city,
-      };
-
-      const orderData = {
-        cart,
-        totalPrice,
-        subTotalPrice,
-        shipping,
-        discountPrice,
-        shippingAddress,
-        user,
-      };
-
-      // update local storage with the updated orders array
-      localStorage.setItem("latestOrder", JSON.stringify(orderData));
-      navigate("/payment");
-    }
+    // if (
+    //   address1 === "" ||
+    //   address2 === "" ||
+    //   zipCode === null ||
+    //   country === "" ||
+    //   city === ""
+    // ) {
+    //   toast.error("Please choose your delivery address!");
+    // } else {
+    //   const shippingAddress = {
+    //     address1,
+    //     address2,
+    //     zipCode,
+    //     country,
+    //     city,
+    //   };
+    //   const orderData = {
+    //     cart,
+    //     totalPrice,
+    //     subTotalPrice,
+    //     shipping,
+    //     discountPrice,
+    //     shippingAddress,
+    //     user,
+    //   };
+    //   // update local storage with the updated orders array
+    //   localStorage.setItem("latestOrder", JSON.stringify(orderData));
+    //   navigate("/payment");
+    // }
   };
 
   const subTotalPrice = cart.reduce(
@@ -98,32 +72,21 @@ const Checkout = () => {
     <div className="w-full flex flex-col items-center py-8">
       <div className="w-[90%] 1000px:w-[70%] block 800px:flex">
         <div className="w-full 800px:w-[65%]">
-          <ShippingInfo
-            user={user}
-            country={country}
-            setCountry={setCountry}
-            city={city}
-            setCity={setCity}
-            userInfo={userInfo}
-            setUserInfo={setUserInfo}
-            address1={address1}
-            setAddress1={setAddress1}
-            address2={address2}
-            setAddress2={setAddress2}
-            zipCode={zipCode}
-            setZipCode={setZipCode}
-          />
+          <ShippingInfo />
         </div>
         <div className="w-full 800px:w-[35%] 800px:mt-0 mt-8">
-          <CartData
-            handleSubmit={handleSubmit}
-            totalPrice={totalPrice}
-            shipping={shipping}
-            subTotalPrice={subTotalPrice}
-            couponCode={couponCode}
-            setCouponCode={setCouponCode}
-            discountPercentenge={discountPercentenge}
-          />
+          <div className="flex flex-col">
+            <CartData
+              handleSubmit={handleSubmit}
+              totalPrice={totalPrice}
+              shipping={shipping}
+              subTotalPrice={subTotalPrice}
+              couponCode={couponCode}
+              setCouponCode={setCouponCode}
+              discountPercentenge={discountPercentenge}
+            />
+            <ProductOrderData />
+          </div>
         </div>
       </div>
       <div
@@ -136,46 +99,72 @@ const Checkout = () => {
   );
 };
 
-const ShippingInfo = ({
-  user,
-  country,
-  setCountry,
-  city,
-  setCity,
-  userInfo,
-  setUserInfo,
-  address1,
-  setAddress1,
-  address2,
-  setAddress2,
-  zipCode,
-  setZipCode,
-}) => {
+const ShippingInfo = ({}) => {
+  const [profile, setProfile] = useState();
+
+  const [lastName, setLastName] = useState();
+  const [firstName, setFirstName] = useState();
+  const [email, setEmail] = useState();
+  const [phoneNumber, setPhoneNumber] = useState(
+    profile?.profile?.phoneNumber[0]
+  );
+  const [address, setAddress] = useState("");
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
+
+  const [option, setOption] = useState(false);
+
+  const [shippedPhone, setShippedPhone] = useState();
+  const [shippedAddress, setShippedAddress] = useState();
+
+  useEffect(() => {
+    async function fetchUserProfile() {
+      await axios
+        .get(`${Server_url}${Api_version}${profile_end_point}/`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          const data = res?.data?.data;
+          setProfile(data);
+          setLastName(data?.profile?.lastName);
+          setFirstName(data?.profile?.firstName);
+          setPhoneNumber(data?.profile?.phoneNumber[0]);
+          setEmail(data?.email);
+        })
+        .catch((err) => toast.error("Failed Load Profile"));
+    }
+    fetchUserProfile();
+    return () => {
+      setProfile();
+    };
+  }, []);
+
   return (
     <div className="w-full 800px:w-[95%] bg-white rounded-md p-5 pb-8">
       <h5 className="text-[18px] font-[500]">Shipping Address</h5>
       <br />
+      {console.log("profile", profile)}
       <form>
         <div className="w-full flex pb-3">
           <div className="w-[50%]">
-            <label className="block pb-2">Full Name</label>
+            <label className="block pb-2">First Name</label>
             <input
               type="text"
-              value={user && user.name}
+              value={firstName}
               required
               className={`${styles.input} !w-[95%]`}
+              onChange={(e) => setFirstName(e.target.value)}
             />
           </div>
           <div className="w-[50%]">
-            <label className="block pb-2">Email Address</label>
+            <label className="block pb-2">Last Name</label>
             <input
-              type="email"
-              value={user && user.email}
+              type="text"
+              value={lastName}
               required
-              className={`${styles.input}`}
+              className={`${styles.input} !w-[95%]`}
+              onChange={(e) => setLastName(e.target.value)}
             />
           </div>
         </div>
@@ -186,16 +175,16 @@ const ShippingInfo = ({
             <input
               type="number"
               required
-              value={user && user.phoneNumber}
+              value={phoneNumber}
               className={`${styles.input} !w-[95%]`}
+              onChange={(e) => setPhoneNumber(e.target.value)}
             />
           </div>
           <div className="w-[50%]">
-            <label className="block pb-2">Zip Code</label>
+            <label className="block pb-2">Email Address</label>
             <input
-              type="number"
-              value={zipCode}
-              onChange={(e) => setZipCode(e.target.value)}
+              type="email"
+              value={email}
               required
               className={`${styles.input}`}
             />
@@ -261,8 +250,8 @@ const ShippingInfo = ({
             <label className="block pb-2">Address</label>
             <input
               type="address"
-              value={address2}
-              onChange={(e) => setAddress2(e.target.value)}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
               required
               className={`${styles.input}`}
             />
@@ -272,29 +261,39 @@ const ShippingInfo = ({
         <div></div>
       </form>
       <h5
-        className="text-[18px] cursor-pointer inline-block"
-        onClick={() => setUserInfo(!userInfo)}
+        className={`${styles.button}  w-[150px] 800px:w-[280px] mt-10 text-[18px] cursor-pointer inline-block text-zinc-50`}
+        onClick={() => setOption(!option)}
       >
         Choose From saved address
       </h5>
-      {userInfo && (
+      {option && (
         <div>
-          {user &&
-            user.addresses.map((item, index) => (
+          <p>Phone Number</p>
+          {profile?.profile?.phoneNumber.length &&
+            profile?.profile?.phoneNumber.map((item, index) => (
               <div className="w-full flex mt-1">
                 <input
-                  type="checkbox"
-                  className="mr-3"
-                  value={item.addressType}
-                  onClick={() =>
-                    setAddress1(item.address1) ||
-                    setAddress2(item.address2) ||
-                    setZipCode(item.zipCode) ||
-                    setCountry(item.country) ||
-                    setCity(item.city)
-                  }
+                  type="radio"
+                  value={item}
+                  className={`mr-3`}
+                  onClick={() => setShippedPhone(item)}
+                  name="phoneNumber"
                 />
-                <h2>{item.addressType}</h2>
+                <h2>{item}</h2>
+              </div>
+            ))}
+          <p>Phone Number</p>
+          {profile?.profile?.address.length &&
+            profile?.profile?.address.map((item, index) => (
+              <div className="w-full flex mt-1">
+                <input
+                  type="radio"
+                  value={item}
+                  className={`mr-3`}
+                  onClick={() => setShippedAddress(item)}
+                  name="address"
+                />
+                <h2>{item}</h2>
               </div>
             ))}
         </div>
@@ -339,6 +338,42 @@ const CartData = ({
           placeholder="Coupoun code"
           value={couponCode}
           onChange={(e) => setCouponCode(e.target.value)}
+          required
+        />
+        <input
+          className={`w-full h-[40px] border border-[#f63b60] text-center text-[#f63b60] rounded-[3px] mt-8 cursor-pointer`}
+          required
+          value="Apply code"
+          type="submit"
+        />
+      </form>
+    </div>
+  );
+};
+const ProductOrderData = () => {
+  return (
+    <div className="w-full bg-[#fff] rounded-md p-5 pb-8">
+      <div className="flex justify-between">
+        <h3 className="text-[16px] font-[400] text-[#000000a4]">subtotal:</h3>
+        <h5 className="text-[18px] font-[600]"></h5>
+      </div>
+      <br />
+      <div className="flex justify-between">
+        <h3 className="text-[16px] font-[400] text-[#000000a4]">shipping:</h3>
+        <h5 className="text-[18px] font-[600]"></h5>
+      </div>
+      <br />
+      <div className="flex justify-between border-b pb-3">
+        <h3 className="text-[16px] font-[400] text-[#000000a4]">Discount:</h3>
+        <h5 className="text-[18px] font-[600]"></h5>
+      </div>
+      <h5 className="text-[18px] font-[600] text-end pt-3">${}</h5>
+      <br />
+      <form>
+        <input
+          type="text"
+          className={`${styles.input} h-[40px] pl-2`}
+          placeholder="Coupoun code"
           required
         />
         <input
