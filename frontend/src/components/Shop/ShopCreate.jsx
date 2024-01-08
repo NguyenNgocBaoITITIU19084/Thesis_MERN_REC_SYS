@@ -158,9 +158,9 @@ const ShopCreate = () => {
               </label>
               <div className="mt-1">
                 <input
-                  type="email"
-                  name="email"
-                  autoComplete="email"
+                  type="text"
+                  name="text"
+                  autoComplete="text"
                   required
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}

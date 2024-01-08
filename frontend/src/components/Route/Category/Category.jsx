@@ -21,7 +21,7 @@ const Category = () => {
           console.log(res);
           const check = res?.data?.data;
           if (check.length) {
-            setCategoriesData([...check]);
+            setCategoriesData([...check.slice(0, 10)]);
           }
         })
         .catch((err) => console.log(err));

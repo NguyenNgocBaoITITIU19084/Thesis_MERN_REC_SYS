@@ -44,7 +44,9 @@ const Header = ({ activeHeading }) => {
   const { isAuthenticated } = useSelector(selectAccessAuth);
   const { profile } = useSelector(selectProfile);
 
-  const categories = useSelector(selectAllCategories);
+  const categoriesData = useSelector(selectAllCategories);
+  const slicedCategory = categoriesData.slice(0, 10);
+  const categories = [...slicedCategory];
   const categoryStatus = useSelector(selectLoadingState);
 
   const brands = useSelector(selectAllBrands);

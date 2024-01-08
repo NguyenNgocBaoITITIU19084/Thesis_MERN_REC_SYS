@@ -26,7 +26,6 @@ exports.register = catchAsync(async (req, res) => {
     profile: id,
   });
   const { id: userID } = user;
-  console.log("user id", userID);
   const whishList = await whishListSchema.create({ createdBy: userID });
   const cartList = await cartListSchema.create({ createdBy: userID });
   // Send Email
