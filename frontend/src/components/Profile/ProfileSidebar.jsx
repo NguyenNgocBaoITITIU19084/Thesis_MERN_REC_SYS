@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineLogin, AiOutlineMessage } from "react-icons/ai";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { HiOutlineReceiptRefund, HiOutlineShoppingBag } from "react-icons/hi";
@@ -19,9 +19,27 @@ import {
 } from "../../redux/features/auths/authSlice";
 import { clearProfile } from "../../redux/features/profile/profilesSlice";
 import { clearStoreProfile } from "../../redux/features/store/storeSlice";
+import axios from "axios";
+import { Api_version, Server_url } from "../../Server";
 const ProfileSidebar = ({ setActive, active }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [admin, setAdmin] = useState();
+  useEffect(() => {
+    async function fecthIsAdmin() {
+      await axios
+        .get(`${Server_url}${Api_version}/auth/is-admin`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          console.log(res);
+          setAdmin(res.data.data);
+        })
+        .catch((err) => console.log(err));
+    }
+    fecthIsAdmin();
+  }, []);
 
   const logoutHandler = () => {
     dispatch(LogOutByUser()).then(() => {
@@ -130,7 +148,21 @@ const ProfileSidebar = ({ setActive, active }) => {
           Address
         </span>
       </div>
-
+      {admin && (
+        <div
+          className="flex items-center cursor-pointer w-full mb-8"
+          onClick={() => setActive(10)}
+        >
+          <TbAddressBook size={20} color={active === 10 ? "red" : ""} />
+          <span
+            className={`pl-3 ${
+              active === 10 ? "text-[red]" : ""
+            } 800px:block hidden`}
+          >
+            <Link to="/admin/dashboard">Admin Dash Board</Link>
+          </span>
+        </div>
+      )}
       <div
         className="single_item flex items-center cursor-pointer w-full mb-8"
         onClick={logoutHandler}

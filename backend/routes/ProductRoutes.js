@@ -50,5 +50,4 @@ route.patch(
   authorize([ROLE.SUPPLIER, ROLE.ADMIN]),
   productControllers.updateProductById
 );
-
 module.exports = route;

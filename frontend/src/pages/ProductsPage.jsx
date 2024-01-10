@@ -8,7 +8,7 @@ import { Api_version, Server_url, product_end_point } from "../Server";
 
 const ProductsPage = () => {
   const [searchParams] = useSearchParams();
-  const categoryData = searchParams.get("category");
+  const categoryData = searchParams.get("categories");
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -22,8 +22,10 @@ const ProductsPage = () => {
         .catch((err) => console.log(err));
     }
     fectchAllProducts();
+    if (categoryData) {
+    }
     return () => {};
-  }, []);
+  }, [categoryData]);
   return (
     <div>
       <Header activeHeading={3} />

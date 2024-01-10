@@ -22,9 +22,9 @@ import { toast } from "react-toastify";
 const ProductCard = ({ data }) => {
   const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
-  const d = data.name;
-  const product_name = d.replace(/\s+/g, "-");
-  const productId = data._id;
+  const d = data?.name;
+  const product_name = d?.replace(/\s+/g, "-");
+  const productId = data?._id;
 
   const handleAddToWhishList = async (productId) => {
     const data = { productId };
@@ -72,7 +72,7 @@ const ProductCard = ({ data }) => {
     <>
       <div className="w-full h-[370px] bg-white rounded-lg shadow-sm p-3 relative cursor-pointer">
         <div className="flex justify-end"></div>
-        <Link to={`/product/${data._id}`}>
+        <Link to={`/product/${data?._id}`}>
           <img
             src={data?.images[0]?.link}
             alt=""

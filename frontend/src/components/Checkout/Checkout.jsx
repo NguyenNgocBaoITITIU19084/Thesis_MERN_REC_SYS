@@ -51,7 +51,8 @@ const Checkout = () => {
     //   };
     //   // update local storage with the updated orders array
     //   localStorage.setItem("latestOrder", JSON.stringify(orderData));
-    //   navigate("/payment");
+    navigate("/");
+    toast.success("Success");
     // }
   };
 
@@ -340,7 +341,7 @@ const ProductOrderData = () => {
         <h5 className="text-[18px] font-[600]">${subtotal}</h5>
       </div>
       <br />
-      <div className="flex justify-between border-b pb-3">
+      {/* <div className="flex justify-between border-b pb-3">
         <h3 className="text-[16px] font-[400] text-[#000000a4]">Discount:</h3>
         <h5 className="text-[18px] font-[600]"></h5>
       </div>
@@ -359,7 +360,7 @@ const ProductOrderData = () => {
           value="Apply code"
           type="submit"
         />
-      </form>
+      </form> */}
     </div>
   );
 };

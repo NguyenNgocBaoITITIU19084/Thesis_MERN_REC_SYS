@@ -176,3 +176,26 @@ exports.resetPassword = catchAsync(async (req, res) => {
       )
     );
 });
+exports.isAdmin = catchAsync(async (req, res) => {
+  const { roles } = req.user;
+  if (roles.includes("admin")) {
+    return res
+      .status(200)
+      .json(
+        new ResultObject(
+          STATUS_CODE.SUCCESS,
+          `${message.models.success_update}${message.models.user}`,
+          true
+        )
+      );
+  }
+  return res
+    .status(200)
+    .json(
+      new ResultObject(
+        STATUS_CODE.SUCCESS,
+        `${message.models.success_update}${message.models.user}`,
+        false
+      )
+    );
+});

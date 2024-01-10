@@ -3,15 +3,27 @@ import Header from "../components/layout/Header";
 import styles from "../styles/styles";
 import ProductCard from "../components/Route/ProductCard/ProductCard";
 import { productData } from "../static/data";
+import axios from "axios";
+import { Api_version, Server_url } from "../Server";
 
 const BestSellingPage = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const d =
-      productData && productData.sort((a, b) => a.total_sell - b.total_sell);
-    setData(d);
-  });
+    async function fetchCollaborative() {
+      await axios
+        .get(
+          `${Server_url}${Api_version}/recommend/recommend-collaborative-based/`,
+          { withCredentials: true }
+        )
+        .then((res) => {
+          console.log(res);
+          setData([...res.data.data]);
+        })
+        .catch((err) => console.log(err));
+    }
+    fetchCollaborative();
+  }, []);
   return (
     <div>
       <Header activeHeading={2} />

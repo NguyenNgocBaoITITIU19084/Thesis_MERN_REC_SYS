@@ -86,7 +86,6 @@ const Header = ({ activeHeading }) => {
       await axios
         .get(`${Server_url}${Api_version}${product_end_point}/`)
         .then((res) => {
-          console.log("all products", res);
           setProducts([...res.data.data]);
         })
         .catch((err) => console.log(err));
@@ -197,7 +196,7 @@ const Header = ({ activeHeading }) => {
         >
           {/* {categories} */}
           <div className="flex justify-between">
-            <OptionList data={brands} title={"Brands"} />
+            {/* <OptionList data={brands} title={"Brands"} /> */}
             <OptionList data={categories} title={"Categories"} />
           </div>
 

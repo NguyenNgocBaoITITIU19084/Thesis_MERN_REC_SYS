@@ -45,7 +45,6 @@ const ProductDetails = ({ data }) => {
   };
   return (
     <>
-      {console.log(data)}
       <div className="bg-white">
         {data ? (
           <div className={`${styles.section} w-[90%] 800px:w-[80%]`}>
@@ -61,7 +60,6 @@ const ProductDetails = ({ data }) => {
                             select === 0 ? "border" : "null"
                           } cursor-pointer`}
                         >
-                          {console.log(index)}
                           <img
                             src={image.link}
                             alt=""
