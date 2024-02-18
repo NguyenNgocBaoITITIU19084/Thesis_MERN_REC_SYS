@@ -21,8 +21,21 @@ const ProductsPage = () => {
         })
         .catch((err) => console.log(err));
     }
-    fectchAllProducts();
+    async function fectchAllProductsByCategory(categoryData) {
+      await axios
+        .get(
+          `${Server_url}${Api_version}${product_end_point}/get-by-category/${categoryData}`
+        )
+        .then((res) => {
+          console.log(res.data.data);
+          setProducts([...res.data.data]);
+        })
+        .catch((err) => console.log(err));
+    }
     if (categoryData) {
+      fectchAllProductsByCategory(categoryData);
+    } else {
+      fectchAllProducts();
     }
     return () => {};
   }, [categoryData]);

@@ -7,6 +7,7 @@ const ResultObject = require("../utils/ResultObject");
 
 const productSchema = require("../models/ProductsModel");
 const discountSchema = require("../models/DiscountsModel");
+const categorySchema = require("../models/CategoriesModel");
 const { STATUS_CODE } = require("../contants/statusCode");
 const message = require("../config/Messages");
 
@@ -120,7 +121,34 @@ exports.getProductById = catchAsync(async (req, res) => {
       )
     );
 });
-
+exports.getByCategory = catchAsync(async (req, res) => {
+  const { name } = req.params;
+  const category = await categorySchema.findOne({ name }).lean();
+  if (!category) {
+    throw new ApiError(400, message.models.not_founded);
+  }
+  const product = await productSchema
+    .find({ categories: category._id })
+    .populate("discountApplied")
+    .populate("brand")
+    .populate("categories")
+    .populate("createdBy");
+  if (!product) {
+    throw new ApiError(
+      400,
+      message.models.not_founded + message.models.product
+    );
+  }
+  return res
+    .status(200)
+    .json(
+      new ResultObject(
+        STATUS_CODE.SUCCESS,
+        message.models.success_query + message.models.product,
+        product
+      )
+    );
+});
 exports.deleteProductById = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { store: storeId } = req.user;

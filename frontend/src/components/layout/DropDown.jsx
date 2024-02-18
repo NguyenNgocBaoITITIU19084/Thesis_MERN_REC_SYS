@@ -18,7 +18,7 @@ const DropDown = ({ data, setDropDown, title }) => {
             className={`${styles.noramlFlex}`}
             onClick={() => submitHandle(i)}
           >
-            <img
+            {/* <img
               src={i?.images[0]?.link}
               style={{
                 width: "25px",
@@ -28,7 +28,7 @@ const DropDown = ({ data, setDropDown, title }) => {
                 userSelect: "none",
               }}
               alt=""
-            />
+            /> */}
             <h3 className="m-3 cursor-pointer select-none">{i?.name}</h3>
           </div>
         ))}

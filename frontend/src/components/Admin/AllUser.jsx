@@ -1,36 +1,60 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { DataGrid } from "@material-ui/data-grid";
-import { AiOutlineDelete } from "react-icons/ai";
+import { AiFillTool } from "react-icons/ai";
 import { Button } from "@material-ui/core";
 import styles from "../../styles/styles";
 import { RxCross1 } from "react-icons/rx";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Server_url, Api_version, auth_end_point } from "../../Server";
 
 const AllUsers = () => {
   const [open, setOpen] = useState(false);
   const [userId, setUserId] = useState("");
 
-  useEffect(() => {}, []);
+  const [userData, setUserData] = useState([]);
 
-  const handleDelete = async (id) => {};
+  useEffect(() => {
+    async function fetchAllUsers() {
+      await axios
+        .get(`${Server_url}${Api_version}${auth_end_point}/get-all-users`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          setUserData([...res.data.data]);
+        })
+        .catch((err) => toast.error("Failed Load Users"));
+    }
+    fetchAllUsers();
+  }, []);
+
+  const handleBanned = async (id) => {
+    await axios
+      .patch(`${Server_url}${Api_version}${auth_end_point}/banned-user/${id}`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        userData.forEach((user) => {
+          if (user._id === id) {
+            user.isActive = res.data.data.isActive;
+          }
+        });
+        setUserData([...userData]);
+        toast.success("Update isActive of User");
+      })
+      .catch((err) => toast.error("Failed Load Users"));
+  };
 
   const columns = [
-    { field: "id", headerName: "User ID", minWidth: 150, flex: 0.7 },
-
-    {
-      field: "name",
-      headerName: "name",
-      minWidth: 130,
-      flex: 0.7,
-    },
+    { field: "id", headerName: "User ID", minWidth: 150, flex: 1 },
+    ,
     {
       field: "email",
       headerName: "Email",
       type: "text",
-      minWidth: 130,
-      flex: 0.7,
+      minWidth: 200,
+      flex: 2,
     },
     {
       field: "role",
@@ -44,38 +68,44 @@ const AllUsers = () => {
       field: "joinedAt",
       headerName: "joinedAt",
       type: "text",
-      minWidth: 130,
+      minWidth: 100,
       flex: 0.8,
     },
-
+    {
+      field: "isActive",
+      headerName: "isActive",
+      type: "text",
+      minWidth: 80,
+      flex: 0.8,
+    },
     {
       field: " ",
       flex: 1,
       minWidth: 150,
-      headerName: "Delete User",
+      headerName: "Banned User",
       type: "number",
       sortable: false,
       renderCell: (params) => {
         return (
           <>
             <Button onClick={() => setUserId(params.id) || setOpen(true)}>
-              <AiOutlineDelete size={20} />
+              <AiFillTool size={20} />
             </Button>
           </>
         );
       },
     },
   ];
-  const users = [];
+
   const row = [];
-  users &&
-    users.forEach((item) => {
+  userData &&
+    userData.forEach((item) => {
       row.push({
         id: item._id,
-        name: item.name,
         email: item.email,
-        role: item.role,
+        role: item.roles,
         joinedAt: item.createdAt.slice(0, 10),
+        isActive: item.isActive,
       });
     });
 
@@ -99,7 +129,7 @@ const AllUsers = () => {
                 <RxCross1 size={25} onClick={() => setOpen(false)} />
               </div>
               <h3 className="text-[25px] text-center py-5 font-Poppins text-[#000000cb]">
-                Are you sure you wanna delete this user?
+                Are you sure you wanna ban this user?
               </h3>
               <div className="w-full flex items-center justify-center">
                 <div
@@ -110,7 +140,7 @@ const AllUsers = () => {
                 </div>
                 <div
                   className={`${styles.button} text-white text-[18px] !h-[42px] ml-4`}
-                  onClick={() => setOpen(false) || handleDelete(userId)}
+                  onClick={() => setOpen(false) || handleBanned(userId)}
                 >
                   confirm
                 </div>

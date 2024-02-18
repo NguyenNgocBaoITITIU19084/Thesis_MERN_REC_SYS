@@ -19,9 +19,9 @@ exports.jwtAuth = (req, res, next) => {
     next();
   } catch (error) {
     if (error.name === "TokenExpiredError") {
-      throw new ApiError(401, "Token is expired!");
+      return new ApiError(401, "Token is expired!");
     }
-    throw new ApiError(403, "Forbiden");
+    return new ApiError(403, "Forbiden");
   }
 };
 
@@ -34,20 +34,26 @@ exports.isAuthenticated = async (req, res, next) => {
       return next(new ApiError(401, "Please login to continue"));
     }
     if (token) {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-      const { id } = decoded;
-      req.user = await UserSchema.findById(id).catch((error) => {
-        return next(new ApiError(404, "Not Found User"));
-      });
-      next();
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        const { id } = decoded;
+        req.user = await UserSchema.findById(id).catch((error) => {
+          return next(new ApiError(404, "Not Found User"));
+        });
+        next();
+      } catch (error) {
+        if (error.name === "TokenExpiredError") {
+          return new ApiError(401, "Token is expired!");
+        }
+      }
     } else {
       return next(new ApiError(401, "Please login to continue"));
     }
   } catch (error) {
     next(error);
     if (error.name === "TokenExpiredError") {
-      throw new ApiError(401, "Token is expired!");
+      return new ApiError(401, "Token is expired!");
     }
-    throw new ApiError(403, "Forbiden");
+    return new ApiError(403, "Forbiden");
   }
 };

@@ -7,7 +7,7 @@ const route = express.Router();
 
 route.get("/", productControllers.getAllproducts);
 // get product by store id (supplier side)
-
+route.get("/get-by-category/:name", productControllers.getByCategory);
 route.get(
   "/store-side",
   isAuthenticated,

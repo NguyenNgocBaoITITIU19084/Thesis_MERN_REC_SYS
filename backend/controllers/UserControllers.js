@@ -29,12 +29,12 @@ exports.register = catchAsync(async (req, res) => {
   const whishList = await whishListSchema.create({ createdBy: userID });
   const cartList = await cartListSchema.create({ createdBy: userID });
   // Send Email
-  // await EmailService.sendGmail(
-  //   process.env.EMAIL,
-  //   email,
-  //   "Create Account At DevShop.",
-  //   `Thanks for creating account at DevShop.`
-  // );
+  await EmailService.sendGmail(
+    process.env.EMAIL,
+    email,
+    "Create Account At DevShop.",
+    `Thanks for creating account at DevShop.`
+  );
   return res
     .status(200)
     .json(
@@ -196,6 +196,39 @@ exports.isAdmin = catchAsync(async (req, res) => {
         STATUS_CODE.SUCCESS,
         `${message.models.success_update}${message.models.user}`,
         false
+      )
+    );
+});
+
+exports.getAllUsers = catchAsync(async (req, res) => {
+  const users = await userSchema.find().lean();
+  return res
+    .status(200)
+    .json(
+      new ResultObject(
+        STATUS_CODE.SUCCESS,
+        `${message.models.success_update}${message.models.user}`,
+        users
+      )
+    );
+});
+exports.bannedUserById = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const user = await userSchema.findById(id).lean();
+  if (!user) {
+    throw new ApiError(404, `${message.error.user_not_existed}`);
+  }
+  const userUpdated = await userSchema.findByIdAndUpdate(
+    { _id: id },
+    { isActive: !user.isActive }
+  );
+  return res
+    .status(200)
+    .json(
+      new ResultObject(
+        STATUS_CODE.SUCCESS,
+        `${message.models.success_update}${message.models.user}`,
+        userUpdated
       )
     );
 });
