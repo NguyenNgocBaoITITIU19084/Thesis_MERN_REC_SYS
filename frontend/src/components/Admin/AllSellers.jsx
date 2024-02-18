@@ -7,12 +7,27 @@ import { RxCross1 } from "react-icons/rx";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import { Server_url, Api_version, store_end_point } from "../../Server";
 
 const AllSellers = () => {
   const [open, setOpen] = useState(false);
   const [userId, setUserId] = useState("");
 
-  useEffect(() => {}, []);
+  const [sellersData, setSellersData] = useState([]);
+
+  useEffect(() => {
+    async function fetchAllSellers() {
+      await axios
+        .get(`${Server_url}${Api_version}${store_end_point}/get-all`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          setSellersData([...res.data.data]);
+        })
+        .catch((err) => toast.error("Failed Load Users"));
+    }
+    fetchAllSellers();
+  }, []);
 
   const handleDelete = async (id) => {};
 
@@ -22,13 +37,6 @@ const AllSellers = () => {
     {
       field: "name",
       headerName: "name",
-      minWidth: 130,
-      flex: 0.7,
-    },
-    {
-      field: "email",
-      headerName: "Email",
-      type: "text",
       minWidth: 130,
       flex: 0.7,
     },
@@ -84,10 +92,10 @@ const AllSellers = () => {
       },
     },
   ];
-  const sellers = [];
+
   const row = [];
-  sellers &&
-    sellers.forEach((item) => {
+  sellersData &&
+    sellersData.forEach((item) => {
       row.push({
         id: item._id,
         name: item?.name,

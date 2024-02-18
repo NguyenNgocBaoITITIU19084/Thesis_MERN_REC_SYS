@@ -6,11 +6,27 @@ import { Link } from "react-router-dom";
 import { DataGrid } from "@material-ui/data-grid";
 import { Button } from "@material-ui/core";
 import Loader from "../layout/Loader";
+import { Server_url, Api_version, store_end_point } from "../../Server";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const AdminDashboardMain = () => {
   const [loading, setLoading] = useState(false);
+  const [sellersData, setSellersData] = useState([]);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    async function fetchAllSellers() {
+      await axios
+        .get(`${Server_url}${Api_version}${store_end_point}/get-all`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          setSellersData([...res.data.data]);
+        })
+        .catch((err) => toast.error("Failed Load Users"));
+    }
+    fetchAllSellers();
+  }, []);
 
   const columns = [
     { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
@@ -94,7 +110,7 @@ const AdminDashboardMain = () => {
                 </h3>
               </div>
               <h5 className="pt-2 pl-[36px] text-[22px] font-[500]">
-                {/* {sellers && sellers.length} */}
+                {sellersData && sellersData.length}
               </h5>
               <Link to="/admin-sellers">
                 <h5 className="pt-4 pl-2 text-[#077f9c]">View Sellers</h5>
@@ -122,7 +138,63 @@ const AdminDashboardMain = () => {
               </Link>
             </div>
           </div>
+          <div className="w-full block 800px:flex items-center justify-between">
+            <div className="w-full mb-4 800px:w-[30%] min-h-[20vh] bg-white shadow rounded px-2 py-5">
+              <div className="flex items-center">
+                <AiOutlineMoneyCollect
+                  size={30}
+                  className="mr-2"
+                  fill="#00000085"
+                />
+                <h3
+                  className={`${styles.productTitle} !text-[18px] leading-5 !font-[400] text-[#00000085]`}
+                >
+                  Total Earning
+                </h3>
+              </div>
+              <h5 className="pt-2 pl-[36px] text-[22px] font-[500]">
+                {/* $ {adminBalance} */}
+              </h5>
+            </div>
 
+            <div className="w-full mb-4 800px:w-[30%] min-h-[20vh] bg-white shadow rounded px-2 py-5">
+              <div className="flex items-center">
+                <MdBorderClear size={30} className="mr-2" fill="#00000085" />
+                <h3
+                  className={`${styles.productTitle} !text-[18px] leading-5 !font-[400] text-[#00000085]`}
+                >
+                  All Sellers
+                </h3>
+              </div>
+              <h5 className="pt-2 pl-[36px] text-[22px] font-[500]">
+                {sellersData && sellersData.length}
+              </h5>
+              <Link to="/admin-sellers">
+                <h5 className="pt-4 pl-2 text-[#077f9c]">View Sellers</h5>
+              </Link>
+            </div>
+
+            <div className="w-full mb-4 800px:w-[30%] min-h-[20vh] bg-white shadow rounded px-2 py-5">
+              <div className="flex items-center">
+                <AiOutlineMoneyCollect
+                  size={30}
+                  className="mr-2"
+                  fill="#00000085"
+                />
+                <h3
+                  className={`${styles.productTitle} !text-[18px] leading-5 !font-[400] text-[#00000085]`}
+                >
+                  All Orders
+                </h3>
+              </div>
+              <h5 className="pt-2 pl-[36px] text-[22px] font-[500]">
+                {/* {adminOrders && adminOrders.length} */}
+              </h5>
+              <Link to="/admin-orders">
+                <h5 className="pt-4 pl-2 text-[#077f9c]">View Orders</h5>
+              </Link>
+            </div>
+          </div>
           <br />
           <h3 className="text-[22px] font-Poppins pb-2">Latest Orders</h3>
           <div className="w-full min-h-[45vh] bg-white rounded">
