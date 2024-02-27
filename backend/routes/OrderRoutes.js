@@ -13,4 +13,29 @@ route.post(
   OrderControllers.createOrderByUser
 );
 
+route.get(
+  "/get-all-orders-by-admin",
+  isAuthenticated,
+  authorize([ROLE.ADMIN]),
+  OrderControllers.getAllOrdersByAdmin
+);
+
+route.get(
+  "/get-order-by-id/:orderId",
+  isAuthenticated,
+  OrderControllers.getOrderById
+);
+route.get(
+  "/get-order-by-supplier",
+  isAuthenticated,
+  authorize([ROLE.SUPPLIER]),
+  OrderControllers.getOrderBySupplier
+);
+
+route.get(
+  "/get-order-by-user",
+  isAuthenticated,
+  authorize([ROLE.GUEST]),
+  OrderControllers.getOrderByUser
+);
 module.exports = route;

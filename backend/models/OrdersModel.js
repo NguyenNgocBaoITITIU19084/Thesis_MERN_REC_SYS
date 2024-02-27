@@ -14,11 +14,15 @@ const orderSchema = new Schema(
         quantity: {
           type: Number,
           default: 1,
-          required: [true, "InStock of Product is Required"],
+          required: [true, "quantity of Product is Required"],
+        },
+        shopOwner: {
+          type: Schema.Types.ObjectId,
+          ref: "stores",
         },
       },
     ],
-    description: {
+    notes: {
       type: String,
     },
     phoneNumber: {

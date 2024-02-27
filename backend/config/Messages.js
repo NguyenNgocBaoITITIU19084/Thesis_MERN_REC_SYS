@@ -29,6 +29,7 @@ const messages = {
     store: " Store Model",
     whishList: " WhishList Model",
     cartList: " CartList Model",
+    order: " Order Model",
   },
   error: {
     user_not_existed: "User doest not existed",
