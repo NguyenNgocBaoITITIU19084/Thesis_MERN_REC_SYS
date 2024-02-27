@@ -42,9 +42,7 @@ exports.isAuthenticated = async (req, res, next) => {
         });
         next();
       } catch (error) {
-        if (error.name === "TokenExpiredError") {
-          return new ApiError(401, "Token is expired!");
-        }
+        return next(new ApiError(401, "Please login to continue"));
       }
     } else {
       return next(new ApiError(401, "Please login to continue"));

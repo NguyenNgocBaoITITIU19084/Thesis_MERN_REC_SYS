@@ -20,40 +20,14 @@ const Checkout = () => {
   const [couponCode, setCouponCode] = useState("");
   const [couponCodeData, setCouponCodeData] = useState(null);
   const [discountPrice, setDiscountPrice] = useState(null);
+  const [inforShipping, setInforShipping] = useState(null);
 
   const navigate = useNavigate();
 
   const paymentSubmit = () => {
-    // if (
-    //   address1 === "" ||
-    //   address2 === "" ||
-    //   zipCode === null ||
-    //   country === "" ||
-    //   city === ""
-    // ) {
-    //   toast.error("Please choose your delivery address!");
-    // } else {
-    //   const shippingAddress = {
-    //     address1,
-    //     address2,
-    //     zipCode,
-    //     country,
-    //     city,
-    //   };
-    //   const orderData = {
-    //     cart,
-    //     totalPrice,
-    //     subTotalPrice,
-    //     shipping,
-    //     discountPrice,
-    //     shippingAddress,
-    //     user,
-    //   };
     //   // update local storage with the updated orders array
     //   localStorage.setItem("latestOrder", JSON.stringify(orderData));
-    navigate("/");
-    toast.success("Success");
-    // }
+    navigate("/payment");
   };
 
   const subTotalPrice = cart.reduce(
@@ -78,7 +52,7 @@ const Checkout = () => {
     <div className="w-full flex flex-col items-center py-8">
       <div className="w-[90%] 1000px:w-[70%] block 800px:flex">
         <div className="w-full 800px:w-[65%]">
-          <ShippingInfo />
+          <ShippingInfo setInforShipping={setInforShipping} />
         </div>
         <div className="w-full 800px:w-[35%] 800px:mt-0 mt-8">
           <div className="flex flex-col">
@@ -96,7 +70,7 @@ const Checkout = () => {
   );
 };
 
-const ShippingInfo = ({}) => {
+const ShippingInfo = ({ setInforShipping }) => {
   const [profile, setProfile] = useState();
 
   const [lastName, setLastName] = useState();
@@ -114,6 +88,37 @@ const ShippingInfo = ({}) => {
 
   const [shippedPhone, setShippedPhone] = useState();
   const [shippedAddress, setShippedAddress] = useState();
+
+  const finishShippingInfor = () => {
+    if (option) {
+      const shippingInfor = {
+        lastName,
+        firstName,
+        email,
+        phoneNumber,
+        address,
+        selectedCountry,
+        selectedState,
+        selectedCity,
+        shippedAddress,
+        shippedPhone,
+      };
+      setInforShipping(shippingInfor);
+    } else {
+      const shippingInfor = {
+        lastName,
+        firstName,
+        email,
+        phoneNumber,
+        address,
+        selectedCountry,
+        selectedState,
+        selectedCity,
+      };
+      setInforShipping(shippingInfor);
+    }
+    toast.success("Finish Shipping Infor");
+  };
 
   useEffect(() => {
     async function fetchUserProfile() {
@@ -294,6 +299,12 @@ const ShippingInfo = ({}) => {
             ))}
         </div>
       )}
+      <div
+        className={`${styles.button} w-[150px] 800px:w-[280px] mt-10`}
+        onClick={() => finishShippingInfor()}
+      >
+        <h5 className="text-white">Finish</h5>
+      </div>
     </div>
   );
 };
@@ -341,7 +352,7 @@ const ProductOrderData = () => {
         <h5 className="text-[18px] font-[600]">${subtotal}</h5>
       </div>
       <br />
-      {/* <div className="flex justify-between border-b pb-3">
+      <div className="flex justify-between border-b pb-3">
         <h3 className="text-[16px] font-[400] text-[#000000a4]">Discount:</h3>
         <h5 className="text-[18px] font-[600]"></h5>
       </div>
@@ -360,7 +371,7 @@ const ProductOrderData = () => {
           value="Apply code"
           type="submit"
         />
-      </form> */}
+      </form>
     </div>
   );
 };
