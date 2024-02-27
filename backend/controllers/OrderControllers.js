@@ -89,7 +89,9 @@ exports.getOrderBySupplier = catchAsync(async (req, res) => {
   const { store: storeId } = req.user;
   const orders = await OrderSchema.findOne({
     orderList: { $elemMatch: { shopOwner: storeId } },
-  });
+  })
+    .populate("orderList.productId")
+    .populate("orderList.shopOwner");
   return res
     .status(201)
     .json(
@@ -103,7 +105,9 @@ exports.getOrderBySupplier = catchAsync(async (req, res) => {
 
 exports.getOrderByUser = catchAsync(async (req, res) => {
   const userId = req.user._id;
-  const orders = await OrderSchema.findOne({ createdBy: userId });
+  const orders = await OrderSchema.findOne({ createdBy: userId })
+    .populate("orderList.productId")
+    .populate("orderList.shopOwner");
   return res
     .status(201)
     .json(
