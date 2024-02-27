@@ -18,7 +18,7 @@ const Payment = () => {
   const [orderData, setOrderData] = useState([]);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const stripe = useStripe();
+  // const stripe = useStripe();
   const elements = useElements();
 
   useEffect(() => {
