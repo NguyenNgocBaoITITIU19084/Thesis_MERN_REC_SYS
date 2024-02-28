@@ -11,3 +11,5 @@ exports.discount_end_point = "/discount";
 exports.cloudinary_end_point = "/uploadCloudinary";
 exports.whishlist_end_point = "/whish-list";
 exports.cartList_end_point = "/cart-list";
+exports.payment_end_point = "/payment";
+exports.order_end_point = "/order";

@@ -11,6 +11,7 @@ import Layout from "./components/layout/Layout.jsx";
 import ShopCreatePage from "./pages/ShopCreatePage.jsx";
 import CheckoutPage from "./pages/CheckoutPage.jsx";
 import PaymentPage from "./pages/PaymentPage.jsx";
+import OrderSuccessPage from "./pages/OrderSuccessPage.jsx";
 export {
   LoginPage,
   SignUpPage,
@@ -25,4 +26,5 @@ export {
   ShopCreatePage,
   CheckoutPage,
   PaymentPage,
+  OrderSuccessPage,
 };

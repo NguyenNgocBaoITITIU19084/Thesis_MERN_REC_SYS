@@ -13,19 +13,50 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { RxCross1 } from "react-icons/rx";
+import {
+  Api_version,
+  Server_url,
+  cartList_end_point,
+  order_end_point,
+} from "../../Server";
 
 const Payment = () => {
   const [orderData, setOrderData] = useState([]);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  // const stripe = useStripe();
+  const stripe = useStripe();
   const elements = useElements();
 
+  const [cartList, setCartList] = useState([]);
+  const [subtotal, setSubtotal] = useState();
+  const [orderList, setOrderList] = useState([]);
   useEffect(() => {
     const orderData = JSON.parse(localStorage.getItem("latestOrder"));
     setOrderData(orderData);
-  }, []);
 
+    async function fetchCartList() {
+      await axios
+        .get(`${Server_url}${Api_version}${cartList_end_point}/get-cart-list`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          let subPrice = 0;
+          let orderList = [];
+          res.data.data.cartList.forEach((item) => {
+            subPrice += item.productId.price * item.quantity;
+            orderList.push({
+              productId: item.productId._id,
+              quantity: item.quantity,
+            });
+          });
+          setSubtotal(subPrice);
+          setOrderList(orderList);
+          setCartList([...res.data.data.cartList]);
+        })
+        .catch((err) => toast.error(err.response.data.message));
+    }
+    fetchCartList();
+  }, []);
   const createOrder = (data, actions) => {
     // return actions.order
     //   .create({
@@ -141,25 +172,23 @@ const Payment = () => {
   };
 
   const cashOnDeliveryHandler = async (e) => {
-    // e.preventDefault();
-    // const config = {
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // };
-    // order.paymentInfo = {
-    //   type: "Cash On Delivery",
-    // };
-    // await axios
-    //   .post(`${server}/order/create-order`, order, config)
-    //   .then((res) => {
-    //     setOpen(false);
-    //     navigate("/order/success");
-    //     toast.success("Order successful!");
-    //     localStorage.setItem("cartItems", JSON.stringify([]));
-    //     localStorage.setItem("latestOrder", JSON.stringify([]));
-    //     window.location.reload();
-    //   });
+    e.preventDefault();
+    console.log(orderList);
+    const phoneNumber = `${orderData.phoneNumber}`;
+    const address = `${orderData.address} ${orderData.selectedCountry} ${orderData.selectedState} ${orderData.selectedCity}`;
+    const data = { orderList, phoneNumber, address };
+    await axios
+      .post(`${Server_url}${Api_version}/order/create-order`, data, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setOpen(false);
+        navigate("/order/success");
+        toast.success("Order successful!");
+        localStorage.setItem("cartItems", JSON.stringify([]));
+        localStorage.setItem("latestOrder", JSON.stringify([]));
+        window.location.reload();
+      });
   };
 
   return (
@@ -176,7 +205,7 @@ const Payment = () => {
           />
         </div>
         <div className="w-full 800px:w-[35%] 800px:mt-0 mt-8">
-          <CartData orderData={orderData} />
+          <CartData orderData={orderData} subtotal={subtotal} />
         </div>
       </div>
     </div>
@@ -393,29 +422,27 @@ const PaymentInfo = ({
   );
 };
 
-const CartData = ({ orderData }) => {
+const CartData = ({ orderData, subtotal }) => {
   const shipping = orderData?.shipping?.toFixed(2);
   return (
     <div className="w-full bg-[#fff] rounded-md p-5 pb-8">
       <div className="flex justify-between">
         <h3 className="text-[16px] font-[400] text-[#000000a4]">subtotal:</h3>
-        <h5 className="text-[18px] font-[600]">${orderData?.subTotalPrice}</h5>
+        <h5 className="text-[18px] font-[600]">${subtotal}</h5>
       </div>
       <br />
-      <div className="flex justify-between">
+      {/* <div className="flex justify-between">
         <h3 className="text-[16px] font-[400] text-[#000000a4]">shipping:</h3>
         <h5 className="text-[18px] font-[600]">${shipping}</h5>
-      </div>
+      </div> */}
       <br />
-      <div className="flex justify-between border-b pb-3">
+      {/* <div className="flex justify-between border-b pb-3">
         <h3 className="text-[16px] font-[400] text-[#000000a4]">Discount:</h3>
         <h5 className="text-[18px] font-[600]">
           {orderData?.discountPrice ? "$" + orderData.discountPrice : "-"}
         </h5>
-      </div>
-      <h5 className="text-[18px] font-[600] text-end pt-3">
-        ${orderData?.totalPrice}
-      </h5>
+      </div> */}
+      <h5 className="text-[18px] font-[600] text-end pt-3">${subtotal}</h5>
       <br />
     </div>
   );

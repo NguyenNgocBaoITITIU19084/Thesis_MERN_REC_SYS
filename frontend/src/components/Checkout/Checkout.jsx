@@ -21,12 +21,14 @@ const Checkout = () => {
   const [couponCodeData, setCouponCodeData] = useState(null);
   const [discountPrice, setDiscountPrice] = useState(null);
   const [inforShipping, setInforShipping] = useState(null);
+  const [orderData, setOrderData] = useState([]);
 
   const navigate = useNavigate();
 
   const paymentSubmit = () => {
     //   // update local storage with the updated orders array
     localStorage.setItem("latestOrder", JSON.stringify(inforShipping));
+    localStorage.setItem("orderData", JSON.stringify(orderData));
     navigate("/payment");
   };
 
@@ -56,7 +58,10 @@ const Checkout = () => {
         </div>
         <div className="w-full 800px:w-[35%] 800px:mt-0 mt-8">
           <div className="flex flex-col">
-            <ProductOrderData />
+            <ProductOrderData
+              setOrderData={setOrderData}
+              orderData={orderData}
+            />
           </div>
         </div>
       </div>
@@ -309,10 +314,9 @@ const ShippingInfo = ({ setInforShipping }) => {
   );
 };
 
-const ProductOrderData = () => {
+const ProductOrderData = ({ setOrderData, orderData }) => {
   const [cartList, setCartList] = useState([]);
   const [subtotal, setSubtotal] = useState();
-
   useEffect(() => {
     async function fetchCartList() {
       await axios
@@ -344,6 +348,8 @@ const ProductOrderData = () => {
               setCartList={setCartList}
               setSubtotal={setSubtotal}
               subtotal={subtotal}
+              setOrderData={setOrderData}
+              orderData={orderData}
             />
           ))}
       </div>
@@ -375,10 +381,20 @@ const ProductOrderData = () => {
     </div>
   );
 };
-const CartSingle = ({ data, setCartList, setSubtotal, subtotal }) => {
+const CartSingle = ({
+  data,
+  setCartList,
+  setSubtotal,
+  subtotal,
+  setOrderData,
+  orderData,
+}) => {
   const [value, setValue] = useState(data.quantity);
   const totalPrice = data.productId.price * value;
   const price = data.productId.price;
+  useEffect(() => {
+    setOrderData([...orderData, data?.productId, data?.quantity]);
+  }, []);
   const handleAddProductToCartList = async (productId) => {
     await axios
       .patch(

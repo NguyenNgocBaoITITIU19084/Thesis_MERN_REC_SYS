@@ -24,6 +24,7 @@ const CartListRoutes = require("./routes/CartListRoute");
 const OrderRoutes = require("./routes/OrderRoutes");
 const ReadeDataRoutes = require("./routes/ReadDataRoute");
 const RecommendationRoute = require("./routes/RecommendRoute");
+const PaymentRoute = require("./routes/PaymentRoute");
 
 const PORT = process.env.PORT;
 
@@ -55,6 +56,7 @@ app.use(`${server}/cart-list`, CartListRoutes);
 app.use(`${server}/order`, OrderRoutes);
 app.use(`${server}/read-data`, ReadeDataRoutes);
 app.use(`${server}/recommend`, RecommendationRoute);
+app.use(`${server}/payment`, PaymentRoute);
 
 app.use(catchError);
 

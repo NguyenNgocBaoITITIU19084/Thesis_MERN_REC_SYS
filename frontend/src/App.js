@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -16,6 +16,7 @@ import {
   ShopCreatePage,
   CheckoutPage,
   PaymentPage,
+  OrderSuccessPage,
 } from "./Routes.js";
 import {
   ShopHomePage,
@@ -54,16 +55,31 @@ import {
   clearStoreProfile,
 } from "./redux/features/store/storeSlice.js";
 import { useSelector } from "react-redux";
-
+import { Server_url, Api_version, payment_end_point } from "./Server.js";
+import axios from "axios";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 const ROLE = {
   ADMIN: "admin",
   GUEST: "guest",
   SUPPLIER: "supplier",
 };
 const App = () => {
+  const [stripeApiKey, setStripeApiKey] = useState("");
+
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector(selectAccessAuth);
   useEffect(async () => {
+    async function getStripeApiKey() {
+      await axios
+        .get(`${Server_url}${Api_version}${payment_end_point}/api_key`)
+        .then((res) => {
+          console.log("api key ==================", res);
+          setStripeApiKey(res.data.data?.api_key);
+        })
+        .catch((err) => console.log(err));
+    }
+    getStripeApiKey();
     if (isAuthenticated === true) {
       try {
         await dispatch(fetchProfile())
@@ -88,6 +104,20 @@ const App = () => {
   }, [isAuthenticated]);
   return (
     <>
+      {stripeApiKey && (
+        <Elements stripe={loadStripe(stripeApiKey)}>
+          <Routes>
+            <Route
+              path="/payment"
+              element={
+                <ProtectedRoute>
+                  <PaymentPage />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Elements>
+      )}
       <Routes>
         <Route path="/" element={<Layout />}>
           {/* Public Route */}
@@ -100,19 +130,12 @@ const App = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUpPage />} />
           <Route path="/shop/preview/:id" element={<ShopPreviewPage />} />
+          <Route path="/order/success" element={<OrderSuccessPage />} />
           <Route
             path="/for-you"
             element={
               <ProtectedRoute>
                 <BestSellingPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/payment"
-            element={
-              <ProtectedRoute>
-                <PaymentPage />
               </ProtectedRoute>
             }
           />
