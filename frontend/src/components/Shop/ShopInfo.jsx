@@ -16,7 +16,7 @@ import {
   selectStore,
 } from "../../redux/features/store/storeSlice";
 import { Api_version, Server_url, store_end_point } from "../../Server";
-const ShopInfo = ({ isOwner }) => {
+const ShopInfo = ({ isOwner, totalProduct }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -32,7 +32,6 @@ const ShopInfo = ({ isOwner }) => {
       await axios
         .get(`${Server_url}${Api_version}${store_end_point}/get-detail/${id}`)
         .then((res) => {
-          console.log("not authen", res);
           setDetail(res.data.data);
         })
         .catch((err) => console.log(err));
@@ -43,7 +42,6 @@ const ShopInfo = ({ isOwner }) => {
           withCredentials: true,
         })
         .then((res) => {
-          console.log("authen", res);
           setDetail(res.data.data.store);
         })
         .catch((err) => console.log(err));
@@ -53,7 +51,7 @@ const ShopInfo = ({ isOwner }) => {
     } else {
       fetchProductsByStoreId(id);
     }
-  }, []);
+  }, [totalProduct]);
 
   const logoutHandler = () => {
     dispatch(LogOutByUser()).then(() => {
@@ -105,14 +103,14 @@ const ShopInfo = ({ isOwner }) => {
               );
             })}
           </div>
-          <div className="p-3">
+          {/* <div className="p-3">
             <h5 className="font-[600]">Total Products</h5>
-            {/* <h4 className="text-[#000000a6]">{products && products.length}</h4> */}
-          </div>
-          <div className="p-3">
+            <h4 className="text-[#000000a6]">{totalProduct && totalProduct}</h4>
+          </div> */}
+          {/* <div className="p-3">
             <h5 className="font-[600]">Shop Ratings</h5>
-            {/* <h4 className="text-[#000000b0]">{averageRating}/5</h4> */}
-          </div>
+            <h4 className="text-[#000000b0]">{averageRating}/5</h4>
+          </div> */}
           <div className="p-3">
             <h5 className="font-[600]">Joined On</h5>
             <h4 className="text-[#000000b0]">
