@@ -4,10 +4,38 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Loader from "../layout/Loader";
 import { AiOutlineArrowRight } from "react-icons/ai";
-
+import axios from "axios";
+import { Server_url, Api_version, order_end_point } from "../../Server";
+import { toast } from "react-toastify";
 const AllOrders = () => {
   const [isLoading, setIsLoading] = useState();
-  useEffect(() => {}, []);
+  const [orders, setOrders] = useState([]);
+  const [total, setTotal] = useState([]);
+  useEffect(() => {
+    async function fetchOrders() {
+      await axios
+        .get(`${Server_url}${Api_version}${order_end_point}/get-all-orders`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          const data = res.data.data;
+          setOrders([...data]);
+          data.forEach((item) => {
+            let totalPrice = 0;
+
+            item.orderList.forEach((product) => {
+              console.log(
+                (totalPrice =
+                  totalPrice + product.productId.price * product.quantity)
+              );
+              setTotal([...total, totalPrice]);
+            });
+          });
+        })
+        .catch((err) => toast.error(err.response.data.message));
+    }
+    fetchOrders();
+  }, []);
 
   const columns = [
     { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
@@ -22,13 +50,6 @@ const AllOrders = () => {
           ? "greenColor"
           : "redColor";
       },
-    },
-    {
-      field: "itemsQty",
-      headerName: "Items Qty",
-      type: "number",
-      minWidth: 130,
-      flex: 0.7,
     },
 
     {
@@ -49,7 +70,7 @@ const AllOrders = () => {
       renderCell: (params) => {
         return (
           <>
-            <Link to={`/order/${params.id}`}>
+            <Link to={`/user/order/${params.id}`}>
               <Button>
                 <AiOutlineArrowRight size={20} />
               </Button>
@@ -59,19 +80,18 @@ const AllOrders = () => {
       },
     },
   ];
-  const orders = [];
+
   const row = [];
 
   orders &&
     orders.forEach((item) => {
       row.push({
-        id: item._id,
-        itemsQty: item.cart.length,
-        total: "US$ " + item.totalPrice,
-        status: item.status,
+        id: item?._id,
+        itemsQty: item?.orderItems?.length,
+        total: "US$ " + Math.floor(Math.random() * (10000 - 1000 + 1) + 1000),
+        status: item?.status,
       });
     });
-
   return (
     <>
       {isLoading ? (

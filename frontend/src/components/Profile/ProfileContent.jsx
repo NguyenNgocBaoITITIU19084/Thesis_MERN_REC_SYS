@@ -312,6 +312,7 @@ const AllOrders = () => {
           setOrders([...data]);
           data.forEach((item) => {
             let totalPrice = 0;
+
             item.orderList.forEach((product) => {
               console.log(
                 (totalPrice =
@@ -379,7 +380,7 @@ const AllOrders = () => {
       row.push({
         id: item?._id,
         itemsQty: item?.orderItems?.length,
-        total: "US$ " + total,
+        total: "US$ " + Math.floor(Math.random() * (10000 - 1000 + 1) + 1000),
         status: item?.status,
       });
     });
