@@ -118,3 +118,17 @@ exports.getOrderByUser = catchAsync(async (req, res) => {
       )
     );
 });
+exports.getOrders = catchAsync(async (req, res) => {
+  const orders = await OrderSchema.find()
+    .populate("orderList.productId")
+    .populate("orderList.shopOwner");
+  return res
+    .status(201)
+    .json(
+      new ResultObject(
+        STATUS_CODE.SUCCESS,
+        message.models.success_create + message.models.order,
+        orders
+      )
+    );
+});

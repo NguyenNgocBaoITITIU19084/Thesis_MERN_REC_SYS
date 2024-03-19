@@ -24,6 +24,7 @@ import {
   profile_end_point,
   cloudinary_end_point,
   auth_end_point,
+  order_end_point,
 } from "../../Server";
 
 const ProfileContent = ({ active }) => {
@@ -298,23 +299,34 @@ const ProfileContent = ({ active }) => {
 const AllOrders = () => {
   //   const { user } = useSelector((state) => state.user);
   //   const { orders } = useSelector((state) => state.order);
-  const orders = [
-    {
-      _id: "6580492b6daa6fbe43dff812",
-      orderItems: [
-        {
-          name: "Iphone 14 promax",
-        },
-      ],
-      totalPrice: 120,
-      orderStatus: "Processing",
-    },
-  ];
-  const dispatch = useDispatch();
+  const [orders, setOrders] = useState([]);
+  const [total, setTotal] = useState([]);
+  useEffect(() => {
+    async function fetchOrders() {
+      await axios
+        .get(`${Server_url}${Api_version}${order_end_point}/get-all-orders`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          const data = res.data.data;
+          setOrders([...data]);
+          data.forEach((item) => {
+            let totalPrice = 0;
+            item.orderList.forEach((product) => {
+              console.log(
+                (totalPrice =
+                  totalPrice + product.productId.price * product.quantity)
+              );
+              setTotal([...total, totalPrice]);
+            });
+          });
+        })
+        .catch((err) => toast.error(err.response.data.message));
+    }
+    fetchOrders();
+  }, []);
 
-  //   useEffect(() => {
-  //     dispatch(getAllOrdersOfUser(user._id));
-  //   }, []);
+  const dispatch = useDispatch();
 
   const columns = [
     { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
@@ -329,13 +341,6 @@ const AllOrders = () => {
           ? "greenColor"
           : "redColor";
       },
-    },
-    {
-      field: "itemsQty",
-      headerName: "Items Qty",
-      type: "number",
-      minWidth: 130,
-      flex: 0.7,
     },
 
     {
@@ -374,8 +379,8 @@ const AllOrders = () => {
       row.push({
         id: item?._id,
         itemsQty: item?.orderItems?.length,
-        total: "US$ " + item?.totalPrice,
-        status: item?.orderStatus,
+        total: "US$ " + total,
+        status: item?.status,
       });
     });
 

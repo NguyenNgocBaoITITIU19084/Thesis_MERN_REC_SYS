@@ -27,8 +27,6 @@ const orderSchema = new Schema(
     },
     phoneNumber: {
       type: String,
-      maxlength: [11, "phone number must be less than 11 numbers"],
-      minlength: [10, "phone number must be greater than 10 numbers"],
     },
     address: {
       type: String,
@@ -40,6 +38,10 @@ const orderSchema = new Schema(
         ref: "discounts",
       },
     ],
+    status: {
+      type: String,
+      default: "pending",
+    },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "users",

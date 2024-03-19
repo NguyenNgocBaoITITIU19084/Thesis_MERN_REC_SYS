@@ -12,7 +12,7 @@ route.post(
   authorize([ROLE.GUEST]),
   OrderControllers.createOrderByUser
 );
-
+route.get("/get-all-orders", OrderControllers.getOrders);
 route.get(
   "/get-all-orders-by-admin",
   isAuthenticated,
